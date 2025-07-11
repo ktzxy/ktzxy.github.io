@@ -1,0 +1,33 @@
+<?xml version="1.0" encoding="utf-8"?>
+<search> 
+  
+  
+    
+    <entry>
+      <title>Hello World</title>
+      <link href="/posts/16107.html"/>
+      <url>/posts/16107.html</url>
+      
+        <content type="html"><![CDATA[<p>Welcome to <a href="https://hexo.io/">Hexo</a>! This is your very first post. Check <a href="https://hexo.io/docs/">documentation</a> for more info. If you get any problems when using Hexo, you can find the answer in <a href="https://hexo.io/docs/troubleshooting.html">troubleshooting</a> or you can ask me on <a href="https://github.com/hexojs/hexo/issues">GitHub</a>.</p><h2 id="Quick-Start"><a href="#Quick-Start" class="headerlink" title="Quick Start"></a>Quick Start</h2><h3 id="Create-a-new-post"><a href="#Create-a-new-post" class="headerlink" title="Create a new post"></a>Create a new post</h3><figure class="highlight bash"><table><tr><td class="gutter"><pre><span class="line">1</span><br></pre></td><td class="code"><pre><span class="line">$ hexo new <span class="string">&quot;My New Post&quot;</span></span><br></pre></td></tr></table></figure><p>More info: <a href="https://hexo.io/docs/writing.html">Writing</a></p><h3 id="Run-server"><a href="#Run-server" class="headerlink" title="Run server"></a>Run server</h3><figure class="highlight bash"><table><tr><td class="gutter"><pre><span class="line">1</span><br></pre></td><td class="code"><pre><span class="line">$ hexo server</span><br></pre></td></tr></table></figure><p>More info: <a href="https://hexo.io/docs/server.html">Server</a></p><h3 id="Generate-static-files"><a href="#Generate-static-files" class="headerlink" title="Generate static files"></a>Generate static files</h3><figure class="highlight bash"><table><tr><td class="gutter"><pre><span class="line">1</span><br></pre></td><td class="code"><pre><span class="line">$ hexo generate</span><br></pre></td></tr></table></figure><p>More info: <a href="https://hexo.io/docs/generating.html">Generating</a></p><h3 id="Deploy-to-remote-sites"><a href="#Deploy-to-remote-sites" class="headerlink" title="Deploy to remote sites"></a>Deploy to remote sites</h3><figure class="highlight bash"><table><tr><td class="gutter"><pre><span class="line">1</span><br></pre></td><td class="code"><pre><span class="line">$ hexo deploy</span><br></pre></td></tr></table></figure><p>More info: <a href="https://hexo.io/docs/one-command-deployment.html">Deployment</a></p>]]></content>
+      
+      
+      
+    </entry>
+    
+    
+  
+  
+    
+    
+    <entry>
+      <title>About Me</title>
+      <link href="/about/index.html"/>
+      <url>/about/index.html</url>
+      
+        <content type="html"><![CDATA[<h3 id="emsp-emsp-emsp-emsp-emsp-emsp-emsp-emsp-emsp-emsp-emsp-我和这个世界不熟。这并非是我绝望的原因。"><a href="#emsp-emsp-emsp-emsp-emsp-emsp-emsp-emsp-emsp-emsp-emsp-我和这个世界不熟。这并非是我绝望的原因。" class="headerlink" title="&emsp;&emsp;&emsp;&emsp;&emsp;&emsp;&emsp;&emsp;&emsp;&emsp;&emsp;我和这个世界不熟。这并非是我绝望的原因。"></a>&emsp;&emsp;&emsp;&emsp;&emsp;&emsp;&emsp;&emsp;&emsp;&emsp;&emsp;<font face="宋体" size=4>我和这个世界不熟。这并非是我绝望的原因。</font></h3><h3 id="emsp-emsp-emsp-emsp-emsp-emsp-emsp-我依旧有很多热情，给分开，给死亡，给昨天，给安寂。"><a href="#emsp-emsp-emsp-emsp-emsp-emsp-emsp-我依旧有很多热情，给分开，给死亡，给昨天，给安寂。" class="headerlink" title="&emsp;&emsp;&emsp;&emsp;&emsp;&emsp;&emsp;我依旧有很多热情，给分开，给死亡，给昨天，给安寂。"></a>&emsp;&emsp;&emsp;&emsp;&emsp;&emsp;&emsp;<font face="宋体" size=4>我依旧有很多热情，给分开，给死亡，给昨天，给安寂。</font></h3><h1 id="1-技术栈-框架-💕"><a href="#1-技术栈-框架-💕" class="headerlink" title="1. 技术栈&amp;框架 💕"></a>1. 技术栈&amp;框架 💕</h1><ul><li>博客框架：<a href="https://github.com/hexojs/hexo">Hexo 6.3.0</a></li><li>主题：<a href="https://butterfly.js.org/">Butterfly 4.3.1</a></li><li>源码仓库：<a href="https://github.com/">Github</a></li><li>托管与部署：本网站采用多线部署，包括<a href="https://vercel.com/">Vercel</a> + <a href="https://zeabur.com/zh-CN">Zeabur</a> + <a href="https://pages.github.com/">Github Pages</a> 等</li><li>评论系统：<a href="https://twikoo.js.org/">Twikoo</a>系统 + <a href="https://vercel.com/">Vercel</a>部署 目前还未开放</li><li>图床：还未上线</li><li>图片压缩：<a href="https://github.com/meowtec/Imagine">Imagine</a>有损压缩技术 + <a href="https://imagestool.com/zh_CN/index.html">imagesTool</a>转化图片格式为 webp</li><li>静态资源压缩: <a href="https://github.com/gulpjs/gulp">gulp</a> + <a href="https://github.com/olback/es6-css-minify/tree/3.0">JS &amp; CSS Minifier (Minify)</a></li><li>自动部署：<a href="https://git-scm.com/">Git 钩子</a> + <a href="https://blog.csdn.net/weixin_43669978/article/details/122392448">Github Action</a></li><li>SEO 优化：还未上线</li><li>版权声明：详见<a href="https://creativecommons.org/licenses/by-nc-sa/4.0/">CC BY-NC-SA 4.0</a></li></ul><h1 id="2-关与本人-😎"><a href="#2-关与本人-😎" class="headerlink" title="2. 关与本人 😎"></a>2. 关与本人 😎</h1><ul><li>**昵称：*<em>蓝桉（取自蓝桉已遇</em>释怀鸟*,不爱万物唯爱你）</li><li><strong>性别：</strong>♂</li><li>**生日：**1999.11.14</li><li>**身份：**某公司小职员</li><li>**地点：**深圳</li><li><strong>邮箱：</strong><a href="mailto:&#50;&#x32;&#x35;&#49;&#x35;&#49;&#x31;&#55;&#x36;&#52;&#64;&#113;&#113;&#46;&#99;&#x6f;&#109;">2251511764@qq.com</a> | <a href="mailto:&#107;&#116;&#95;&#122;&#120;&#104;&#x40;&#x31;&#54;&#51;&#46;&#x63;&#x6f;&#109;">kt_zxh@163.com</a></li><li>**学习：**Java、C++、C、Python、Linux、Docker、Mysql、Sql Server(技能树持续点亮中…)</li></ul><h1 id="3-todoList-🤣"><a href="#3-todoList-🤣" class="headerlink" title="3. todoList 🤣"></a>3. todoList 🤣</h1><ul><li><p>永远热爱生活、热爱自己</p></li><li><p>又菜又爱玩 🏀🏸🎱 ctrl + C、ctrl + V 高级 CV 工程师 🏆</p></li><li><p>擅长 PS、Pr、Ae、Au、Ai、Dw、An、Id 等软件的安装与卸载 🎃</p></li><li><p>精通 Html、CSS、JavaScript、PHP、Java、Python、C、C++、C#、Go、TypeScript 等单词的拼写 🎲</p></li><li><p>熟悉 Windows、Linux、Mac、Android、IOS 等系统的开关机 👻</p></li><li><p>阅读爱好者 好奇的像只 🐱😸🙀</p></li><li><p>健身达人 0 块腹肌保持着</p></li></ul><h1 id="4-我的简历-😌"><a href="#4-我的简历-😌" class="headerlink" title="4. 我的简历 😌"></a>4. 我的简历 😌</h1><p>&emsp;&emsp;&emsp;<a href="https://ktzxy.xyz/posts/676dd596.html">本人简历</a></p>]]></content>
+      
+    </entry>
+    
+    
+  
+</search>
