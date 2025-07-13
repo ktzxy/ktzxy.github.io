@@ -1,0 +1,670 @@
+<!DOCTYPE html><html lang="zh-CN" data-theme="light"><head><meta charset="UTF-8"><meta http-equiv="X-UA-Compatible" content="IE=edge"><meta name="viewport" content="width=device-width, initial-scale=1.0,viewport-fit=cover"><title>MySQL-开发规范 | 蓝桉`Blog</title><meta name="author" content="蓝桉,kt_zxh@163.com"><meta name="copyright" content="蓝桉"><meta name="format-detection" content="telephone=no"><meta name="theme-color" content="#ffffff"><meta name="description" content="1. 标准 SQL 语言没有规范以下功能 ID自示增长 分页 函数 编程语言 服务端的数据软件  2. 数据库命名规范 所有数据库对象名称必须使用小写字母并用下划线分割； 所有数据库对象名称禁止使用mysql保留关键字（如果表名中包含关键字查询时，需要将其用单引号括起来）； 数据库对象的命名要能做到见名识意，并且最后不要超过32个字符； 临时库表必须以tmp为前缀并以日期为后缀，备份表必须以bak">
+<meta property="og:type" content="article">
+<meta property="og:title" content="MySQL-开发规范">
+<meta property="og:url" content="https://ktzxy.github.io/posts/ac28f454.html">
+<meta property="og:site_name" content="蓝桉&#96;Blog">
+<meta property="og:description" content="1. 标准 SQL 语言没有规范以下功能 ID自示增长 分页 函数 编程语言 服务端的数据软件  2. 数据库命名规范 所有数据库对象名称必须使用小写字母并用下划线分割； 所有数据库对象名称禁止使用mysql保留关键字（如果表名中包含关键字查询时，需要将其用单引号括起来）； 数据库对象的命名要能做到见名识意，并且最后不要超过32个字符； 临时库表必须以tmp为前缀并以日期为后缀，备份表必须以bak">
+<meta property="og:locale" content="zh_CN">
+<meta property="og:image" content="https://ktzxy.github.io/bg/Image00024.webp">
+<meta property="article:published_time" content="2025-07-09T17:28:46.000Z">
+<meta property="article:modified_time" content="2025-07-13T15:45:18.450Z">
+<meta property="article:author" content="蓝桉">
+<meta property="article:tag" content="数据库">
+<meta name="twitter:card" content="summary">
+<meta name="twitter:image" content="https://ktzxy.github.io/bg/Image00024.webp"><script type="application/ld+json">{
+  "@context": "https://schema.org",
+  "@type": "BlogPosting",
+  "headline": "MySQL-开发规范",
+  "url": "https://ktzxy.github.io/posts/ac28f454.html",
+  "image": "https://ktzxy.github.io/bg/Image00024.webp",
+  "datePublished": "2025-07-09T17:28:46.000Z",
+  "dateModified": "2025-07-13T15:45:18.450Z",
+  "author": [
+    {
+      "@type": "Person",
+      "name": "蓝桉",
+      "url": "https://ktzxy.github.io"
+    }
+  ]
+}</script><link rel="shortcut icon" href="/img/favicon.png"><link rel="canonical" href="https://ktzxy.github.io/posts/ac28f454.html"><link rel="preconnect" href="//cdn.jsdelivr.net"/><link rel="preconnect" href="//busuanzi.ibruce.info"/><link rel="stylesheet" href="/css/index.css"><link rel="stylesheet" href="https://cdn.jsdelivr.net/npm/@fortawesome/fontawesome-free/css/all.min.css"><script>
+    (() => {
+      
+    const saveToLocal = {
+      set: (key, value, ttl) => {
+        if (!ttl) return
+        const expiry = Date.now() + ttl * 86400000
+        localStorage.setItem(key, JSON.stringify({ value, expiry }))
+      },
+      get: key => {
+        const itemStr = localStorage.getItem(key)
+        if (!itemStr) return undefined
+        const { value, expiry } = JSON.parse(itemStr)
+        if (Date.now() > expiry) {
+          localStorage.removeItem(key)
+          return undefined
+        }
+        return value
+      }
+    }
+
+    window.btf = {
+      saveToLocal,
+      getScript: (url, attr = {}) => new Promise((resolve, reject) => {
+        const script = document.createElement('script')
+        script.src = url
+        script.async = true
+        Object.entries(attr).forEach(([key, val]) => script.setAttribute(key, val))
+        script.onload = script.onreadystatechange = () => {
+          if (!script.readyState || /loaded|complete/.test(script.readyState)) resolve()
+        }
+        script.onerror = reject
+        document.head.appendChild(script)
+      }),
+      getCSS: (url, id) => new Promise((resolve, reject) => {
+        const link = document.createElement('link')
+        link.rel = 'stylesheet'
+        link.href = url
+        if (id) link.id = id
+        link.onload = link.onreadystatechange = () => {
+          if (!link.readyState || /loaded|complete/.test(link.readyState)) resolve()
+        }
+        link.onerror = reject
+        document.head.appendChild(link)
+      }),
+      addGlobalFn: (key, fn, name = false, parent = window) => {
+        if (!false && key.startsWith('pjax')) return
+        const globalFn = parent.globalFn || {}
+        globalFn[key] = globalFn[key] || {}
+        globalFn[key][name || Object.keys(globalFn[key]).length] = fn
+        parent.globalFn = globalFn
+      }
+    }
+  
+      
+      const activateDarkMode = () => {
+        document.documentElement.setAttribute('data-theme', 'dark')
+        if (document.querySelector('meta[name="theme-color"]') !== null) {
+          document.querySelector('meta[name="theme-color"]').setAttribute('content', '#0d0d0d')
+        }
+      }
+      const activateLightMode = () => {
+        document.documentElement.setAttribute('data-theme', 'light')
+        if (document.querySelector('meta[name="theme-color"]') !== null) {
+          document.querySelector('meta[name="theme-color"]').setAttribute('content', '#ffffff')
+        }
+      }
+
+      btf.activateDarkMode = activateDarkMode
+      btf.activateLightMode = activateLightMode
+
+      const theme = saveToLocal.get('theme')
+    
+          theme === 'dark' ? activateDarkMode() : theme === 'light' ? activateLightMode() : null
+        
+      
+      const asideStatus = saveToLocal.get('aside-status')
+      if (asideStatus !== undefined) {
+        document.documentElement.classList.toggle('hide-aside', asideStatus === 'hide')
+      }
+    
+      
+    const detectApple = () => {
+      if (/iPad|iPhone|iPod|Macintosh/.test(navigator.userAgent)) {
+        document.documentElement.classList.add('apple')
+      }
+    }
+    detectApple()
+  
+    })()
+  </script><script>const GLOBAL_CONFIG = {
+  root: '/',
+  algolia: undefined,
+  localSearch: undefined,
+  translate: undefined,
+  highlight: {"plugin":"highlight.js","highlightCopy":true,"highlightLang":true,"highlightHeightLimit":false,"highlightFullpage":false,"highlightMacStyle":false},
+  copy: {
+    success: '复制成功',
+    error: '复制失败',
+    noSupport: '浏览器不支持'
+  },
+  relativeDate: {
+    homepage: false,
+    post: false
+  },
+  runtime: '',
+  dateSuffix: {
+    just: '刚刚',
+    min: '分钟前',
+    hour: '小时前',
+    day: '天前',
+    month: '个月前'
+  },
+  copyright: undefined,
+  lightbox: 'null',
+  Snackbar: undefined,
+  infinitegrid: {
+    js: 'https://cdn.jsdelivr.net/npm/@egjs/infinitegrid/dist/infinitegrid.min.js',
+    buttonText: '加载更多'
+  },
+  isPhotoFigcaption: false,
+  islazyloadPlugin: false,
+  isAnchor: false,
+  percent: {
+    toc: true,
+    rightside: false,
+  },
+  autoDarkmode: false
+}</script><script id="config-diff">var GLOBAL_CONFIG_SITE = {
+  title: 'MySQL-开发规范',
+  isHighlightShrink: false,
+  isToc: true,
+  pageType: 'post'
+}</script><link rel="stylesheet" href="/css/custom.css" media="defer" onload="this.media='all'"><link rel="stylesheet" href="//at.alicdn.com/t/c/font_4379924_273fk05h86zi.css" media="defer" onload="this.media='all'"><link rel="stylesheet" href="/css/progress_bar/progress_bar.css" media="defer" onload="this.media='all'"><link rel="stylesheet" href="/css/windmill/windmill.css"><link rel="stylesheet" href="/css/cat.css"><link rel="stylesheet" href="/css/meting/music_lanan.css"><div id="myscoll"></div><!-- hexo injector head_end start --><link rel="stylesheet" href="https://cdn.jsdelivr.net/gh/Zfour/Butterfly-double-row-display@1.00/cardlistpost.min.css"/>
+<style>#recent-posts > .recent-post-item >.recent-post-info > .article-meta-wrap > .tags:before {content:"\A";
+  white-space: pre;}#recent-posts > .recent-post-item >.recent-post-info > .article-meta-wrap > .tags > .article-meta__separator{display:none}</style>
+<link rel="stylesheet" href="https://cdn.cbd.int/hexo-butterfly-clock-anzhiyu/lib/clock.min.css" /><link rel="stylesheet" href="/css/runtime/runtime.min.css" media="print" onload="this.media='all'"><link rel="stylesheet" href="https://cdn.cbd.int/hexo-butterfly-tag-plugins-plus@latest/lib/assets/font-awesome-animation.min.css" media="defer" onload="this.media='all'"><link rel="stylesheet" href="https://npm.elemecdn.com/hexo-butterfly-tag-plugins-plus@latest/lib/tag_plugins.css" media="defer" onload="this.media='all'"><script src="https://npm.elemecdn.com/hexo-butterfly-tag-plugins-plus@latest/lib/assets/carousel-touch.js"></script><link rel="stylesheet" href="https://cdn.cbd.int/hexo-butterfly-wowjs/lib/animate.min.css" media="print" onload="this.media='screen'"><!-- hexo injector head_end end --><meta name="generator" content="Hexo 7.3.0"><link rel="alternate" href="/atom.xml" title="蓝桉`Blog" type="application/atom+xml">
+</head><body><div id="loading-box"><div class="loading-left-bg"></div><div class="loading-right-bg"></div><div class="spinner-box"><div class="configure-border-1"><div class="configure-core"></div></div><div class="configure-border-2"><div class="configure-core"></div></div><div class="loading-word">加载中...</div></div></div><script>(()=>{
+  const $loadingBox = document.getElementById('loading-box')
+  const $body = document.body
+  const preloader = {
+    endLoading: () => {
+      $body.style.overflow = ''
+      $loadingBox.classList.add('loaded')
+    },
+    initLoading: () => {
+      $body.style.overflow = 'hidden'
+      $loadingBox.classList.remove('loaded')
+    }
+  }
+
+  preloader.initLoading()
+  window.addEventListener('load', preloader.endLoading)
+
+  if (false) {
+    btf.addGlobalFn('pjaxSend', preloader.initLoading, 'preloader_init')
+    btf.addGlobalFn('pjaxComplete', preloader.endLoading, 'preloader_end')
+  }
+})()</script><div id="web_bg" style="background-image: url(/img/bg.webp);"></div><div id="an_music_bg"></div><div id="sidebar"><div id="menu-mask"></div><div id="sidebar-menus"><div class="avatar-img text-center"><img src="/img/avatar.webp" onerror="this.onerror=null;this.src='/img/friend_404.gif'" alt="avatar"/></div><div class="site-data text-center"><a href="/archives/"><div class="headline">文章</div><div class="length-num">264</div></a><a href="/tags/"><div class="headline">标签</div><div class="length-num">38</div></a><a href="/categories/"><div class="headline">分类</div><div class="length-num">37</div></a></div><div class="menus_items"><div class="menus_item"><a class="site-page faa-parent animated-hover" href="/"><i class="fa-fw icon-zhuye-"></i><svg class="icon faa-tada" aria-hidden="true"><use xlink:href="#icon-zhuye-"></use></svg><span> 首页</span></a></div><div class="menus_item"><a class="site-page faa-parent animated-hover" href="/archives/"><i class="fa-fw icon-shijianzhou"></i><svg class="icon faa-tada" aria-hidden="true"><use xlink:href="#icon-shijianzhou"></use></svg><span> 时间轴</span></a></div><div class="menus_item"><a class="site-page faa-parent animated-hover" href="/essay/"><i class="fa-fw icon-xiaoxi"></i><svg class="icon faa-tada" aria-hidden="true"><use xlink:href="#icon-xiaoxi"></use></svg><span> 闲言碎语</span></a></div><div class="menus_item"><a class="site-page faa-parent animated-hover" href="/music/"><i class="fa-fw icon-music"></i><svg class="icon faa-tada" aria-hidden="true"><use xlink:href="#icon-music"></use></svg><span> 音乐馆</span></a></div><div class="menus_item"><a class="site-page faa-parent animated-hover" href="/categories/"><i class="fa-fw icon-fenlei"></i><svg class="icon faa-tada" aria-hidden="true"><use xlink:href="#icon-fenlei"></use></svg><span> 分类</span></a></div><div class="menus_item"><a class="site-page faa-parent animated-hover" href="/fcircle/"><i class="fa-fw icon-pengyouquan"></i><svg class="icon faa-tada" aria-hidden="true"><use xlink:href="#icon-pengyouquan"></use></svg><span> 朋友圈</span></a></div><div class="menus_item"><a class="site-page faa-parent animated-hover" href="/comments/"><i class="fa-fw icon-xinfeng"></i><svg class="icon faa-tada" aria-hidden="true"><use xlink:href="#icon-xinfeng"></use></svg><span> 留言板</span></a></div><div class="menus_item"><a class="site-page faa-parent animated-hover" href="/link/"><i class="fa-fw icon-lianjie"></i><svg class="icon faa-tada" aria-hidden="true"><use xlink:href="#icon-lianjie"></use></svg><span> 友人帐</span></a></div><div class="menus_item"><a class="site-page faa-parent animated-hover" href="javascript:randomPost();"><i class="fa-fw icon-wodezhuifan"></i><svg class="icon faa-tada" aria-hidden="true"><use xlink:href="#icon-wodezhuifan"></use></svg><span> 随机访问</span></a></div><div class="menus_item"><a class="site-page faa-parent animated-hover" href="/about/"><i class="fa-fw icon-guanyuwomen2"></i><svg class="icon faa-tada" aria-hidden="true"><use xlink:href="#icon-guanyuwomen2"></use></svg><span> 关于</span></a></div></div></div></div><div class="post" id="body-wrap"><header class="post-bg" id="page-header" style="background-image: url(/bg/Image00024.webp);"><nav id="nav"><span id="blog-info"><a class="nav-site-title" href="/"><span class="site-name">蓝桉`Blog</span></a><a class="nav-page-title" href="/"><span class="site-name">MySQL-开发规范</span><span class="site-name"><i class="fa-solid fa-circle-arrow-left"></i><span>  返回首页</span></span></a></span><div id="menus"><div class="menus_items"><div class="menus_item"><a class="site-page faa-parent animated-hover" href="/"><i class="fa-fw icon-zhuye-"></i><svg class="icon faa-tada" aria-hidden="true"><use xlink:href="#icon-zhuye-"></use></svg><span> 首页</span></a></div><div class="menus_item"><a class="site-page faa-parent animated-hover" href="/archives/"><i class="fa-fw icon-shijianzhou"></i><svg class="icon faa-tada" aria-hidden="true"><use xlink:href="#icon-shijianzhou"></use></svg><span> 时间轴</span></a></div><div class="menus_item"><a class="site-page faa-parent animated-hover" href="/essay/"><i class="fa-fw icon-xiaoxi"></i><svg class="icon faa-tada" aria-hidden="true"><use xlink:href="#icon-xiaoxi"></use></svg><span> 闲言碎语</span></a></div><div class="menus_item"><a class="site-page faa-parent animated-hover" href="/music/"><i class="fa-fw icon-music"></i><svg class="icon faa-tada" aria-hidden="true"><use xlink:href="#icon-music"></use></svg><span> 音乐馆</span></a></div><div class="menus_item"><a class="site-page faa-parent animated-hover" href="/categories/"><i class="fa-fw icon-fenlei"></i><svg class="icon faa-tada" aria-hidden="true"><use xlink:href="#icon-fenlei"></use></svg><span> 分类</span></a></div><div class="menus_item"><a class="site-page faa-parent animated-hover" href="/fcircle/"><i class="fa-fw icon-pengyouquan"></i><svg class="icon faa-tada" aria-hidden="true"><use xlink:href="#icon-pengyouquan"></use></svg><span> 朋友圈</span></a></div><div class="menus_item"><a class="site-page faa-parent animated-hover" href="/comments/"><i class="fa-fw icon-xinfeng"></i><svg class="icon faa-tada" aria-hidden="true"><use xlink:href="#icon-xinfeng"></use></svg><span> 留言板</span></a></div><div class="menus_item"><a class="site-page faa-parent animated-hover" href="/link/"><i class="fa-fw icon-lianjie"></i><svg class="icon faa-tada" aria-hidden="true"><use xlink:href="#icon-lianjie"></use></svg><span> 友人帐</span></a></div><div class="menus_item"><a class="site-page faa-parent animated-hover" href="javascript:randomPost();"><i class="fa-fw icon-wodezhuifan"></i><svg class="icon faa-tada" aria-hidden="true"><use xlink:href="#icon-wodezhuifan"></use></svg><span> 随机访问</span></a></div><div class="menus_item"><a class="site-page faa-parent animated-hover" href="/about/"><i class="fa-fw icon-guanyuwomen2"></i><svg class="icon faa-tada" aria-hidden="true"><use xlink:href="#icon-guanyuwomen2"></use></svg><span> 关于</span></a></div></div><div id="toggle-menu"><span class="site-page"><i class="fas fa-bars fa-fw"></i></span></div></div></nav><div id="post-info"><h1 class="post-title">MySQL-开发规范</h1><div id="post-meta"><div class="meta-firstline"><span class="post-meta-date"><i class="far fa-calendar-alt fa-fw post-meta-icon"></i><span class="post-meta-label">发表于</span><time class="post-meta-date-created" datetime="2025-07-09T17:28:46.000Z" title="发表于 2025-07-09 17:28:46">2025-07-09</time><span class="post-meta-separator">|</span><i class="fas fa-history fa-fw post-meta-icon"></i><span class="post-meta-label">更新于</span><time class="post-meta-date-updated" datetime="2025-07-13T15:45:18.450Z" title="更新于 2025-07-13 15:45:18">2025-07-13</time></span><span class="post-meta-categories"><span class="post-meta-separator">|</span><i class="fas fa-inbox fa-fw post-meta-icon"></i><a class="post-meta-categories" href="/categories/%E6%95%B0%E6%8D%AE%E5%BA%93/">数据库</a></span></div><div class="meta-secondline"><span class="post-meta-separator">|</span><span class="post-meta-pv-cv" id="" data-flag-title=""><i class="far fa-eye fa-fw post-meta-icon"></i><span class="post-meta-label">浏览量:</span><span id="busuanzi_value_page_pv"><i class="fa-solid fa-spinner fa-spin"></i></span></span></div></div></div></header><main class="layout" id="content-inner"><div id="post"><article class="container post-content" id="article-container"><h2 id="1-标准-SQL-语言没有规范以下功能"><a href="#1-标准-SQL-语言没有规范以下功能" class="headerlink" title="1. 标准 SQL 语言没有规范以下功能"></a>1. 标准 SQL 语言没有规范以下功能</h2><ul>
+<li>ID自示增长</li>
+<li>分页</li>
+<li>函数</li>
+<li>编程语言</li>
+<li>服务端的数据软件</li>
+</ul>
+<h2 id="2-数据库命名规范"><a href="#2-数据库命名规范" class="headerlink" title="2. 数据库命名规范"></a>2. 数据库命名规范</h2><ol>
+<li>所有数据库对象名称必须使用小写字母并用下划线分割；</li>
+<li>所有数据库对象名称禁止使用mysql保留关键字（如果表名中包含关键字查询时，需要将其用单引号括起来）；</li>
+<li>数据库对象的命名要能做到见名识意，并且最后不要超过32个字符；</li>
+<li>临时库表必须以tmp<em>为前缀并以日期为后缀，备份表必须以bak</em>为前缀并以日期(时间戳)为后缀；</li>
+<li>所有存储相同数据的列名和列类型必须一致（一般作为关联列，如果查询时关联列类型不一致会自动进行数据类型隐式转换，会造成列上的索 引失效，导致查询效率降低）。</li>
+</ol>
+<h2 id="3-SQL-语句规范"><a href="#3-SQL-语句规范" class="headerlink" title="3. SQL 语句规范"></a>3. SQL 语句规范</h2><ul>
+<li><strong>SQL 语句可以单行或多行书写，以分号结尾</strong></li>
+<li>可使用空格和缩进来增强语句的可读性</li>
+<li>同样可以使用<code>/**/</code>的方式完成注释</li>
+<li>MySQL 数据库的 <strong>SQL 语句不区分大小写，建议关键字使用大写，自定义的使用小写</strong>，例如：</li>
+</ul>
+<figure class="highlight sql"><table><tr><td class="gutter"><pre><span class="line">1</span><br></pre></td><td class="code"><pre><span class="line"><span class="keyword">SELECT</span> <span class="operator">*</span> <span class="keyword">FROM</span> <span class="keyword">user</span>;</span><br></pre></td></tr></table></figure>
+<h2 id="4-命名规范"><a href="#4-命名规范" class="headerlink" title="4. 命名规范"></a>4. 命名规范</h2><ul>
+<li>数据库、表、字段的命名要遵守可读性原则，尽可能少使用或者不使用缩写</li>
+<li>表名、字段名必须使用小写字母或数字，禁止出现数字开头，禁止两个下划线中间只出现数字。<ul>
+<li>说明：MySQL在Windows下不区分大小写，但在Linux下默认是区分大小写。因此，数据库名、表名、字段名，都不允许出现任何大写字母，避免节外生枝。</li>
+</ul>
+</li>
+<li>表名使用<strong>单数</strong>形式。如：员工表使用 EMPLOYEE，而不要使用 EMPLOYEES</li>
+<li>采用有意义的名字，一般不超过三个英文单词，单词之间使用<strong>下划线</strong>分隔</li>
+<li>数据库、表、字段的命名禁用保留字，如<code>desc</code>、<code>range</code>、<code>match</code>之类</li>
+<li>对象的名字应该能够描述它所表示的对象。<ul>
+<li>表的名称应该能够体现表中存储的数据内容，最好是遵循“<code>业务名称_表的作用</code>”；</li>
+<li>对于存储过程存储过程应该能够体现存储过程的功能。</li>
+<li>库名与应用名称尽量一致。</li>
+</ul>
+</li>
+<li>主键索引名为<code>pk_字段名</code>；唯一索引名为<code>uk_字段名</code>；普通索引名则为<code>idx_字段名</code></li>
+<li>表达是与否概念的字段，应该使用<code>is_xxx</code>的方式命名，数据类型是<code>unsigned tinyint</code>（1 表示是，0 表示否）。</li>
+</ul>
+<h2 id="5-数据库基本设计规范"><a href="#5-数据库基本设计规范" class="headerlink" title="5. 数据库基本设计规范"></a>5. 数据库基本设计规范</h2><ol>
+<li><strong>所有表必须使用Innodb存储引擎</strong></li>
+</ol>
+<ul>
+<li>没有特殊要求（即Innodb无法满足的功能如：列存储，存储空间数据等）的情况下，所有表必须使用Innodb存储引擎（mysql5.5之前默认使用Myisam，5.6以后默认的为Innodb）Innodb 支持事务，支持行级锁，更好的恢复性，高并发下性能更好。</li>
+</ul>
+<ol>
+<li><strong>数据库和表的字符集统一使用UTF8</strong></li>
+</ol>
+<ul>
+<li>兼容性更好，统一字符集可以避免由于字符集转换产生的乱码，不同的字符集进行比较前需要进行转换会造成索引失效。</li>
+</ul>
+<ol>
+<li><strong>所有表和字段都需要添加注释</strong></li>
+</ol>
+<ul>
+<li>使用comment从句添加表和列的备注 从一开始就进行数据字典的维护。</li>
+</ul>
+<ol>
+<li><strong>尽量控制单表数据量的大小，建议控制在500万以内</strong></li>
+</ol>
+<ul>
+<li>500万并不是MySQL数据库的限制，过大会造成修改表结构，备份，恢复都会有很大的问题。</li>
+<li>可以用历史数据归档（应用于日志数据），分库分表（应用于业务数据）等手段来控制数据量大小。</li>
+</ul>
+<ol>
+<li><strong>谨慎使用MySQL分区表</strong></li>
+</ol>
+<ul>
+<li>分区表在物理上表现为多个文件，在逻辑上表现为一个表，谨慎选择分区键，跨分区查询效率可能更低 建议采用物理分表的方式管理大数据。</li>
+</ul>
+<ol>
+<li><strong>尽量做到冷热数据分离，减小表的宽度</strong></li>
+</ol>
+<ul>
+<li>MySQL限制每个表最多存储4096列，并且每一行数据的大小不能超过65535字节 减少磁盘IO，保证热数据的内存缓存命中率（表越宽，把表装载进内存缓冲池时所占用的内存也就越大，也会消耗更多的IO） 更有效的利用缓存，避免读入无用的冷数据 经常一起使用的列放到一个表中（避免更多的关联操作）。</li>
+</ul>
+<ol>
+<li><strong>禁止在表中建立预留字段</strong></li>
+</ol>
+<ul>
+<li>预留字段的命名很难做到见名识义 预留字段无法确认存储的数据类型，所以无法选择合适的类型 对预留字段类型的修改，会对表进行锁定。</li>
+</ul>
+<ol>
+<li><strong>禁止在数据库中存储图片，文件等大的二进制数据</strong></li>
+</ol>
+<ul>
+<li>通常文件很大，会短时间内造成数据量快速增长，数据库进行数据库读取时，通常会进行大量的随机IO操作，文件很大时，IO操作很耗时，通常存储于文件服务器，数据库只存储文件地址信息。</li>
+</ul>
+<ol>
+<li><strong>禁止在线上做数据库压力测试</strong></li>
+<li><strong>禁止从开发环境，测试环境直接连接生成环境数据库</strong></li>
+</ol>
+<h2 id="6-数据库表字段类型设计规范"><a href="#6-数据库表字段类型设计规范" class="headerlink" title="6. 数据库表字段类型设计规范"></a>6. 数据库表字段类型设计规范</h2><h3 id="6-1-基本原则"><a href="#6-1-基本原则" class="headerlink" title="6.1. 基本原则"></a>6.1. 基本原则</h3><h4 id="6-1-1-优先选择符合存储需要的最小的数据类型（更小的通常更好）"><a href="#6-1-1-优先选择符合存储需要的最小的数据类型（更小的通常更好）" class="headerlink" title="6.1.1. 优先选择符合存储需要的最小的数据类型（更小的通常更好）"></a>6.1.1. 优先选择符合存储需要的最小的数据类型（更小的通常更好）</h4><p>原因：列的字段越大，建立索引时所需要的空间也就越大，这样一页中所能存储的索引节点的数量也就越少也越少，在遍历时所需要的IO次数也就越多， 索引的性能也就越差。</p>
+<p><strong>一些优化的示例</strong>：</p>
+<ul>
+<li><strong>将字符串转换成数字类型存储，如：将IP地址转换成整形数据</strong>。mysql提供了两个方法来处理ip地址：<ul>
+<li><code>inet_aton</code>：把ip转为无符号整形（4-8位）</li>
+<li><code>inet_ntoa</code>：把整型的ip转成地址</li>
+<li>插入数据前，先用<code>inet_aton</code>把ip地址转为整型，可以节省空间。显示数据时，使用<code>inet_ntoa</code>把整型的ip地址转为地址显示即可。</li>
+</ul>
+</li>
+<li><strong>对于非负型的数据（如自增ID、整型IP）来说，要优先使用无符号整型来存储</strong>。因为，无符号相对于有符号可以多出一倍的存储空间<ul>
+<li><strong>VARCHAR(N)中的N代表的是字符数，而不是字节数</strong></li>
+<li>使用UTF8存储255个汉字<code>Varchar(255)=765</code>个字节。过大的长度会消耗更多的内存</li>
+</ul>
+</li>
+</ul>
+<h4 id="6-1-2-简单的数据类型更好"><a href="#6-1-2-简单的数据类型更好" class="headerlink" title="6.1.2. 简单的数据类型更好"></a>6.1.2. 简单的数据类型更好</h4><p>简单数据类型的操作通常需要更少的CPU周期。例如：</p>
+<ul>
+<li>整型比字符操作代价更低，因为字符集和校对规则(排序规则)使字符比较比整型比较更复杂。</li>
+<li>应该使用 MySQL 内建的类型而不是字符串来存储日期和时间</li>
+</ul>
+<h4 id="6-1-3-尽量避免-NULL"><a href="#6-1-3-尽量避免-NULL" class="headerlink" title="6.1.3. 尽量避免 NULL"></a>6.1.3. 尽量避免 NULL</h4><p><strong>尽可能把所有列定义为NOT NULL</strong>。原因如下：</p>
+<ul>
+<li>索引NULL列需要额外的空间来保存，所以要占用更多的空间；</li>
+<li>进行比较和计算时要对NULL值做特别的处理。</li>
+</ul>
+<h3 id="6-2-整数类型（int）"><a href="#6-2-整数类型（int）" class="headerlink" title="6.2. 整数类型（int）"></a>6.2. 整数类型（int）</h3><p>MySQL存储整数的数据类型如下表：</p>
+<div class="table-container">
+<table>
+<thead>
+<tr>
+<th style="text-align:center">整数类型</th>
+<th style="text-align:center">存储空间（位）</th>
+<th style="text-align:center">字节数</th>
+</tr>
+</thead>
+<tbody>
+<tr>
+<td style="text-align:center"><code>TINYINT</code></td>
+<td style="text-align:center">8</td>
+<td style="text-align:center">1</td>
+</tr>
+<tr>
+<td style="text-align:center"><code>SMALLINT</code></td>
+<td style="text-align:center">16</td>
+<td style="text-align:center">2</td>
+</tr>
+<tr>
+<td style="text-align:center"><code>MEDIUMINT</code></td>
+<td style="text-align:center">24</td>
+<td style="text-align:center">3</td>
+</tr>
+<tr>
+<td style="text-align:center"><code>INT</code></td>
+<td style="text-align:center">32</td>
+<td style="text-align:center">4</td>
+</tr>
+<tr>
+<td style="text-align:center"><code>BIGINT</code></td>
+<td style="text-align:center">64</td>
+<td style="text-align:center">8</td>
+</tr>
+</tbody>
+</table>
+</div>
+<p>同时整数类型有可选的 <code>UNSIGNED</code> 属性，表示不允许负值可以使正数的上限提高一倍。如：<code>TINYINT UNSIGNED</code>可以存储的范围是<code>0~255</code>，而<code>TINYINT</code>的存储范围是<code>-128~127</code>。</p>
+<p><strong>有符号和无符号类型使用相同的存储空间，并具有相同的性能</strong>，因此可以根据实际情况选择合适的类型。</p>
+<font color=red>**MySQL 可以为整数类型指定宽度，例如`INT(11)`，对大多数应用这是没有意义的，它不会限制值的合法范围，只是规定了MySQL的一些交互工具（例如 MySQL命令行客户端)用来显示字符的个数。对于存储和计算来说，`INT(1)`和`INT(20)`是相同的。**</font>
+
+<font color=red>**在整数字段类型选择上，遵循着更小的通常更好的原则，在业务许可的情况下，尽量选择位数小的**</font>
+
+<h3 id="6-3-实数类型"><a href="#6-3-实数类型" class="headerlink" title="6.3. 实数类型"></a>6.3. 实数类型</h3><p>实数是带有小数部分的数字。MySQL 既支持精确浮点类型的存储<code>DECIMAL</code>类型，也支持不精确浮点类型存储<code>FLOAT</code>和<code>DOUBLE</code>类型。</p>
+<ul>
+<li><font color=red><strong>DECIMAL 类型用于存储精确的小数，本质上 MySQL 是以字符串形式存放的</strong></font>。所以CPU不支持对<code>DECIMAL</code>类型的直接计算，而MySQL会实现了<code>DECIMAL</code>的高精度计算。相对而言，CPU 直接支持原生浮点计算，所以浮点运算明显更快。</li>
+<li>浮点类型在存储同样范围的值时，通常比<code>DECIMAL</code>使用更少的空间。<code>FLOAT</code>使用4个字节存储，<code>DOUBLE</code>使用8个字节，所以<code>DOUBLE</code>比<code>FLOAT</code>有更高的精度和更大的范围。</li>
+</ul>
+<blockquote>
+<p>浮点和 <code>DECIMAL</code> 类型都可以指定精度。对于 <code>DECIMAL</code> 列，可以指定小数点前后所允许的最大位数。这会影响列的空间消耗。MySQL 5.0 和更高版本将数字打包保存到一个二进制字符串中（每 4 个字节存 9 个数字)。例如，<code>DECIMAL(18,9</code>)小数点两边将各存储 9 个数字，一共使用 9 个字节：小数点前的数字用 4 个字节，小数点后的数字用 4 个字节，小数点本身占 1 个字节。</p>
+</blockquote>
+<p><strong>一般涉及财务相关的金额类数据必须使用<code>decimal</code>类型</strong>。因为<code>Decimal</code>类型为精准浮点数，在计算时不会丢失精度。占用空间由定义的宽度决定，每4个字节可以存储9位数字，并且小数点要占用一个字节。可用于存储比<code>bigint</code>更大的整型数据。MySQL 5.0 和更高版本中的<code>DECIMAL</code>类型允许最多65个数字。在精度不敏感和需要快速运算的时候，选择<code>FLOAT</code>和<code>DOUBLE</code>。</p>
+<p>实际项目运用中，如果在数据量比较大的而且要求精度时，可以考虑使用<code>BIGINT</code>代替<code>DECIMAL</code>，将需要存储的货币单位根据小数的位数乘以相应的倍数即可。假设要存储财务数据精确到万分之一分，则可以把所有金额乘以一百万，然后将结果存储在<code>BIGINT</code>里，这样可以同时避免浮点存储计算不精确和<code>DECIMAL</code>精确计算代价高的问题。</p>
+<h3 id="6-4-字段串类型"><a href="#6-4-字段串类型" class="headerlink" title="6.4. 字段串类型"></a>6.4. 字段串类型</h3><p>MySQL 支持多种字符串类型，包括<code>VARCHAR</code>和<code>CHAR</code>类型、<code>BLOB</code>和<code>TEXT</code>类型、<code>ENUM</code>（枚举）和<code>SET</code>类型。</p>
+<h4 id="6-4-1-VARCHAR-和-CHAR-类型"><a href="#6-4-1-VARCHAR-和-CHAR-类型" class="headerlink" title="6.4.1. VARCHAR 和 CHAR 类型"></a>6.4.1. VARCHAR 和 CHAR 类型</h4><p>VARCHAR 和 CHAR 是两种最主要的字符串类型。</p>
+<p><strong>VARCHAR</strong></p>
+<p>VARCHAR 类型用于存储可变长字符串，它比定长类型更节省空间，因为它仅使用必要的空间（例如，越短的字符串使用越少的空间)。</p>
+<p>在内部实现上，VARCHAR 需要使用 1 或 2 个额外字节记录字符串的长度，如果列的最大长度小于或等于 255 字节，则只使用 1 个字节表示，否则使用 2 个字节。</p>
+<p>VARCHAR 节省了存储空间，所以对性能也有帮助。但是，由于行是变长的，在 UPDATE 时新值比旧值长时，使行变得比原来更长，这就肯能导致需要做额外的工作。如果一个行占用的空间增长，并且在页内没有更多的空间可以存储，在这种情况下，MyISAM 会将行拆成不同的片段存储，InnoDB 则需要分裂页来使行可以放进页内。</p>
+<p><strong>CHAR</strong></p>
+<p>CHAR 类型是定长的，MySQL 总是根据定义的字符串长度分配足够的空间。当存储 CHAR 值时，MySQL 会删除所有的末尾空格，CHAR 值会根据需要采用空格进行填充以方便比较。</p>
+<p><strong>适合使用VARCHAR的情况</strong></p>
+<ul>
+<li>字符串列的最大长度比平均长度大很多。</li>
+<li>列的更新很少；</li>
+<li>使用了像 UTF-8 这样复杂的字符集，每个字符都使用不同的字节数进行存储。</li>
+</ul>
+<p><strong>适合使用CHAR的情况</strong></p>
+<ul>
+<li>适合存储很短的字符串，或者所有值定长或都接近同一个长度。如存储密码MD5值，因为它是定长的</li>
+<li>适合长度非常短的列。如<code>CHAR(1)</code>来存储只有 Y 和 N 的值，如果采用单字节字符集只需要一个字节，但是<code>VARCHAR(1)</code>却需要两个字节，因为还有一个记录长度的额外字节。</li>
+</ul>
+<blockquote>
+<p>使用<code>VARCHAR(5)</code>和<code>VARCHAR(200)</code>存储’hello’在磁盘空间上开销是一样的。应该使用更短的列。最好的策略是只分配真正需要的空间。因为更长的列会消耗更多的内存，MySQL 通常会分配固定大小的内存块来保存内部值。尤其是使用内存临时表进行排序或操作时会特别糟糕。</p>
+</blockquote>
+<h4 id="6-4-2-BLOB-和-TEXT-类型"><a href="#6-4-2-BLOB-和-TEXT-类型" class="headerlink" title="6.4.2. BLOB 和 TEXT 类型"></a>6.4.2. BLOB 和 TEXT 类型</h4><p>BLOB 和 TEXT 都是为存储很大的数据而设计的字符串数据类型，分别采用二进制和字符方式存储。与其他类型不同，MySQL 把每个 BLOB 和 TEXT 值当作一个独立的对象处理，存储引擎在存储时通常会做特殊处理。<em>当 BLOB 和 TEXT 值太大时，InnoDB 会使用专门的“外部”存储区域来进行存储，此时每个值在行内需要 1~4 个字节存储一个指针，然后在外部存储区域存储实际的值。</em></p>
+<p>BLOB 和 TEXT 之间的区别是 BLOB 类型存储的是二进制数据，没有排序规则或字符集，而 TEXT 类型有字符集和排序规则。</p>
+<p><strong><code>BLOB</code>和<code>TEXT</code>类型使用规范</strong></p>
+<ul>
+<li><code>BLOB</code>和<code>TEXT</code>值会引起一些性能问题，所以尽量避免使用<code>BLOB</code>和<code>TEXT</code>类型。最常见的TEXT类型可以存储64k的数据。</li>
+<li>如必须使用此两种类型，<strong>建议把 BLOB 或 TEXT 的列分离到单独的表中</strong>。<ul>
+<li>Mysql内存临时表不支持TEXT、BLOB这样的大数据类型，如果查询中包含这样的数据，在排序等操作时，就不能使用内存临时表，必须使用磁盘临时表进行。</li>
+<li>而且对于这种数据，Mysql还是要进行二次查询，会使sql性能变得很差，但是不是说一定不能使用这样的数据类型。</li>
+</ul>
+</li>
+<li>在不必要的时候避免检索大型的 BLOB 或 TEXT 值。避免在包含此两种类型的表使用<code>select *</code>查询，导致网络上传输大量的值。建议可以搜索索引列，决定需要的哪些数据行，然后从符合条件的数据行中检索 BLOB 或 TEXT 值；</li>
+<li>可以使用合成的(Synthetic)索引来提高大文本字段(BLOB 或 TEXT)的查询性能。合成索引就是根据大文本字段的内容建立一个散列值，并把这个值存储在单独的数据列中，接下来就可以通过检索散列值找到数据行。<font color=violet>注意这种技术只能用于精确匹配的查询（散列值对于类似“<code>&lt;</code>”或“<code>&gt;=</code>”等范围搜索操作符是没有用处的)</font>。</li>
+<li><strong>TEXT或BLOB类型只能使用前缀索引</strong>。因为MySQL对索引字段长度是有限制的，所以TEXT类型只能使用前缀索引，并且TEXT列上是不能有默认值的。</li>
+</ul>
+<h3 id="6-5-ENUM-类型"><a href="#6-5-ENUM-类型" class="headerlink" title="6.5. ENUM 类型"></a>6.5. ENUM 类型</h3><p>枚举列可以把一些不重复的字符串存储成一个预定义的集合。MySQL 在存储枚举时非常紧凑，会根据列表值的数量压缩到一个或者两个字节中，MySQL 在内部会将每个值在列表中的位置保存为整数，这样的话可以让表的大小大为缩小。</p>
+<figure class="highlight sql"><table><tr><td class="gutter"><pre><span class="line">1</span><br><span class="line">2</span><br></pre></td><td class="code"><pre><span class="line"><span class="keyword">CREATE TABLE</span> enum_test(e ENUM(<span class="string">&#x27; fish&#x27;</span>, <span class="string">&#x27;apple&#x27;</span>, <span class="string">&#x27;dog&#x27;</span>) <span class="keyword">NOT NULL</span>);</span><br><span class="line"><span class="keyword">INSERT INTO</span> enum_test(e) <span class="keyword">VALUES</span>(<span class="string">&#x27;fish&#x27;</span>),(<span class="string">&#x27;dog&#x27;</span>),(<span class="string">&#x27;apple&#x27;</span>);</span><br></pre></td></tr></table></figure>
+<p><strong>枚举类型的使用规范</strong>：</p>
+<ul>
+<li><strong>一般是避免使用ENUM类型</strong>。因为修改<code>ENUM</code>值需要使用<code>ALTER</code>语句；<code>ENUM</code>类型的<code>ORDER BY</code>操作效率低，需要额外操作</li>
+<li><strong>必要时可使用枚举代替字符串</strong>。如果表中的字段的取值是固定几个字符串，可以使用枚举列代替常用的字符串类型。</li>
+<li><strong>禁止使用数值作为ENUM的枚举值</strong>。因为枚举列实际存储为整数，而不是字符串，所以不要使用数字作为<code>ENUM</code>枚举常量，这种双重性很容易导致混乱，例如<code>ENUN(&#39;1&#39;,&#39;2&#39;&#39;3&#39;)</code>。</li>
+<li>枚举字段是按照内部存储的整数而不是定义的字符串进行排序的，所以<strong>尽量按照需要的顺序来定义枚举列</strong>。</li>
+</ul>
+<h3 id="6-6-日期和时间类型"><a href="#6-6-日期和时间类型" class="headerlink" title="6.6. 日期和时间类型"></a>6.6. 日期和时间类型</h3><p>MySQL 可以使用许多类型来保存日期和时间值，分别是：<code>DATETIME</code>、<code>DATE</code>、<code>TIMESTAMP</code>、<code>YEAR</code>、<code>TIME</code>。MySQL 能存储的最小时间粒度为秒。</p>
+<p>大部分时间类型都没有替代品，因此没有什么是最佳选择的问题。唯一就是<code>DATETIME</code>和<code>TIMESTAMP</code>比较相似，需要做些适当的选择</p>
+<ul>
+<li>TIMESTAMP（占用空间是4个字节），存储的时间范围<code>1970-01-01 00:00:01 ~ 2038-01-19 03:14:07</code>。TIMESTAMP显示的值也依赖于时区。从空间效率来说，TIMETAMP 比 DATETIME 更高。</li>
+<li>DATETIME（占用空间是8个字节），存储的时间范围从 1001 年到 9999 年，精度为秒。它把日期和时间封装到格式为 <code>YYYYMMDDHHMMSS</code> 的整数中，与时区无关。</li>
+</ul>
+<p><strong>日期时间类型使用规范</strong>：</p>
+<ul>
+<li>TIMESTAMP 占用4字节和INT相同，但比INT可读性高。超出TIMESTAMP取值范围的使用DATETIME类型存储。</li>
+<li>如果需要存储比秒更小粒度的日期和时间值，MySQL目前没有提供合适的数据类型，但是可以使用自定义的存储格式：可以使用 <code>BIGINT</code> 类型存储微秒级别的时间截，或者使用 <code>DOUBLE</code> 存储秒之后的小数部分。</li>
+<li><strong>不应该用字符串存储日期型的数据</strong>。<ul>
+<li><strong>缺点1：无法用日期函数进行计算和比较</strong></li>
+<li><strong>缺点2：用字符串存储日期要占用更多的空间</strong></li>
+</ul>
+</li>
+</ul>
+<h3 id="6-7-其他规范"><a href="#6-7-其他规范" class="headerlink" title="6.7. 其他规范"></a>6.7. 其他规范</h3><ul>
+<li><strong>字段名称不能包含数据类型，不能使用关键字</strong></li>
+<li>建议使用 INT UNSIGNED 类型存储 IPV4 地址。用 UNSINGED INT 存储 IP 地址占用 4 字节，<code>CHAR(15)</code> 则占用 15 字节。另外，计算机处理整数类型比字符串类型快。<blockquote>
+<p>Tips: MySQL 提供函数 <code>inet_ntoa</code> 和 <code>inet_aton</code> 来对 ip 地址在 int 与 char 之间相互转化。IPv6 地址目前没有转化函数，需要使用 DECIMAL 或两个 BIGINT 来存储。</p>
+</blockquote>
+</li>
+</ul>
+<h2 id="7-索引设计规范"><a href="#7-索引设计规范" class="headerlink" title="7. 索引设计规范"></a>7. 索引设计规范</h2><h3 id="7-1-索引的数量"><a href="#7-1-索引的数量" class="headerlink" title="7.1. 索引的数量"></a>7.1. 索引的数量</h3><p><strong>限制每张表上的索引数量，建议单张表索引不超过5个</strong></p>
+<ul>
+<li>索引并不是越多越好！索引可以提高效率同样可以降低效率。</li>
+<li>索引可以增加查询效率，但同样也会降低插入和更新的效率，甚至有些情况下会降低查询效率。</li>
+<li>因为mysql优化器在选择如何优化查询时，会根据统一信息，对每一个可以用到的索引来进行评估，以生成出一个最好的执行计划，如果同时有很多个索引都可以用于查询，就会增加mysql优化器生成执行计划的时间，同样会降低查询性能。</li>
+</ul>
+<h3 id="7-2-禁止给表中的每一列都建立单独的索引"><a href="#7-2-禁止给表中的每一列都建立单独的索引" class="headerlink" title="7.2. 禁止给表中的每一列都建立单独的索引"></a>7.2. 禁止给表中的每一列都建立单独的索引</h3><ul>
+<li>5.6版本之前，一个sql只能使用到一个表中的一个索引，5.6 以后，虽然有了合并索引的优化方式，但是还是远远没有使用一个联合索引的查询方式好。</li>
+</ul>
+<h3 id="7-3-主键索引的注意事项"><a href="#7-3-主键索引的注意事项" class="headerlink" title="7.3. 主键索引的注意事项"></a>7.3. 主键索引的注意事项</h3><p>Innodb 是一种索引组织表：数据的存储的逻辑顺序和索引的顺序是相同的。每个表都可以有多个索引，但是表的存储顺序只能有一种 Innodb 是按照主键索引的顺序来组织表的。</p>
+<p>不要使用更新频繁的列作为主键，不适用多列主键（相当于联合索引），不要使用UUID、MD5、HASH、字符串列作为主键（无法保证数据的顺序增长）。主键建议使用自增ID值。</p>
+<h2 id="8-数据库-SQL-开发规范"><a href="#8-数据库-SQL-开发规范" class="headerlink" title="8. 数据库 SQL 开发规范"></a>8. 数据库 SQL 开发规范</h2><ol>
+<li><strong>建议使用预编译语句进行数据库操作</strong><ul>
+<li>预编译语句可以重复使用这些计划，减少SQL编译所需要的时间，还可以解决动态SQL所带来的 SQL 注入的问题 只传参数，比传递SQL语句更高效 相同语句可以一次解析，多次使用，提高处理效率。</li>
+</ul>
+</li>
+<li><strong>避免数据类型的隐式转换</strong><ul>
+<li>隐式转换会导致索引失效。如：<code>select name,phone from customer where id = &#39;111&#39;;</code></li>
+</ul>
+</li>
+<li><strong>充分利用表上已经存在的索引</strong><ul>
+<li>避免使用双%号的查询条件。如 <code>a like &#39;%123%&#39;</code>（如果无前置%，只有后置%，是可以用到列上的索引的）</li>
+<li>一个SQL只能利用到复合索引中的一列进行范围查询<ul>
+<li>如：有 a,b,c列的联合索引，在查询条件中有a列的范围查询，则在b,c列上的索引将不会被用到，在定义联合索引时，如果a列要用到范围查找的话，就要把a列放到联合索引的右侧。</li>
+<li>使用left join或 not exists来优化not in操作，因为not in 也通常会使用索引失效。</li>
+</ul>
+</li>
+</ul>
+</li>
+<li><strong>数据库设计时，应该要对以后扩展进行考虑</strong></li>
+<li><strong>程序连接不同的数据库使用不同的账号，进制跨库查询</strong><ul>
+<li>为数据库迁移和分库分表留出余地</li>
+<li>降低业务耦合度</li>
+<li>避免权限过大而产生的安全风险</li>
+</ul>
+</li>
+<li><strong>禁止使用 <code>SELECT *</code> 必须使用 <code>SELECT &lt;字段列表&gt;</code> 查询</strong>。原因如下：<ul>
+<li>消耗更多的CPU和IO以网络带宽资源</li>
+<li>无法使用覆盖索引</li>
+<li>可减少表结构变更带来的影响</li>
+</ul>
+</li>
+<li><strong>禁止使用不含字段列表的INSERT语句</strong><ul>
+<li>如：insert into values (‘a’,’b’,’c’);</li>
+<li>应使用insert into t(c1,c2,c3) values (‘a’,’b’,’c’);</li>
+</ul>
+</li>
+<li><strong>避免使用子查询，可以把子查询优化为join操作</strong><ul>
+<li>通常子查询在in子句中，且子查询中为简单SQL(不包含union、group by、order by、limit从句)时，才可以把子查询转化为关联查询进行优化。</li>
+<li>子查询性能差的原因：<ul>
+<li>子查询的结果集无法使用索引，通常子查询的结果集会被存储到临时表中，不论是内存临时表还是磁盘临时表都不会存在索引，所以查询性能 会受到一定的影响；</li>
+<li>特别是对于返回结果集比较大的子查询，其对查询性能的影响也就越大；</li>
+<li>由于子查询会产生大量的临时表也没有索引，所以会消耗过多的CPU和IO资源，产生大量的慢查询。</li>
+</ul>
+</li>
+</ul>
+</li>
+<li><strong>避免使用JOIN关联太多的表</strong><ul>
+<li>对于Mysql来说，是存在关联缓存的，缓存的大小可以由join_buffer_size参数进行设置。</li>
+<li>在Mysql中，对于同一个SQL多关联（join）一个表，就会多分配一个关联缓存，如果在一个SQL中关联的表越多，所占用的内存也就越大。</li>
+<li>如果程序中大量的使用了多表关联的操作，同时join_buffer_size设置的也不合理的情况下，就容易造成服务器内存溢出的情况，就会影响到服务器数据库性能的稳定性。</li>
+<li>同时对于关联操作来说，会产生临时表操作，影响查询效率Mysql最多允许关联61个表，建议不超过5个。</li>
+</ul>
+</li>
+<li><strong>减少同数据库的交互次数</strong><ul>
+<li>数据库更适合处理批量操作 合并多个相同的操作到一起，可以提高处理效率</li>
+</ul>
+</li>
+<li><strong>对应同一列进行or判断时，使用in代替or</strong><ul>
+<li>in的值不要超过500个in操作可以更有效的利用索引，or大多数情况下很少能利用到索引。</li>
+</ul>
+</li>
+<li><strong>禁止使用<code>order by rand()</code>进行随机排序</strong><ul>
+<li>会把表中所有符合条件的数据装载到内存中，然后在内存中对所有数据根据随机生成的值进行排序，并且可能会对每一行都生成一个随机值，如果满足条件的数据集非常大，就会消耗大量的CPU和IO及内存资源。</li>
+<li>推荐在程序中获取一个随机值，然后从数据库中获取数据的方式。</li>
+</ul>
+</li>
+<li><strong>WHERE从句中禁止对列进行函数转换和计算</strong><ul>
+<li>对列进行函数转换或计算时会导致无法使用索引。</li>
+<li>不推荐：<code>where date(create_time)=&#39;20190101&#39;</code></li>
+<li>推荐：<code>where create_time &gt;= &#39;20190101 and create_time &lt; &#39;20190102&#39;</code></li>
+</ul>
+</li>
+<li><strong>在明显不会有重复值时使用UNION ALL而不是UNION</strong><ul>
+<li>UNION会把两个结果集的所有数据放到临时表中后再进行去重操作</li>
+<li>UNION ALL不会再对结果集进行去重操作</li>
+</ul>
+</li>
+<li><strong>拆分复杂的大SQL为多个小SQL</strong><ul>
+<li>大SQL：逻辑上比较复杂，需要占用大量CPU进行计算的SQL</li>
+<li>MySQL：一个SQL只能使用一个CPU进行计算</li>
+<li>SQL拆分后可以通过并行执行来提高处理效率</li>
+</ul>
+</li>
+</ol>
+<h2 id="9-数据库操作行为规范"><a href="#9-数据库操作行为规范" class="headerlink" title="9. 数据库操作行为规范"></a>9. 数据库操作行为规范</h2><ol>
+<li><strong>超100万行的批量写（UPDATE、DELETE、INSERT）操作，要分批多次进行操作</strong><ul>
+<li><strong>大批量操作可能会造成严重的主从延迟</strong><ul>
+<li>主从环境中，大批量操作可能会造成严重的主从延迟，大批量的写操作一般都需要执行一定长的时间，而只有当主库上执行完成后，才会在其他从库上执行，所以会造成主库与从库长时间的延迟情况</li>
+</ul>
+</li>
+<li><strong>binlog日志为row格式时会产生大量的日志</strong><ul>
+<li>大批量写操作会产生大量日志，特别是对于row格式二进制数据而言，由于在row格式中会记录每一行数据的修改，我们一次修改的数据越多，产生的日志量也就会越多，日志的传输和恢复所需要的时间也就越长，这也是造成主从延迟的一个原因。</li>
+</ul>
+</li>
+<li><strong>避免产生大事务操作</strong><ul>
+<li>大批量修改数据，一定是在一个事务中进行的，这就会造成表中大批量数据进行锁定，从而导致大量的阻塞，阻塞会对MySQL的性能产生非常大的影响。</li>
+<li>特别是长时间的阻塞会占满所有数据库的可用连接，这会使生产环境中的其他应用无法连接到数据库，因此一定要注意大批量写操作要进行分批。</li>
+</ul>
+</li>
+</ul>
+</li>
+<li><strong>对于大表使用pt-online-schema-change修改表结构</strong><ul>
+<li><strong>避免大表修改产生的主从延迟</strong></li>
+<li><strong>避免在对表字段进行修改时进行锁表</strong><ul>
+<li>对大表数据结构的修改一定要谨慎，会造成严重的锁表操作，尤其是生产环境，是不能容忍的。</li>
+<li>pt-online-schema-change它会首先建立一个与原表结构相同的新表，并且在新表上进行表结构的修改，然后再把原表中的数据复制到新表中，并在原表中增加一些触发器。</li>
+<li>把原表中新增的数据也复制到新表中，在行所有数据复制完成之后，把新表命名成原表，并把原来的表删除掉。</li>
+<li>把原来一个DDL操作，分解成多个小的批次进行。</li>
+</ul>
+</li>
+</ul>
+</li>
+<li><strong>禁止为程序使用的账号赋予super权限</strong><ul>
+<li>当达到最大连接数限制时，还运行1个有super权限的用户连接super权限只能留给DBA处理问题的账号使用。</li>
+</ul>
+</li>
+<li><strong>对于程序连接数据库账号，遵循权限最小原则</strong><ul>
+<li>程序使用数据库账号只能在一个DB下使用，不准跨库 程序使用的账号原则上不准有drop权限。</li>
+</ul>
+</li>
+</ol>
+</article><div class="post-copyright"><div class="post-copyright__author"><span class="post-copyright-meta"><i class="fas fa-circle-user fa-fw"></i>文章作者: </span><span class="post-copyright-info"><a href="https://ktzxy.github.io">蓝桉</a></span></div><div class="post-copyright__type"><span class="post-copyright-meta"><i class="fas fa-square-arrow-up-right fa-fw"></i>文章链接: </span><span class="post-copyright-info"><a href="https://ktzxy.github.io/posts/ac28f454.html">https://ktzxy.github.io/posts/ac28f454.html</a></span></div><div class="post-copyright__notice"><span class="post-copyright-meta"><i class="fas fa-circle-exclamation fa-fw"></i>版权声明: </span><span class="post-copyright-info">本博客所有文章除特别声明外，均采用 <a href="https://creativecommons.org/licenses/by-nc-sa/4.0/" target="_blank">CC BY-NC-SA 4.0</a> 许可协议。转载请注明来源 <a href="https://ktzxy.github.io" target="_blank">蓝桉`Blog</a>！</span></div></div><div class="tag_share"><div class="post-meta__tag-list"><a class="post-meta__tags" href="/tags/%E6%95%B0%E6%8D%AE%E5%BA%93/">数据库</a></div><div class="post-share"><div class="social-share" data-image="/bg/Image00024.webp" data-sites="facebook,twitter,wechat,weibo,qq"></div><link rel="stylesheet" href="https://cdn.jsdelivr.net/npm/butterfly-extsrc/sharejs/dist/css/share.min.css" media="print" onload="this.media='all'"><script src="https://cdn.jsdelivr.net/npm/butterfly-extsrc/sharejs/dist/js/social-share.min.js" defer></script></div></div><link rel="stylesheet" href="/css/coin/coin.css" media="defer" onload="this.media='all'"/><div class="post-reward"><button class="tip-button reward-button"><span class="tip-button__text">不给糖果就捣蛋</span><div class="coin-wrapper"><div class="coin"><div class="coin__middle"></div><div class="coin__back"></div><div class="coin__front"></div></div></div><div class="reward-main"><ul class="reward-all"><li class="reward-item"><a href="/img/wechat.webp" target="_blank"><img class="post-qr-code-img" src="/img/wechat.webp" alt="wechat"/></a><div class="post-qr-code-desc">wechat</div></li><li class="reward-item"><a href="/img/alipay.webp" target="_blank"><img class="post-qr-code-img" src="/img/alipay.webp" alt="alipay"/></a><div class="post-qr-code-desc">alipay</div></li></ul></div></button></div><audio id="coinAudio" src="https://cdn.cbd.int/akilar-candyassets@1.0.36/audio/aowu.m4a"></audio><script defer="defer" src="/js/coin/coin.js"></script><nav class="pagination-post" id="pagination"><a class="pagination-related" href="/posts/e582bf51.html" title="MySQL-性能优化"><img class="cover" src="/bg/Image00013.webp" onerror="onerror=null;src='/img/404.jpg'" alt="cover of previous post"><div class="info"><div class="info-1"><div class="info-item-1">上一篇</div><div class="info-item-2">MySQL-性能优化</div></div><div class="info-2"><div class="info-item-1">1. 性能优化总论 上图显示，越往上走，难度越来越高，收益却是越来越小的。 比如硬件和 OS 调优，需要对硬件和 OS 有着非常深刻的了解，仅仅就磁盘一项来说，一般非 DBA 能想到的调整就是 SSD 盘比用机械硬盘更好，但其实它至少包括了，使用什么样的磁盘阵列（RAID）级别、是否可以分散磁盘 IO、是否使用裸设备存放数据，使用哪种文件系统（目前比较推荐的是 XFS），操作系统的磁盘调度算法（目前比较推荐 deadline，对机械硬盘和 SSD 都比较合适。从内核 2.5开始，默认的 I/O 调度算法是 Deadline，之后默认 I/O 调度算法为 Anticipatory，直到内核 2.6.17 为止，从内核 2.6.18 开始，CFQ 成为默认的 IO 调度算法，但CFQ 并不推荐作为数据库服务器的磁盘调度算法。）选择，是否需要调整操作系统文件管理方面比如 atime 属性等等。  TIPS：裸设备(raw device)，也叫裸分区（原始分区），是一种没有经过格式化，不被 Unix 通过文件系统来读取的特殊块设备文件。由应用程序负责对它进行读写操作。不经过文件系统的缓冲...</div></div></div></a><a class="pagination-related" href="/posts/774beab2.html" title="MySQL-函数"><img class="cover" src="/bg/Image00016.webp" onerror="onerror=null;src='/img/404.jpg'" alt="cover of next post"><div class="info text-right"><div class="info-1"><div class="info-item-1">下一篇</div><div class="info-item-2">MySQL-函数</div></div><div class="info-2"><div class="info-item-1">1. 函数概述在 MySQL 中，为了提高代码重用性和隐藏实现细节，MySQL 提供了很多内置函数。函数可以理解为封装好的模板程序或代码，可以直接被另一段程序调用的。函数主要可以分为以下几类：  聚合函数 数学函数 字符串函数 日期函数 控制流函数 窗口函数   TODO: 实际使用时再追加  2. 聚合函数2.1. GROUP_CONCAT() 函数GROUP_CONCAT() 首先根据 group by 指定的列进行分组，并且用分隔符分隔，将同一个分组中的非 NULL 的值连接起来，返回一个字符串结果。语法： 1group_concat([distinct] 字段名 [order by 排序字段 asc/desc] [separator &#x27;分隔符&#x27;]) 参数说明：  使用 distinct 可以排除重复值 如果需要对结果中的值进行排序，可以使用 order by 子句 separator 是一个字符串值，指定返回结果拼接的分隔符，默认为逗号  示例： 12345678SELECT t.spec_id, GROUP_CONCAT(t.option_name)...</div></div></div></a></nav><div class="relatedPosts"><div class="headline"><i class="fas fa-thumbs-up fa-fw"></i><span>相关推荐</span></div><div class="relatedPosts-list"><a class="pagination-related" href="/posts/a318ca1f.html" title="MySQL数据库150道高频面试题"><img class="cover" src="/bg/Image00018.webp" alt="cover"><div class="info text-center"><div class="info-1"><div class="info-item-1"><i class="far fa-calendar-alt fa-fw"></i> 2025-07-09</div><div class="info-item-2">MySQL数据库150道高频面试题</div></div><div class="info-2"><div class="info-item-1">[toc] 1. Mysql 索引1.1. Mysql如何实现的索引机制？MySQL中索引分三类：B+树索引、Hash索引、全文索引 1.1.1. InnoDB索引与MyISAM索引实现的区别是什么？ MyISAM的索引方式都是非聚簇的，与InnoDB包含1个聚簇索引是不同的。 在InnoDB存储引擎中，我们只需要根据主键值对聚簇索引进行一次查找就能找到对应的记录，而在MyISAM中却需要进行一次回表操作，意味着MyISAM中建立的索引相当于全部都是二级索引。 InnoDB的数据文件本身就是索引文件，而MyISAM索引文件和数据文件是分离的 ，索引文件仅保存数据记录的地址。 MyISAM的表在磁盘上存储在以下文件中：  *.sdi（描述表结构）、*.MYD（数据），*.MYI（索引） InnoDB的表在磁盘上存储在以下文件中： .ibd（表结构、索引和数据都存在一起）   InnoDB的非聚簇索引data域存储相应记录主键的值 ，而MyISAM索引记录的是地址 。换句话说，InnoDB的所有非聚簇索引都引用主键作为data域。 MyISAM的回表操作是十分快速的，因为是拿着地址偏...</div></div></div></a><a class="pagination-related" href="/posts/8f9b37aa.html" title="技术同学必会的MySQL设计规约"><img class="cover" src="/bg/Image00014.webp" alt="cover"><div class="info text-center"><div class="info-1"><div class="info-item-1"><i class="far fa-calendar-alt fa-fw"></i> 2025-07-09</div><div class="info-item-2">技术同学必会的MySQL设计规约</div></div><div class="info-2"><div class="info-item-1">在我们对数据库技术方案设计的时候，我们是否有自己的设计理念或者原则，还是更多的依据自己的直觉去设计，是否曾经懊悔线上发生过的一次低级故障，可能稍微注意点就可以避免，是否想过怎么才能很好的避免，下面规范的价值正是我们工作的检查清单，需要我们不断从错误中积累有效经验来指导未来的工作。以下规范在大型互联网公司经过了充分的验证，尤其适用于并发量大、数据量大的业务场景。先介绍的是安全规范，因为安全无小事，很多公司都曾经因为自己的数据泄露导致用户的惨痛损失，所以将安全规范放到了第一位。﻿ 一、安全规范1.【强制】禁止在数据库中存储明文密码，需把密码加密后存储 说明：对于加密操作建议由公司的中间件团队基于如mybatis的扩展，提供统一的加密算法及密钥管理，避免每个业务线单独开发一套，同时也与具体的业务进行了解耦 2.【强制】禁止在数据库中明文存储用户敏感信息，如手机号等 说明：对于手机号建议公司搭建统一的手机号查询服务，避免在每个业务线单独存储 3.【强制】禁止开发直接给业务同学导出或者查询涉及到用户敏感信息的数据，如需要需上级领导审批 4.【强制】涉及到导出数据功能的操作，如包含敏感字段都...</div></div></div></a><a class="pagination-related" href="/posts/dfdfdf4.html" title="数据库概述"><img class="cover" src="/bg/Image00002.webp" alt="cover"><div class="info text-center"><div class="info-1"><div class="info-item-1"><i class="far fa-calendar-alt fa-fw"></i> 2025-07-09</div><div class="info-item-2">数据库概述</div></div><div class="info-2"><div class="info-item-1">1. 数据库技术1.1. 概述数据库（DB）是一个以某种组织方式存储在磁盘上的数据的集合。简单理解就是用来存储数据的仓库。  数据库 DataBase（DB）：存储数据的仓库，数据是有组织的进行存储。 数据库管理系统 DataBase Management System (DBMS)：操纵和管理数据库的大型软件。  1.2. 数据库的分类  1.3. 不同的数据存储方式数据存储在集合（内存）中  优点：读写速度快 缺点：不能永久存储  数据存储在文件中  优点：可以永久存储 缺点：频繁的IO操作效率低，查询数据很不方便。  数据存储在数据库中  优点：可以永久存储。查询速度快，查询数据很方便 缺点：要使用 SQL 语言执行增删改查操作  2. 关系型数据库 关系型数据库 - 百度百科  2.1. 概念关系型数据库，是指采用了关系模型来组织数据的数据库，其以行和列的形式存储数据，以便于用户理解，关系型数据库这一系列的行和列被称为表，一组表组成了数据库。用户通过查询来检索数据库中的数据，而查询是一个用于限定数据库中某些区域的执行代码。关系模型可以简单理解为二维表格模型，而一个关系型数...</div></div></div></a><a class="pagination-related" href="/posts/75522c08.html" title="第4节-布隆过滤器"><img class="cover" src="/bg/Image00003.webp" alt="cover"><div class="info text-center"><div class="info-1"><div class="info-item-1"><i class="far fa-calendar-alt fa-fw"></i> 2025-07-09</div><div class="info-item-2">第4节-布隆过滤器</div></div><div class="info-2"><div class="info-item-1">第4节-布隆过滤器BloomFilter面试题： 现有50亿个电话号码，选定其中10w个电话号码，如何要快速准确的判断这些号码是否已经存在？ 思路：  1、通过数据库查询———-实现快速有点难。  2、数据预放到内存集合中：50亿*8字节大约40G，内存太大了。 1、布隆过滤器是什么？它实际上==是一个很长的二进制数组+一系列随机hash算法映射函数，主要用于判断一个元素是否在集合中==。 通常我们会遇到很多要判断一个元素是否在某个集合中的业务场景，一般想到的是将集合中所有元素保存起来，然后通过比较确定。 链表、树、散列表（又叫哈希表，Hash table）等等数据结构都是这种思路。 但是随着集合中元素的增加，我们需要的存储空间也会呈现线性增长，最终达到瓶颈。 同时检索速度也越来越慢，上述三种结构的检索时间复杂度分别为O(n),O(logn),O(1)。这个时候，布隆过滤器（Bloom Filter）就应运而生  一句话概述：由一个初值为零的bit数组和多个哈希函数构成，用来快速判断某个数据是否存在。 本质就是判断具体元素存不存在一个大的集合中。 布隆过滤器是一种类似set的数据...</div></div></div></a><a class="pagination-related" href="/posts/e4cd3c5b.html" title="第5节-缓存预热+缓存雪崩+缓存击穿+缓存穿透"><img class="cover" src="/bg/Image00008.webp" alt="cover"><div class="info text-center"><div class="info-1"><div class="info-item-1"><i class="far fa-calendar-alt fa-fw"></i> 2025-07-09</div><div class="info-item-2">第5节-缓存预热+缓存雪崩+缓存击穿+缓存穿透</div></div><div class="info-2"><div class="info-item-1">第5节-缓存预热+缓存雪崩+缓存击穿+缓存穿透1、缓存雪崩发生情况： ​    redis主机挂了，redis全盘崩溃，比如缓存中有大量数据同时过期。 解决方案：  redis缓存集群实现高可用，主从+哨兵|| redis cluster ehcache本地缓存 + hystrix 或者 阿里sentinel限流&amp;降级 开启Redis持久化机制/aof+rdb，尽快恢复缓存集群 2、缓存穿透 什么是缓存穿透  请求去查询一条记录，先redis后mysql发现，都查不到该条记录，但是每次请求都会打到数据库上面去，导致后台数据库压力暴增，这种现象我们称为缓存穿透，redis成为了一个摆设。 简单说就是，本来无一物，即不再redis中，也不在mysql中。  危害  数据库可能会被打崩。导致服务不可用。 第一次来查询后，一般我们会有回写redis机制， 第二次来查询的时候redis就有了，偶尔出现穿透现象一般情况无关紧要。  解决方案   1、返回空对象缓存或者缺省值 一般OK  但是存在黑客和恶意攻击情况 黑客会对你的系统进行攻击，拿到一个不存在的id，去查询数据，会产生大量...</div></div></div></a><a class="pagination-related" href="/posts/41ae0132.html" title="MongoDB-基础"><img class="cover" src="/bg/Image00026.webp" alt="cover"><div class="info text-center"><div class="info-1"><div class="info-item-1"><i class="far fa-calendar-alt fa-fw"></i> 2025-07-09</div><div class="info-item-2">MongoDB-基础</div></div><div class="info-2"><div class="info-item-1">1. MongoDb 概述MongoDB 是一个跨平台的，面向文档的数据库，是当前 NoSQL 数据库产品中最热门的一种。它介于关系数据库和非关系数据库之间，是非关系数据库当中功能最丰富，最像关系数据库的产品。它支持的数据结构非常松散，是类似 JSON 的 BSON 格式，因此可以存储比较复杂的数据类型。 1.1. MongoDB 特点MongoDB 最大的特点是他支持的查询语言非常强大，其语法有点类似于面向对象的查询语言，几乎可以实现类似关系数据库单表查询的绝大部分功能，而且还支持对数据建立索引。它是一个面向集合的，模式自由的文档型数据库，具体特点总结如下：  面向集合存储，易于存储对象类型的数据 模式自由 支持动态查询 支持完全索引，包含内部对象 支持复制和故障恢复 使用高效的二进制数据存储，包括大型对象（如视频等） 自动处理碎片，以支持云计算层次的扩展性 支持 Python，PHP，Ruby，Java，C，C#，Javascript，Perl 及 C++语言的驱动程序，社区中也提供了对 Erlang 及.NET 等平台的驱动程序 文件存储格式为 BSON（一种 JSON 的...</div></div></div></a></div></div></div><div class="aside-content" id="aside-content"><div class="card-widget card-info text-center"><div class="avatar-img"><img src="/img/avatar.webp" onerror="this.onerror=null;this.src='/img/friend_404.gif'" alt="avatar"/></div><div class="author-info-name">蓝桉</div><div class="author-info-description"><div style="line-height:1.38;margin:0.6rem 0;text-align:justify;color:rgba(255, 255, 255, 0.8);">这有关于<b style="color:#fff">生活、学习、技术</b>相关的问题和看法，还有<b style="color:#fff">文章教程</b>和<b style="color:#fff">分享</b>。</div><div style="line-height:1.38;margin:0.6rem 0;text-align:justify;color:rgba(255, 255, 255, 0.8);">相信你可以在这里找到对你有用的<b style="color:#fff">知识</b>和<b style="color:#fff">教程</b>。</div></div><div class="site-data"><a href="/archives/"><div class="headline">文章</div><div class="length-num">264</div></a><a href="/tags/"><div class="headline">标签</div><div class="length-num">38</div></a><a href="/categories/"><div class="headline">分类</div><div class="length-num">37</div></a></div><a id="card-info-btn" target="_blank" rel="noopener" href="https://github.com/ktzxy"><i class="fab fa-github"></i><span>Follow Me</span></a><div class="card-info-social-icons"><a class="social-icon faa-parent animated-hover" href="https://github.com/ktzxy" target="_blank" title="Github"><svg class="social_icon faa-tada" aria-hidden="true"><use xlink:href="#icon-github"></use></svg></a><a class="social-icon faa-parent animated-hover" href="https://mail.qq.com/cgi-bin/qm_share?t=qm_mailme&amp;email=2251511764@qq.com" target="_blank" title="Email"><svg class="social_icon faa-tada" aria-hidden="true"><use xlink:href="#icon-youxiang"></use></svg></a><a class="social-icon faa-parent animated-hover" href="/atom.xml" target="_blank" title="RSS"><svg class="social_icon faa-tada" aria-hidden="true"><use xlink:href="#icon-RSS"></use></svg></a><a class="social-icon faa-parent animated-hover" href="https://space.bilibili.com/496148176" target="_blank" title="BiliBili"><svg class="social_icon faa-tada" aria-hidden="true"><use xlink:href="#icon-QX-BILIBILI"></use></svg></a><a class="social-icon faa-parent animated-hover" href="tencent://Message/?Uin=2251511764&amp;amp;websiteName=local.edu.com:8888=&amp;amp;Menu=yes" target="_blank" title="QQ"><svg class="social_icon faa-tada" aria-hidden="true"><use xlink:href="#icon-QQ"></use></svg></a></div></div><div class="card-widget card-announcement"><div class="item-headline"><i class="fas fa-bullhorn fa-shake"></i><span>公告</span></div><div class="announcement_content">This is my Blog</div></div><div class="sticky_layout"><div class="card-widget" id="card-toc"><div class="item-headline"><i class="fas fa-stream"></i><span>目录</span><span class="toc-percentage"></span></div><div class="toc-content"><ol class="toc"><li class="toc-item toc-level-2"><a class="toc-link" href="#1-%E6%A0%87%E5%87%86-SQL-%E8%AF%AD%E8%A8%80%E6%B2%A1%E6%9C%89%E8%A7%84%E8%8C%83%E4%BB%A5%E4%B8%8B%E5%8A%9F%E8%83%BD"><span class="toc-number">1.</span> <span class="toc-text">1. 标准 SQL 语言没有规范以下功能</span></a></li><li class="toc-item toc-level-2"><a class="toc-link" href="#2-%E6%95%B0%E6%8D%AE%E5%BA%93%E5%91%BD%E5%90%8D%E8%A7%84%E8%8C%83"><span class="toc-number">2.</span> <span class="toc-text">2. 数据库命名规范</span></a></li><li class="toc-item toc-level-2"><a class="toc-link" href="#3-SQL-%E8%AF%AD%E5%8F%A5%E8%A7%84%E8%8C%83"><span class="toc-number">3.</span> <span class="toc-text">3. SQL 语句规范</span></a></li><li class="toc-item toc-level-2"><a class="toc-link" href="#4-%E5%91%BD%E5%90%8D%E8%A7%84%E8%8C%83"><span class="toc-number">4.</span> <span class="toc-text">4. 命名规范</span></a></li><li class="toc-item toc-level-2"><a class="toc-link" href="#5-%E6%95%B0%E6%8D%AE%E5%BA%93%E5%9F%BA%E6%9C%AC%E8%AE%BE%E8%AE%A1%E8%A7%84%E8%8C%83"><span class="toc-number">5.</span> <span class="toc-text">5. 数据库基本设计规范</span></a></li><li class="toc-item toc-level-2"><a class="toc-link" href="#6-%E6%95%B0%E6%8D%AE%E5%BA%93%E8%A1%A8%E5%AD%97%E6%AE%B5%E7%B1%BB%E5%9E%8B%E8%AE%BE%E8%AE%A1%E8%A7%84%E8%8C%83"><span class="toc-number">6.</span> <span class="toc-text">6. 数据库表字段类型设计规范</span></a><ol class="toc-child"><li class="toc-item toc-level-3"><a class="toc-link" href="#6-1-%E5%9F%BA%E6%9C%AC%E5%8E%9F%E5%88%99"><span class="toc-number">6.1.</span> <span class="toc-text">6.1. 基本原则</span></a><ol class="toc-child"><li class="toc-item toc-level-4"><a class="toc-link" href="#6-1-1-%E4%BC%98%E5%85%88%E9%80%89%E6%8B%A9%E7%AC%A6%E5%90%88%E5%AD%98%E5%82%A8%E9%9C%80%E8%A6%81%E7%9A%84%E6%9C%80%E5%B0%8F%E7%9A%84%E6%95%B0%E6%8D%AE%E7%B1%BB%E5%9E%8B%EF%BC%88%E6%9B%B4%E5%B0%8F%E7%9A%84%E9%80%9A%E5%B8%B8%E6%9B%B4%E5%A5%BD%EF%BC%89"><span class="toc-number">6.1.1.</span> <span class="toc-text">6.1.1. 优先选择符合存储需要的最小的数据类型（更小的通常更好）</span></a></li><li class="toc-item toc-level-4"><a class="toc-link" href="#6-1-2-%E7%AE%80%E5%8D%95%E7%9A%84%E6%95%B0%E6%8D%AE%E7%B1%BB%E5%9E%8B%E6%9B%B4%E5%A5%BD"><span class="toc-number">6.1.2.</span> <span class="toc-text">6.1.2. 简单的数据类型更好</span></a></li><li class="toc-item toc-level-4"><a class="toc-link" href="#6-1-3-%E5%B0%BD%E9%87%8F%E9%81%BF%E5%85%8D-NULL"><span class="toc-number">6.1.3.</span> <span class="toc-text">6.1.3. 尽量避免 NULL</span></a></li></ol></li><li class="toc-item toc-level-3"><a class="toc-link" href="#6-2-%E6%95%B4%E6%95%B0%E7%B1%BB%E5%9E%8B%EF%BC%88int%EF%BC%89"><span class="toc-number">6.2.</span> <span class="toc-text">6.2. 整数类型（int）</span></a></li><li class="toc-item toc-level-3"><a class="toc-link" href="#6-3-%E5%AE%9E%E6%95%B0%E7%B1%BB%E5%9E%8B"><span class="toc-number">6.3.</span> <span class="toc-text">6.3. 实数类型</span></a></li><li class="toc-item toc-level-3"><a class="toc-link" href="#6-4-%E5%AD%97%E6%AE%B5%E4%B8%B2%E7%B1%BB%E5%9E%8B"><span class="toc-number">6.4.</span> <span class="toc-text">6.4. 字段串类型</span></a><ol class="toc-child"><li class="toc-item toc-level-4"><a class="toc-link" href="#6-4-1-VARCHAR-%E5%92%8C-CHAR-%E7%B1%BB%E5%9E%8B"><span class="toc-number">6.4.1.</span> <span class="toc-text">6.4.1. VARCHAR 和 CHAR 类型</span></a></li><li class="toc-item toc-level-4"><a class="toc-link" href="#6-4-2-BLOB-%E5%92%8C-TEXT-%E7%B1%BB%E5%9E%8B"><span class="toc-number">6.4.2.</span> <span class="toc-text">6.4.2. BLOB 和 TEXT 类型</span></a></li></ol></li><li class="toc-item toc-level-3"><a class="toc-link" href="#6-5-ENUM-%E7%B1%BB%E5%9E%8B"><span class="toc-number">6.5.</span> <span class="toc-text">6.5. ENUM 类型</span></a></li><li class="toc-item toc-level-3"><a class="toc-link" href="#6-6-%E6%97%A5%E6%9C%9F%E5%92%8C%E6%97%B6%E9%97%B4%E7%B1%BB%E5%9E%8B"><span class="toc-number">6.6.</span> <span class="toc-text">6.6. 日期和时间类型</span></a></li><li class="toc-item toc-level-3"><a class="toc-link" href="#6-7-%E5%85%B6%E4%BB%96%E8%A7%84%E8%8C%83"><span class="toc-number">6.7.</span> <span class="toc-text">6.7. 其他规范</span></a></li></ol></li><li class="toc-item toc-level-2"><a class="toc-link" href="#7-%E7%B4%A2%E5%BC%95%E8%AE%BE%E8%AE%A1%E8%A7%84%E8%8C%83"><span class="toc-number">7.</span> <span class="toc-text">7. 索引设计规范</span></a><ol class="toc-child"><li class="toc-item toc-level-3"><a class="toc-link" href="#7-1-%E7%B4%A2%E5%BC%95%E7%9A%84%E6%95%B0%E9%87%8F"><span class="toc-number">7.1.</span> <span class="toc-text">7.1. 索引的数量</span></a></li><li class="toc-item toc-level-3"><a class="toc-link" href="#7-2-%E7%A6%81%E6%AD%A2%E7%BB%99%E8%A1%A8%E4%B8%AD%E7%9A%84%E6%AF%8F%E4%B8%80%E5%88%97%E9%83%BD%E5%BB%BA%E7%AB%8B%E5%8D%95%E7%8B%AC%E7%9A%84%E7%B4%A2%E5%BC%95"><span class="toc-number">7.2.</span> <span class="toc-text">7.2. 禁止给表中的每一列都建立单独的索引</span></a></li><li class="toc-item toc-level-3"><a class="toc-link" href="#7-3-%E4%B8%BB%E9%94%AE%E7%B4%A2%E5%BC%95%E7%9A%84%E6%B3%A8%E6%84%8F%E4%BA%8B%E9%A1%B9"><span class="toc-number">7.3.</span> <span class="toc-text">7.3. 主键索引的注意事项</span></a></li></ol></li><li class="toc-item toc-level-2"><a class="toc-link" href="#8-%E6%95%B0%E6%8D%AE%E5%BA%93-SQL-%E5%BC%80%E5%8F%91%E8%A7%84%E8%8C%83"><span class="toc-number">8.</span> <span class="toc-text">8. 数据库 SQL 开发规范</span></a></li><li class="toc-item toc-level-2"><a class="toc-link" href="#9-%E6%95%B0%E6%8D%AE%E5%BA%93%E6%93%8D%E4%BD%9C%E8%A1%8C%E4%B8%BA%E8%A7%84%E8%8C%83"><span class="toc-number">9.</span> <span class="toc-text">9. 数据库操作行为规范</span></a></li></ol></div></div><div class="card-widget card-recent-post"><div class="item-headline"><i class="fas fa-history"></i><span>最新文章</span></div><div class="aside-list"><div class="aside-list-item"><a class="thumbnail" href="/posts/a318ca1f.html" title="MySQL数据库150道高频面试题"><img src="/bg/Image00018.webp" onerror="this.onerror=null;this.src='/img/404.jpg'" alt="MySQL数据库150道高频面试题"/></a><div class="content"><a class="title" href="/posts/a318ca1f.html" title="MySQL数据库150道高频面试题">MySQL数据库150道高频面试题</a><time datetime="2025-07-09T17:28:46.000Z" title="发表于 2025-07-09 17:28:46">2025-07-09</time></div></div><div class="aside-list-item"><a class="thumbnail" href="/posts/8f9b37aa.html" title="技术同学必会的MySQL设计规约"><img src="/bg/Image00014.webp" onerror="this.onerror=null;this.src='/img/404.jpg'" alt="技术同学必会的MySQL设计规约"/></a><div class="content"><a class="title" href="/posts/8f9b37aa.html" title="技术同学必会的MySQL设计规约">技术同学必会的MySQL设计规约</a><time datetime="2025-07-09T17:28:46.000Z" title="发表于 2025-07-09 17:28:46">2025-07-09</time></div></div><div class="aside-list-item"><a class="thumbnail" href="/posts/dfdfdf4.html" title="数据库概述"><img src="/bg/Image00002.webp" onerror="this.onerror=null;this.src='/img/404.jpg'" alt="数据库概述"/></a><div class="content"><a class="title" href="/posts/dfdfdf4.html" title="数据库概述">数据库概述</a><time datetime="2025-07-09T17:28:46.000Z" title="发表于 2025-07-09 17:28:46">2025-07-09</time></div></div><div class="aside-list-item"><a class="thumbnail" href="/posts/490575ab.html" title="24工厂模式俗话解释"><img src="/bg/Image00024.webp" onerror="this.onerror=null;this.src='/img/404.jpg'" alt="24工厂模式俗话解释"/></a><div class="content"><a class="title" href="/posts/490575ab.html" title="24工厂模式俗话解释">24工厂模式俗话解释</a><time datetime="2025-07-09T17:28:46.000Z" title="发表于 2025-07-09 17:28:46">2025-07-09</time></div></div><div class="aside-list-item"><a class="thumbnail" href="/posts/364ea8cc.html" title="设计模式"><img src="/bg/Image00014.webp" onerror="this.onerror=null;this.src='/img/404.jpg'" alt="设计模式"/></a><div class="content"><a class="title" href="/posts/364ea8cc.html" title="设计模式">设计模式</a><time datetime="2025-07-09T17:28:46.000Z" title="发表于 2025-07-09 17:28:46">2025-07-09</time></div></div></div></div></div></div></main><footer id="footer"><div class="footer-other"><div class="footer-copyright"><span class="copyright">&copy;2020 - 2025 By 蓝桉</span><span class="framework-info"><span>框架 </span><a target="_blank" rel="noopener" href="https://hexo.io">Hexo 7.3.0</a><span class="footer-separator">|</span><span>主题 </span><a target="_blank" rel="noopener" href="https://github.com/jerryc127/hexo-theme-butterfly">Butterfly 5.4.2</a></span></div></div></footer></div><div id="rightside"><div id="rightside-config-hide"><button id="readmode" type="button" title="阅读模式"><i class="fas fa-book-open"></i></button><button id="darkmode" type="button" title="日间和夜间模式切换"><i class="fas fa-adjust"></i></button><button id="hide-aside-btn" type="button" title="单栏和双栏切换"><i class="fas fa-arrows-alt-h"></i></button></div><div id="rightside-config-show"><button id="rightside-config" type="button" title="设置"><i class="fas fa-cog fa-spin"></i></button><button class="close" id="mobile-toc-button" type="button" title="目录"><i class="fas fa-list-ul"></i></button><button id="go-up" type="button" title="回到顶部"><span class="scroll-percent"></span><i class="fas fa-arrow-up"></i></button></div></div><div><script src="/js/utils.js"></script><script src="/js/main.js"></script><div class="js-pjax"></div><div class="aplayer no-destroy" data-id="8152976493" data-server="netease" data-type="playlist"   data-order="list" data-fixed="true" data-preload="auto" data-autoplay="false" data-mutex="true" ></div><script async src="//at.alicdn.com/t/c/font_4379924_273fk05h86zi.js"></script><link rel="stylesheet" href="https://cdn.jsdelivr.net/gh/l-lin/font-awesome-animation/dist/font-awesome-animation.min.css"  media="defer" onload="this.media='all'"><script async src="//npm.elemecdn.com/pace-js@1.2.4/pace.min.js"></script><script defer src="https://npm.elemecdn.com/jquery@latest/dist/jquery.min.js"></script><script defer data-pjax src="/js/cat/cat.js"></script><script async data-pjax src="/js/meting/music_lanan.min.js"></script><script defer type="text/javascript" src="https://cdn1.tianli0.top/npm/sweetalert2@8.19.0/dist/sweetalert2.all.js"></script><script defer src="/js/day/lunar.js"></script><script defer src="/js/day/day.js"></script><script async data-pjax src="//busuanzi.ibruce.info/busuanzi/2.3/busuanzi.pure.mini.js"></script></div><!-- hexo injector body_end start --><script data-pjax>
+  function butterfly_clock_anzhiyu_injector_config(){
+    var parent_div_git = document.getElementsByClassName('sticky_layout')[0];
+    var item_html = '<div class="card-widget card-clock"><div class="card-glass"><div class="card-background"><div class="card-content"><div id="hexo_electric_clock"><img class="entered loading" id="card-clock-loading" src="https://cdn.cbd.int/hexo-butterfly-clock-anzhiyu/lib/loading.gif" style="height: 120px; width: 100%;" data-ll-status="loading"/></div></div></div></div></div>';
+    console.log('已挂载butterfly_clock_anzhiyu')
+    if(parent_div_git) {
+      parent_div_git.insertAdjacentHTML("afterbegin",item_html)
+    }
+  }
+  var elist = 'null'.split(',');
+  var cpage = location.pathname;
+  var epage = '/';
+  var qweather_key = '10a7db1c41b6489db9c830c668a18304';
+  var gaud_map_key = '82a64bc994fb6494830f157f319f9f69';
+  var baidu_ak_key = 'undefined';
+  var flag = 0;
+  var clock_rectangle = '113.34532,23.15624';
+  var clock_default_rectangle_enable = 'false';
+
+  for (var i=0;i<elist.length;i++){
+    if (cpage.includes(elist[i])){
+      flag++;
+    }
+  }
+
+  if ((epage ==='all')&&(flag == 0)){
+    butterfly_clock_anzhiyu_injector_config();
+  }
+  else if (epage === cpage){
+    butterfly_clock_anzhiyu_injector_config();
+  }
+  </script><script src="https://widget.qweather.net/simple/static/js/he-simple-common.js?v=2.0"></script><script data-pjax src="https://cdn.cbd.int/hexo-butterfly-clock-anzhiyu/lib/clock.min.js"></script><script data-pjax>
+  function butterfly_footer_beautify_injector_config(){
+    var parent_div_git = document.getElementById('footer-wrap');
+    var item_html = '<div id="workboard"></div><p id="ghbdages"><a class="github-badge" target="_blank" href="https://hexo.io/" style="margin-inline:5px" data-title="博客框架为Hexo_v5.4.0" title=""><img src="https://img.shields.io/badge/Frame-Hexo-blue?style=flat&amp;logo=hexo" alt=""/></a><a class="github-badge" target="_blank" href="https://butterfly.js.org/" style="margin-inline:5px" data-title="主题版本Butterfly_v4.2.2" title=""><img src="https://img.shields.io/badge/Theme-Butterfly-6513df?style=flat&amp;logo=bitdefender" alt=""/></a><a class="github-badge" target="_blank" href="https://www.jsdelivr.com/" style="margin-inline:5px" data-title="本站使用JsDelivr为静态资源提供CDN加速" title=""><img src="https://img.shields.io/badge/CDN-jsDelivr-orange?style=flat&amp;logo=jsDelivr" alt=""/></a><a class="github-badge" target="_blank" href="https://github.com/" style="margin-inline:5px" data-title="本站项目由Github托管" title=""><img src="https://img.shields.io/badge/Source-Github-d021d6?style=flat&amp;logo=GitHub" alt=""/></a><a class="github-badge" target="_blank" href="http://creativecommons.org/licenses/by-nc-sa/4.0/" style="margin-inline:5px" data-title="本站采用知识共享署名-非商业性使用-相同方式共享4.0国际许可协议进行许可" title=""><img src="https://img.shields.io/badge/Copyright-BY--NC--SA%204.0-d42328?style=flat&amp;logo=Claris" alt=""/></a></p>';
+    console.log('已挂载butterfly_footer_beautify')
+    parent_div_git.insertAdjacentHTML("beforeend",item_html)
+    }
+  var elist = 'null'.split(',');
+  var cpage = location.pathname;
+  var epage = 'all';
+  var flag = 0;
+
+  for (var i=0;i<elist.length;i++){
+    if (cpage.includes(elist[i])){
+      flag++;
+    }
+  }
+
+  if ((epage ==='all')&&(flag == 0)){
+    butterfly_footer_beautify_injector_config();
+  }
+  else if (epage === cpage){
+    butterfly_footer_beautify_injector_config();
+  }
+  </script><script async src="/js/runtime/runtime.min.js"></script><script async src="/js/font/ali_font_all.js"></script><div class="js-pjax"><script async="async">var arr = document.getElementsByClassName('recent-post-item');
+for(var i = 0;i<arr.length;i++){
+    arr[i].classList.add('wow');
+    arr[i].classList.add('animate__zoomIn');
+    arr[i].setAttribute('data-wow-duration', '1.5s');
+    arr[i].setAttribute('data-wow-delay', '200ms');
+    arr[i].setAttribute('data-wow-offset', '30');
+    arr[i].setAttribute('data-wow-iteration', '1');
+  }</script><script async="async">var arr = document.getElementsByClassName('card-widget');
+for(var i = 0;i<arr.length;i++){
+    arr[i].classList.add('wow');
+    arr[i].classList.add('animate__zoomIn');
+    arr[i].setAttribute('data-wow-duration', '');
+    arr[i].setAttribute('data-wow-delay', '200ms');
+    arr[i].setAttribute('data-wow-offset', '');
+    arr[i].setAttribute('data-wow-iteration', '');
+  }</script><script async="async">var arr = document.getElementsByClassName('flink-list-card');
+for(var i = 0;i<arr.length;i++){
+    arr[i].classList.add('wow');
+    arr[i].classList.add('animate__flipInY');
+    arr[i].setAttribute('data-wow-duration', '3s');
+    arr[i].setAttribute('data-wow-delay', '');
+    arr[i].setAttribute('data-wow-offset', '');
+    arr[i].setAttribute('data-wow-iteration', '');
+  }</script><script async="async">var arr = document.getElementsByClassName('flink-list-card');
+for(var i = 0;i<arr.length;i++){
+    arr[i].classList.add('wow');
+    arr[i].classList.add('animate__animated');
+    arr[i].setAttribute('data-wow-duration', '3s');
+    arr[i].setAttribute('data-wow-delay', '');
+    arr[i].setAttribute('data-wow-offset', '');
+    arr[i].setAttribute('data-wow-iteration', '');
+  }</script><script async="async">var arr = document.getElementsByClassName('article-sort-item');
+for(var i = 0;i<arr.length;i++){
+    arr[i].classList.add('wow');
+    arr[i].classList.add('animate__slideInRight');
+    arr[i].setAttribute('data-wow-duration', '1.5s');
+    arr[i].setAttribute('data-wow-delay', '');
+    arr[i].setAttribute('data-wow-offset', '');
+    arr[i].setAttribute('data-wow-iteration', '');
+  }</script><script async="async">var arr = document.getElementsByClassName('site-card');
+for(var i = 0;i<arr.length;i++){
+    arr[i].classList.add('wow');
+    arr[i].classList.add('animate__flipInY');
+    arr[i].setAttribute('data-wow-duration', '3s');
+    arr[i].setAttribute('data-wow-delay', '');
+    arr[i].setAttribute('data-wow-offset', '');
+    arr[i].setAttribute('data-wow-iteration', '');
+  }</script><script async="async">var arr = document.getElementsByClassName('site-card');
+for(var i = 0;i<arr.length;i++){
+    arr[i].classList.add('wow');
+    arr[i].classList.add('animate__animated');
+    arr[i].setAttribute('data-wow-duration', '3s');
+    arr[i].setAttribute('data-wow-delay', '');
+    arr[i].setAttribute('data-wow-offset', '');
+    arr[i].setAttribute('data-wow-iteration', '');
+  }</script></div><script defer src="https://cdn.cbd.int/hexo-butterfly-wowjs/lib/wow.min.js"></script><script defer src="https://cdn.cbd.int/hexo-butterfly-wowjs/lib/wow_init.js"></script><!-- hexo injector body_end end --><script src="/live2dw/lib/L2Dwidget.min.js?094cbace49a39548bed64abff5988b05"></script><script>L2Dwidget.init({"pluginRootPath":"live2dw/","pluginJsPath":"lib/","pluginModelPath":"assets/","tagMode":false,"debug":false,"model":{"jsonPath":"/live2dw/assets/shizuku.model.json"},"display":{"position":"right","width":150,"height":300},"mobile":{"show":false},"log":false});</script></body></html>

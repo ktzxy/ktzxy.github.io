@@ -1,0 +1,301 @@
+<!DOCTYPE html><html lang="zh-CN" data-theme="light"><head><meta charset="UTF-8"><meta http-equiv="X-UA-Compatible" content="IE=edge"><meta name="viewport" content="width=device-width, initial-scale=1.0,viewport-fit=cover"><title>vscode上传代码到仓库  错误集锦 Git Permission denied | 蓝桉`Blog</title><meta name="author" content="蓝桉,kt_zxh@163.com"><meta name="copyright" content="蓝桉"><meta name="format-detection" content="telephone=no"><meta name="theme-color" content="#ffffff"><meta name="description" content="vscode上传代码到仓库 | 错误集锦 |Git |Permission denied错误问题描述1Starting ssh-agent on Windows 10 fails: &quot;unable to start ssh-agent service, error :1058&quot; 123456789101112131415161718OpenSSH_for_Windows_8.1">
+<meta property="og:type" content="article">
+<meta property="og:title" content="vscode上传代码到仓库  错误集锦 Git Permission denied">
+<meta property="og:url" content="https://ktzxy.github.io/posts/ae9f9159.html">
+<meta property="og:site_name" content="蓝桉&#96;Blog">
+<meta property="og:description" content="vscode上传代码到仓库 | 错误集锦 |Git |Permission denied错误问题描述1Starting ssh-agent on Windows 10 fails: &quot;unable to start ssh-agent service, error :1058&quot; 123456789101112131415161718OpenSSH_for_Windows_8.1">
+<meta property="og:locale" content="zh_CN">
+<meta property="og:image" content="https://ktzxy.github.io/bg/Image00030.webp">
+<meta property="article:published_time" content="2025-07-09T17:28:39.000Z">
+<meta property="article:modified_time" content="2025-07-13T15:45:18.445Z">
+<meta property="article:author" content="蓝桉">
+<meta property="article:tag" content="其他">
+<meta name="twitter:card" content="summary">
+<meta name="twitter:image" content="https://ktzxy.github.io/bg/Image00030.webp"><script type="application/ld+json">{
+  "@context": "https://schema.org",
+  "@type": "BlogPosting",
+  "headline": "vscode上传代码到仓库  错误集锦 Git Permission denied",
+  "url": "https://ktzxy.github.io/posts/ae9f9159.html",
+  "image": "https://ktzxy.github.io/bg/Image00030.webp",
+  "datePublished": "2025-07-09T17:28:39.000Z",
+  "dateModified": "2025-07-13T15:45:18.445Z",
+  "author": [
+    {
+      "@type": "Person",
+      "name": "蓝桉",
+      "url": "https://ktzxy.github.io"
+    }
+  ]
+}</script><link rel="shortcut icon" href="/img/favicon.png"><link rel="canonical" href="https://ktzxy.github.io/posts/ae9f9159.html"><link rel="preconnect" href="//cdn.jsdelivr.net"/><link rel="preconnect" href="//busuanzi.ibruce.info"/><link rel="stylesheet" href="/css/index.css"><link rel="stylesheet" href="https://cdn.jsdelivr.net/npm/@fortawesome/fontawesome-free/css/all.min.css"><script>
+    (() => {
+      
+    const saveToLocal = {
+      set: (key, value, ttl) => {
+        if (!ttl) return
+        const expiry = Date.now() + ttl * 86400000
+        localStorage.setItem(key, JSON.stringify({ value, expiry }))
+      },
+      get: key => {
+        const itemStr = localStorage.getItem(key)
+        if (!itemStr) return undefined
+        const { value, expiry } = JSON.parse(itemStr)
+        if (Date.now() > expiry) {
+          localStorage.removeItem(key)
+          return undefined
+        }
+        return value
+      }
+    }
+
+    window.btf = {
+      saveToLocal,
+      getScript: (url, attr = {}) => new Promise((resolve, reject) => {
+        const script = document.createElement('script')
+        script.src = url
+        script.async = true
+        Object.entries(attr).forEach(([key, val]) => script.setAttribute(key, val))
+        script.onload = script.onreadystatechange = () => {
+          if (!script.readyState || /loaded|complete/.test(script.readyState)) resolve()
+        }
+        script.onerror = reject
+        document.head.appendChild(script)
+      }),
+      getCSS: (url, id) => new Promise((resolve, reject) => {
+        const link = document.createElement('link')
+        link.rel = 'stylesheet'
+        link.href = url
+        if (id) link.id = id
+        link.onload = link.onreadystatechange = () => {
+          if (!link.readyState || /loaded|complete/.test(link.readyState)) resolve()
+        }
+        link.onerror = reject
+        document.head.appendChild(link)
+      }),
+      addGlobalFn: (key, fn, name = false, parent = window) => {
+        if (!false && key.startsWith('pjax')) return
+        const globalFn = parent.globalFn || {}
+        globalFn[key] = globalFn[key] || {}
+        globalFn[key][name || Object.keys(globalFn[key]).length] = fn
+        parent.globalFn = globalFn
+      }
+    }
+  
+      
+      const activateDarkMode = () => {
+        document.documentElement.setAttribute('data-theme', 'dark')
+        if (document.querySelector('meta[name="theme-color"]') !== null) {
+          document.querySelector('meta[name="theme-color"]').setAttribute('content', '#0d0d0d')
+        }
+      }
+      const activateLightMode = () => {
+        document.documentElement.setAttribute('data-theme', 'light')
+        if (document.querySelector('meta[name="theme-color"]') !== null) {
+          document.querySelector('meta[name="theme-color"]').setAttribute('content', '#ffffff')
+        }
+      }
+
+      btf.activateDarkMode = activateDarkMode
+      btf.activateLightMode = activateLightMode
+
+      const theme = saveToLocal.get('theme')
+    
+          theme === 'dark' ? activateDarkMode() : theme === 'light' ? activateLightMode() : null
+        
+      
+      const asideStatus = saveToLocal.get('aside-status')
+      if (asideStatus !== undefined) {
+        document.documentElement.classList.toggle('hide-aside', asideStatus === 'hide')
+      }
+    
+      
+    const detectApple = () => {
+      if (/iPad|iPhone|iPod|Macintosh/.test(navigator.userAgent)) {
+        document.documentElement.classList.add('apple')
+      }
+    }
+    detectApple()
+  
+    })()
+  </script><script>const GLOBAL_CONFIG = {
+  root: '/',
+  algolia: undefined,
+  localSearch: undefined,
+  translate: undefined,
+  highlight: {"plugin":"highlight.js","highlightCopy":true,"highlightLang":true,"highlightHeightLimit":false,"highlightFullpage":false,"highlightMacStyle":false},
+  copy: {
+    success: '复制成功',
+    error: '复制失败',
+    noSupport: '浏览器不支持'
+  },
+  relativeDate: {
+    homepage: false,
+    post: false
+  },
+  runtime: '',
+  dateSuffix: {
+    just: '刚刚',
+    min: '分钟前',
+    hour: '小时前',
+    day: '天前',
+    month: '个月前'
+  },
+  copyright: undefined,
+  lightbox: 'null',
+  Snackbar: undefined,
+  infinitegrid: {
+    js: 'https://cdn.jsdelivr.net/npm/@egjs/infinitegrid/dist/infinitegrid.min.js',
+    buttonText: '加载更多'
+  },
+  isPhotoFigcaption: false,
+  islazyloadPlugin: false,
+  isAnchor: false,
+  percent: {
+    toc: true,
+    rightside: false,
+  },
+  autoDarkmode: false
+}</script><script id="config-diff">var GLOBAL_CONFIG_SITE = {
+  title: 'vscode上传代码到仓库  错误集锦 Git Permission denied',
+  isHighlightShrink: false,
+  isToc: true,
+  pageType: 'post'
+}</script><link rel="stylesheet" href="/css/custom.css" media="defer" onload="this.media='all'"><link rel="stylesheet" href="//at.alicdn.com/t/c/font_4379924_273fk05h86zi.css" media="defer" onload="this.media='all'"><link rel="stylesheet" href="/css/progress_bar/progress_bar.css" media="defer" onload="this.media='all'"><link rel="stylesheet" href="/css/windmill/windmill.css"><link rel="stylesheet" href="/css/cat.css"><link rel="stylesheet" href="/css/meting/music_lanan.css"><div id="myscoll"></div><!-- hexo injector head_end start --><link rel="stylesheet" href="https://cdn.jsdelivr.net/gh/Zfour/Butterfly-double-row-display@1.00/cardlistpost.min.css"/>
+<style>#recent-posts > .recent-post-item >.recent-post-info > .article-meta-wrap > .tags:before {content:"\A";
+  white-space: pre;}#recent-posts > .recent-post-item >.recent-post-info > .article-meta-wrap > .tags > .article-meta__separator{display:none}</style>
+<link rel="stylesheet" href="https://cdn.cbd.int/hexo-butterfly-clock-anzhiyu/lib/clock.min.css" /><link rel="stylesheet" href="/css/runtime/runtime.min.css" media="print" onload="this.media='all'"><link rel="stylesheet" href="https://cdn.cbd.int/hexo-butterfly-tag-plugins-plus@latest/lib/assets/font-awesome-animation.min.css" media="defer" onload="this.media='all'"><link rel="stylesheet" href="https://npm.elemecdn.com/hexo-butterfly-tag-plugins-plus@latest/lib/tag_plugins.css" media="defer" onload="this.media='all'"><script src="https://npm.elemecdn.com/hexo-butterfly-tag-plugins-plus@latest/lib/assets/carousel-touch.js"></script><link rel="stylesheet" href="https://cdn.cbd.int/hexo-butterfly-wowjs/lib/animate.min.css" media="print" onload="this.media='screen'"><!-- hexo injector head_end end --><meta name="generator" content="Hexo 7.3.0"><link rel="alternate" href="/atom.xml" title="蓝桉`Blog" type="application/atom+xml">
+</head><body><div id="loading-box"><div class="loading-left-bg"></div><div class="loading-right-bg"></div><div class="spinner-box"><div class="configure-border-1"><div class="configure-core"></div></div><div class="configure-border-2"><div class="configure-core"></div></div><div class="loading-word">加载中...</div></div></div><script>(()=>{
+  const $loadingBox = document.getElementById('loading-box')
+  const $body = document.body
+  const preloader = {
+    endLoading: () => {
+      $body.style.overflow = ''
+      $loadingBox.classList.add('loaded')
+    },
+    initLoading: () => {
+      $body.style.overflow = 'hidden'
+      $loadingBox.classList.remove('loaded')
+    }
+  }
+
+  preloader.initLoading()
+  window.addEventListener('load', preloader.endLoading)
+
+  if (false) {
+    btf.addGlobalFn('pjaxSend', preloader.initLoading, 'preloader_init')
+    btf.addGlobalFn('pjaxComplete', preloader.endLoading, 'preloader_end')
+  }
+})()</script><div id="web_bg" style="background-image: url(/img/bg.webp);"></div><div id="an_music_bg"></div><div id="sidebar"><div id="menu-mask"></div><div id="sidebar-menus"><div class="avatar-img text-center"><img src="/img/avatar.webp" onerror="this.onerror=null;this.src='/img/friend_404.gif'" alt="avatar"/></div><div class="site-data text-center"><a href="/archives/"><div class="headline">文章</div><div class="length-num">264</div></a><a href="/tags/"><div class="headline">标签</div><div class="length-num">38</div></a><a href="/categories/"><div class="headline">分类</div><div class="length-num">37</div></a></div><div class="menus_items"><div class="menus_item"><a class="site-page faa-parent animated-hover" href="/"><i class="fa-fw icon-zhuye-"></i><svg class="icon faa-tada" aria-hidden="true"><use xlink:href="#icon-zhuye-"></use></svg><span> 首页</span></a></div><div class="menus_item"><a class="site-page faa-parent animated-hover" href="/archives/"><i class="fa-fw icon-shijianzhou"></i><svg class="icon faa-tada" aria-hidden="true"><use xlink:href="#icon-shijianzhou"></use></svg><span> 时间轴</span></a></div><div class="menus_item"><a class="site-page faa-parent animated-hover" href="/essay/"><i class="fa-fw icon-xiaoxi"></i><svg class="icon faa-tada" aria-hidden="true"><use xlink:href="#icon-xiaoxi"></use></svg><span> 闲言碎语</span></a></div><div class="menus_item"><a class="site-page faa-parent animated-hover" href="/music/"><i class="fa-fw icon-music"></i><svg class="icon faa-tada" aria-hidden="true"><use xlink:href="#icon-music"></use></svg><span> 音乐馆</span></a></div><div class="menus_item"><a class="site-page faa-parent animated-hover" href="/categories/"><i class="fa-fw icon-fenlei"></i><svg class="icon faa-tada" aria-hidden="true"><use xlink:href="#icon-fenlei"></use></svg><span> 分类</span></a></div><div class="menus_item"><a class="site-page faa-parent animated-hover" href="/fcircle/"><i class="fa-fw icon-pengyouquan"></i><svg class="icon faa-tada" aria-hidden="true"><use xlink:href="#icon-pengyouquan"></use></svg><span> 朋友圈</span></a></div><div class="menus_item"><a class="site-page faa-parent animated-hover" href="/comments/"><i class="fa-fw icon-xinfeng"></i><svg class="icon faa-tada" aria-hidden="true"><use xlink:href="#icon-xinfeng"></use></svg><span> 留言板</span></a></div><div class="menus_item"><a class="site-page faa-parent animated-hover" href="/link/"><i class="fa-fw icon-lianjie"></i><svg class="icon faa-tada" aria-hidden="true"><use xlink:href="#icon-lianjie"></use></svg><span> 友人帐</span></a></div><div class="menus_item"><a class="site-page faa-parent animated-hover" href="javascript:randomPost();"><i class="fa-fw icon-wodezhuifan"></i><svg class="icon faa-tada" aria-hidden="true"><use xlink:href="#icon-wodezhuifan"></use></svg><span> 随机访问</span></a></div><div class="menus_item"><a class="site-page faa-parent animated-hover" href="/about/"><i class="fa-fw icon-guanyuwomen2"></i><svg class="icon faa-tada" aria-hidden="true"><use xlink:href="#icon-guanyuwomen2"></use></svg><span> 关于</span></a></div></div></div></div><div class="post" id="body-wrap"><header class="post-bg" id="page-header" style="background-image: url(/bg/Image00030.webp);"><nav id="nav"><span id="blog-info"><a class="nav-site-title" href="/"><span class="site-name">蓝桉`Blog</span></a><a class="nav-page-title" href="/"><span class="site-name">vscode上传代码到仓库  错误集锦 Git Permission denied</span><span class="site-name"><i class="fa-solid fa-circle-arrow-left"></i><span>  返回首页</span></span></a></span><div id="menus"><div class="menus_items"><div class="menus_item"><a class="site-page faa-parent animated-hover" href="/"><i class="fa-fw icon-zhuye-"></i><svg class="icon faa-tada" aria-hidden="true"><use xlink:href="#icon-zhuye-"></use></svg><span> 首页</span></a></div><div class="menus_item"><a class="site-page faa-parent animated-hover" href="/archives/"><i class="fa-fw icon-shijianzhou"></i><svg class="icon faa-tada" aria-hidden="true"><use xlink:href="#icon-shijianzhou"></use></svg><span> 时间轴</span></a></div><div class="menus_item"><a class="site-page faa-parent animated-hover" href="/essay/"><i class="fa-fw icon-xiaoxi"></i><svg class="icon faa-tada" aria-hidden="true"><use xlink:href="#icon-xiaoxi"></use></svg><span> 闲言碎语</span></a></div><div class="menus_item"><a class="site-page faa-parent animated-hover" href="/music/"><i class="fa-fw icon-music"></i><svg class="icon faa-tada" aria-hidden="true"><use xlink:href="#icon-music"></use></svg><span> 音乐馆</span></a></div><div class="menus_item"><a class="site-page faa-parent animated-hover" href="/categories/"><i class="fa-fw icon-fenlei"></i><svg class="icon faa-tada" aria-hidden="true"><use xlink:href="#icon-fenlei"></use></svg><span> 分类</span></a></div><div class="menus_item"><a class="site-page faa-parent animated-hover" href="/fcircle/"><i class="fa-fw icon-pengyouquan"></i><svg class="icon faa-tada" aria-hidden="true"><use xlink:href="#icon-pengyouquan"></use></svg><span> 朋友圈</span></a></div><div class="menus_item"><a class="site-page faa-parent animated-hover" href="/comments/"><i class="fa-fw icon-xinfeng"></i><svg class="icon faa-tada" aria-hidden="true"><use xlink:href="#icon-xinfeng"></use></svg><span> 留言板</span></a></div><div class="menus_item"><a class="site-page faa-parent animated-hover" href="/link/"><i class="fa-fw icon-lianjie"></i><svg class="icon faa-tada" aria-hidden="true"><use xlink:href="#icon-lianjie"></use></svg><span> 友人帐</span></a></div><div class="menus_item"><a class="site-page faa-parent animated-hover" href="javascript:randomPost();"><i class="fa-fw icon-wodezhuifan"></i><svg class="icon faa-tada" aria-hidden="true"><use xlink:href="#icon-wodezhuifan"></use></svg><span> 随机访问</span></a></div><div class="menus_item"><a class="site-page faa-parent animated-hover" href="/about/"><i class="fa-fw icon-guanyuwomen2"></i><svg class="icon faa-tada" aria-hidden="true"><use xlink:href="#icon-guanyuwomen2"></use></svg><span> 关于</span></a></div></div><div id="toggle-menu"><span class="site-page"><i class="fas fa-bars fa-fw"></i></span></div></div></nav><div id="post-info"><h1 class="post-title">vscode上传代码到仓库  错误集锦 Git Permission denied</h1><div id="post-meta"><div class="meta-firstline"><span class="post-meta-date"><i class="far fa-calendar-alt fa-fw post-meta-icon"></i><span class="post-meta-label">发表于</span><time class="post-meta-date-created" datetime="2025-07-09T17:28:39.000Z" title="发表于 2025-07-09 17:28:39">2025-07-09</time><span class="post-meta-separator">|</span><i class="fas fa-history fa-fw post-meta-icon"></i><span class="post-meta-label">更新于</span><time class="post-meta-date-updated" datetime="2025-07-13T15:45:18.445Z" title="更新于 2025-07-13 15:45:18">2025-07-13</time></span><span class="post-meta-categories"><span class="post-meta-separator">|</span><i class="fas fa-inbox fa-fw post-meta-icon"></i><a class="post-meta-categories" href="/categories/%E5%85%B6%E4%BB%96/">其他</a></span></div><div class="meta-secondline"><span class="post-meta-separator">|</span><span class="post-meta-pv-cv" id="" data-flag-title=""><i class="far fa-eye fa-fw post-meta-icon"></i><span class="post-meta-label">浏览量:</span><span id="busuanzi_value_page_pv"><i class="fa-solid fa-spinner fa-spin"></i></span></span></div></div></div></header><main class="layout" id="content-inner"><div id="post"><article class="container post-content" id="article-container"><h1 id="vscode上传代码到仓库-错误集锦-Git-Permission-denied"><a href="#vscode上传代码到仓库-错误集锦-Git-Permission-denied" class="headerlink" title="vscode上传代码到仓库 | 错误集锦 |Git |Permission denied"></a>vscode上传代码到仓库 | 错误集锦 |Git |Permission denied</h1><h2 id="错误问题描述"><a href="#错误问题描述" class="headerlink" title="错误问题描述"></a>错误问题描述</h2><figure class="highlight plaintext"><table><tr><td class="gutter"><pre><span class="line">1</span><br></pre></td><td class="code"><pre><span class="line">Starting ssh-agent on Windows 10 fails: &quot;unable to start ssh-agent service, error :1058&quot;</span><br></pre></td></tr></table></figure>
+<figure class="highlight plaintext"><table><tr><td class="gutter"><pre><span class="line">1</span><br><span class="line">2</span><br><span class="line">3</span><br><span class="line">4</span><br><span class="line">5</span><br><span class="line">6</span><br><span class="line">7</span><br><span class="line">8</span><br><span class="line">9</span><br><span class="line">10</span><br><span class="line">11</span><br><span class="line">12</span><br><span class="line">13</span><br><span class="line">14</span><br><span class="line">15</span><br><span class="line">16</span><br><span class="line">17</span><br><span class="line">18</span><br></pre></td><td class="code"><pre><span class="line">OpenSSH_for_Windows_8.1p1, LibreSSL 3.0.2</span><br><span class="line">debug1: Connecting to github.com [] port 22.</span><br><span class="line">debug1: Connection established.</span><br><span class="line">debug1: identity file C:\\Users\\zhaoyu/.ssh/id_rsa type 0</span><br><span class="line">debug1: identity file C:\\Users\\zhaoyu/.ssh/id_rsa-cert type -1</span><br><span class="line">debug1: identity file C:\\Users\\zhaoyu/.ssh/id_dsa type -1</span><br><span class="line">debug1: identity file C:\\Users\\zhaoyu/.ssh/id_dsa-cert type -1</span><br><span class="line">debug1: identity file C:\\Users\\zhaoyu/.ssh/id_ecdsa type -1</span><br><span class="line">debug1: identity file C:\\Users\\zhaoyu/.ssh/id_ecdsa-cert type -1</span><br><span class="line">debug1: identity file C:\\Users\\zhaoyu/.ssh/id_ed25519 type 3</span><br><span class="line">debug1: identity file C:\\Users\\zhaoyu/.ssh/id_ed25519-cert type -1</span><br><span class="line">debug1: identity file C:\\Users\\zhaoyu/.ssh/id_xmss type -1</span><br><span class="line">debug1: identity file C:\\Users\\zhaoyu/.ssh/id_xmss-cert type -1</span><br><span class="line">debug1: Local version string SSH-2.0-OpenSSH_for_Windows_8.1</span><br><span class="line">...</span><br><span class="line">debug1: Authentications that can continue: publickey</span><br><span class="line">debug1: No more authentication methods to try.</span><br><span class="line">git@github.com: Permission denied (publickey).</span><br></pre></td></tr></table></figure>
+<h2 id="解决办法参考"><a href="#解决办法参考" class="headerlink" title="解决办法参考"></a>解决办法参考</h2><figure class="highlight plaintext"><table><tr><td class="gutter"><pre><span class="line">1</span><br><span class="line">2</span><br><span class="line">3</span><br><span class="line">4</span><br><span class="line">5</span><br><span class="line">6</span><br><span class="line">7</span><br><span class="line">8</span><br><span class="line">9</span><br><span class="line">10</span><br><span class="line">11</span><br><span class="line">12</span><br><span class="line">13</span><br><span class="line">14</span><br><span class="line">15</span><br><span class="line">16</span><br><span class="line">17</span><br><span class="line">18</span><br><span class="line">19</span><br></pre></td><td class="code"><pre><span class="line">PS E:\myblog_hexo\lanan&gt; Get-Service ssh-agent</span><br><span class="line"></span><br><span class="line">Status   Name               DisplayName</span><br><span class="line">------   ----               -----------</span><br><span class="line">Stopped  ssh-agent          OpenSSH Authentication Agent</span><br><span class="line"></span><br><span class="line">PS E:\myblog_hexo\lanan&gt; Get-Service ssh-agent | Select StartType</span><br><span class="line"></span><br><span class="line">StartType</span><br><span class="line">---------</span><br><span class="line"> Disabled</span><br><span class="line"></span><br><span class="line"></span><br><span class="line">PS E:\myblog_hexo\lanan&gt; Get-Service -Name ssh-agent | Set-Service -StartupType Manual</span><br><span class="line">PS E:\myblog_hexo\lanan&gt; Get-Service ssh-agent | Select StartType</span><br><span class="line"></span><br><span class="line">StartType</span><br><span class="line">---------</span><br><span class="line">   Manual</span><br></pre></td></tr></table></figure>
+</article><div class="post-copyright"><div class="post-copyright__author"><span class="post-copyright-meta"><i class="fas fa-circle-user fa-fw"></i>文章作者: </span><span class="post-copyright-info"><a href="https://ktzxy.github.io">蓝桉</a></span></div><div class="post-copyright__type"><span class="post-copyright-meta"><i class="fas fa-square-arrow-up-right fa-fw"></i>文章链接: </span><span class="post-copyright-info"><a href="https://ktzxy.github.io/posts/ae9f9159.html">https://ktzxy.github.io/posts/ae9f9159.html</a></span></div><div class="post-copyright__notice"><span class="post-copyright-meta"><i class="fas fa-circle-exclamation fa-fw"></i>版权声明: </span><span class="post-copyright-info">本博客所有文章除特别声明外，均采用 <a href="https://creativecommons.org/licenses/by-nc-sa/4.0/" target="_blank">CC BY-NC-SA 4.0</a> 许可协议。转载请注明来源 <a href="https://ktzxy.github.io" target="_blank">蓝桉`Blog</a>！</span></div></div><div class="tag_share"><div class="post-meta__tag-list"><a class="post-meta__tags" href="/tags/%E5%85%B6%E4%BB%96/">其他</a></div><div class="post-share"><div class="social-share" data-image="/bg/Image00030.webp" data-sites="facebook,twitter,wechat,weibo,qq"></div><link rel="stylesheet" href="https://cdn.jsdelivr.net/npm/butterfly-extsrc/sharejs/dist/css/share.min.css" media="print" onload="this.media='all'"><script src="https://cdn.jsdelivr.net/npm/butterfly-extsrc/sharejs/dist/js/social-share.min.js" defer></script></div></div><link rel="stylesheet" href="/css/coin/coin.css" media="defer" onload="this.media='all'"/><div class="post-reward"><button class="tip-button reward-button"><span class="tip-button__text">不给糖果就捣蛋</span><div class="coin-wrapper"><div class="coin"><div class="coin__middle"></div><div class="coin__back"></div><div class="coin__front"></div></div></div><div class="reward-main"><ul class="reward-all"><li class="reward-item"><a href="/img/wechat.webp" target="_blank"><img class="post-qr-code-img" src="/img/wechat.webp" alt="wechat"/></a><div class="post-qr-code-desc">wechat</div></li><li class="reward-item"><a href="/img/alipay.webp" target="_blank"><img class="post-qr-code-img" src="/img/alipay.webp" alt="alipay"/></a><div class="post-qr-code-desc">alipay</div></li></ul></div></button></div><audio id="coinAudio" src="https://cdn.cbd.int/akilar-candyassets@1.0.36/audio/aowu.m4a"></audio><script defer="defer" src="/js/coin/coin.js"></script><nav class="pagination-post" id="pagination"><a class="pagination-related" href="/posts/6fc8eab5.html" title="Markdown"><img class="cover" src="/bg/Image00020.webp" onerror="onerror=null;src='/img/404.jpg'" alt="cover of previous post"><div class="info"><div class="info-1"><div class="info-item-1">上一篇</div><div class="info-item-2">Markdown</div></div><div class="info-2"><div class="info-item-1">1. 基础语法1.1. 标题（Headings） 常规写法  要创建标题，请在单词或短语前面添加井号 (#) 。井号的数量代表了标题的级别。例如，添加三个井号即创建一个三级标题 (&lt;h3&gt;) (例如：### My Header)。     Markdown HTML 渲染效果     # Heading level 1 &lt;h1&gt;Heading level 1&lt;/h1&gt; Heading level 1   ## Heading level 2 &lt;h2&gt;Heading level 2&lt;/h2&gt; Heading level 2   ### Heading level 3 &lt;h3&gt;Heading level 3&lt;/h3&gt; Heading level 3   #### Heading level 4 &lt;h4&gt;Heading level 4&lt;/h4&gt; Heading level 4   ##### Heading level 5 &lt;h5&gt;Heading level 5&lt...</div></div></div></a><a class="pagination-related" href="/posts/fff6dde5.html" title="ps学习"><img class="cover" src="/bg/Image00024.webp" onerror="onerror=null;src='/img/404.jpg'" alt="cover of next post"><div class="info text-right"><div class="info-1"><div class="info-item-1">下一篇</div><div class="info-item-2">ps学习</div></div><div class="info-2"><div class="info-item-1">ps学习1.认识主界面 选项栏是调节工具相关参数的面板，位置和显示都可以调节 “Ctrl + 鼠标滚轮” “Shift+ 鼠标滚轮” 也可以实现画板移动 “Alt+ 鼠标滚轮”  可以放大可缩小画面 画面周围灰色的区域为文档的工作面 选择油漆桶工具并设定前景色 按住“Shift” 点击灰色工作面区域 2.新建文档点击菜单栏-文件-新建，可以打开新建选项（快捷键 Ctrl + N）  剪贴板未采集像素则不可用，选框为灰色，不能点用剪贴板截图，打开ps,系统会自动计算该截图尺寸，直接建立应该相同大小文档，或直接使用该剪贴图或者直接去复制—张图片，也能激活剪贴板，建立相同大小文档，粘贴图片即可使用如果是文件夹里复制—张图片来平时，是不能激活剪贴板功能的，这里的复制是文件整体的复制，剪贴板是复制图片的数据 Photoshop数值输入框前的文字都可以拖动，都可以通过鼠标拖拽来改变数值大小 像素和矢量图“像素” 是计算数码影像的一种单位，1个像素就是最小的图形的单位，在屏幕上显示的通常就是单个的染色点，放大会失真，边缘锯齿化 矢量图没有像素的概念，它是面向对象的图像或绘图图像，在数学上定义为...</div></div></div></a></nav><div class="relatedPosts"><div class="headline"><i class="fas fa-thumbs-up fa-fw"></i><span>相关推荐</span></div><div class="relatedPosts-list"><a class="pagination-related" href="/posts/73f1ada8.html" title="Excel学习"><img class="cover" src="/bg/Image00021.webp" alt="cover"><div class="info text-center"><div class="info-1"><div class="info-item-1"><i class="far fa-calendar-alt fa-fw"></i> 2025-07-09</div><div class="info-item-2">Excel学习</div></div><div class="info-2"><div class="info-item-1">说明：根据王佩丰Excel24讲学习所作（部分） 一、认识1.快速到达数据底部或者顶部​        鼠标点击任意单元格，箭头放在上边框或者下边框，点击两次 2.冻结窗口​        滚动工作表其余部分时，保持首行/首列不变 3.填充柄​        选择任意一个或多个填充过的单元格，鼠标点击右下角，（鼠标点击不放）进行下拉；鼠标右击下拉可进行以年/月/工作日填充（日期为例） ​        自定义填充  二、设置单元格格式1.使用单元格格式工具美化表格鼠标右击——设置单元格格式 或者点击  弹出  2.单元格数字格式    类型 原格式 转变后的格式     数值 -25636 -25,636   货币 10000 ¥10,000.00   会计专用 1555 $     1,555.00   日期 39814 2009年1月1日   时间 0.6980556 下午4时45分12秒   百分比 0.11 11.00%   分数 0.1 0   科学计数 1.2E+14 1.2E+14   文本 2422 2422   特殊 25368 二万五千三百六十八     数字...</div></div></div></a><a class="pagination-related" href="/posts/fff6dde5.html" title="ps学习"><img class="cover" src="/bg/Image00024.webp" alt="cover"><div class="info text-center"><div class="info-1"><div class="info-item-1"><i class="far fa-calendar-alt fa-fw"></i> 2025-07-09</div><div class="info-item-2">ps学习</div></div><div class="info-2"><div class="info-item-1">ps学习1.认识主界面 选项栏是调节工具相关参数的面板，位置和显示都可以调节 “Ctrl + 鼠标滚轮” “Shift+ 鼠标滚轮” 也可以实现画板移动 “Alt+ 鼠标滚轮”  可以放大可缩小画面 画面周围灰色的区域为文档的工作面 选择油漆桶工具并设定前景色 按住“Shift” 点击灰色工作面区域 2.新建文档点击菜单栏-文件-新建，可以打开新建选项（快捷键 Ctrl + N）  剪贴板未采集像素则不可用，选框为灰色，不能点用剪贴板截图，打开ps,系统会自动计算该截图尺寸，直接建立应该相同大小文档，或直接使用该剪贴图或者直接去复制—张图片，也能激活剪贴板，建立相同大小文档，粘贴图片即可使用如果是文件夹里复制—张图片来平时，是不能激活剪贴板功能的，这里的复制是文件整体的复制，剪贴板是复制图片的数据 Photoshop数值输入框前的文字都可以拖动，都可以通过鼠标拖拽来改变数值大小 像素和矢量图“像素” 是计算数码影像的一种单位，1个像素就是最小的图形的单位，在屏幕上显示的通常就是单个的染色点，放大会失真，边缘锯齿化 矢量图没有像素的概念，它是面向对象的图像或绘图图像，在数学上定义为...</div></div></div></a></div></div></div><div class="aside-content" id="aside-content"><div class="card-widget card-info text-center"><div class="avatar-img"><img src="/img/avatar.webp" onerror="this.onerror=null;this.src='/img/friend_404.gif'" alt="avatar"/></div><div class="author-info-name">蓝桉</div><div class="author-info-description"><div style="line-height:1.38;margin:0.6rem 0;text-align:justify;color:rgba(255, 255, 255, 0.8);">这有关于<b style="color:#fff">生活、学习、技术</b>相关的问题和看法，还有<b style="color:#fff">文章教程</b>和<b style="color:#fff">分享</b>。</div><div style="line-height:1.38;margin:0.6rem 0;text-align:justify;color:rgba(255, 255, 255, 0.8);">相信你可以在这里找到对你有用的<b style="color:#fff">知识</b>和<b style="color:#fff">教程</b>。</div></div><div class="site-data"><a href="/archives/"><div class="headline">文章</div><div class="length-num">264</div></a><a href="/tags/"><div class="headline">标签</div><div class="length-num">38</div></a><a href="/categories/"><div class="headline">分类</div><div class="length-num">37</div></a></div><a id="card-info-btn" target="_blank" rel="noopener" href="https://github.com/ktzxy"><i class="fab fa-github"></i><span>Follow Me</span></a><div class="card-info-social-icons"><a class="social-icon faa-parent animated-hover" href="https://github.com/ktzxy" target="_blank" title="Github"><svg class="social_icon faa-tada" aria-hidden="true"><use xlink:href="#icon-github"></use></svg></a><a class="social-icon faa-parent animated-hover" href="https://mail.qq.com/cgi-bin/qm_share?t=qm_mailme&amp;email=2251511764@qq.com" target="_blank" title="Email"><svg class="social_icon faa-tada" aria-hidden="true"><use xlink:href="#icon-youxiang"></use></svg></a><a class="social-icon faa-parent animated-hover" href="/atom.xml" target="_blank" title="RSS"><svg class="social_icon faa-tada" aria-hidden="true"><use xlink:href="#icon-RSS"></use></svg></a><a class="social-icon faa-parent animated-hover" href="https://space.bilibili.com/496148176" target="_blank" title="BiliBili"><svg class="social_icon faa-tada" aria-hidden="true"><use xlink:href="#icon-QX-BILIBILI"></use></svg></a><a class="social-icon faa-parent animated-hover" href="tencent://Message/?Uin=2251511764&amp;amp;websiteName=local.edu.com:8888=&amp;amp;Menu=yes" target="_blank" title="QQ"><svg class="social_icon faa-tada" aria-hidden="true"><use xlink:href="#icon-QQ"></use></svg></a></div></div><div class="card-widget card-announcement"><div class="item-headline"><i class="fas fa-bullhorn fa-shake"></i><span>公告</span></div><div class="announcement_content">This is my Blog</div></div><div class="sticky_layout"><div class="card-widget" id="card-toc"><div class="item-headline"><i class="fas fa-stream"></i><span>目录</span><span class="toc-percentage"></span></div><div class="toc-content"><ol class="toc"><li class="toc-item toc-level-1"><a class="toc-link" href="#vscode%E4%B8%8A%E4%BC%A0%E4%BB%A3%E7%A0%81%E5%88%B0%E4%BB%93%E5%BA%93-%E9%94%99%E8%AF%AF%E9%9B%86%E9%94%A6-Git-Permission-denied"><span class="toc-number">1.</span> <span class="toc-text">vscode上传代码到仓库 | 错误集锦 |Git |Permission denied</span></a><ol class="toc-child"><li class="toc-item toc-level-2"><a class="toc-link" href="#%E9%94%99%E8%AF%AF%E9%97%AE%E9%A2%98%E6%8F%8F%E8%BF%B0"><span class="toc-number">1.1.</span> <span class="toc-text">错误问题描述</span></a></li><li class="toc-item toc-level-2"><a class="toc-link" href="#%E8%A7%A3%E5%86%B3%E5%8A%9E%E6%B3%95%E5%8F%82%E8%80%83"><span class="toc-number">1.2.</span> <span class="toc-text">解决办法参考</span></a></li></ol></li></ol></div></div><div class="card-widget card-recent-post"><div class="item-headline"><i class="fas fa-history"></i><span>最新文章</span></div><div class="aside-list"><div class="aside-list-item"><a class="thumbnail" href="/posts/a318ca1f.html" title="MySQL数据库150道高频面试题"><img src="/bg/Image00018.webp" onerror="this.onerror=null;this.src='/img/404.jpg'" alt="MySQL数据库150道高频面试题"/></a><div class="content"><a class="title" href="/posts/a318ca1f.html" title="MySQL数据库150道高频面试题">MySQL数据库150道高频面试题</a><time datetime="2025-07-09T17:28:46.000Z" title="发表于 2025-07-09 17:28:46">2025-07-09</time></div></div><div class="aside-list-item"><a class="thumbnail" href="/posts/8f9b37aa.html" title="技术同学必会的MySQL设计规约"><img src="/bg/Image00014.webp" onerror="this.onerror=null;this.src='/img/404.jpg'" alt="技术同学必会的MySQL设计规约"/></a><div class="content"><a class="title" href="/posts/8f9b37aa.html" title="技术同学必会的MySQL设计规约">技术同学必会的MySQL设计规约</a><time datetime="2025-07-09T17:28:46.000Z" title="发表于 2025-07-09 17:28:46">2025-07-09</time></div></div><div class="aside-list-item"><a class="thumbnail" href="/posts/dfdfdf4.html" title="数据库概述"><img src="/bg/Image00002.webp" onerror="this.onerror=null;this.src='/img/404.jpg'" alt="数据库概述"/></a><div class="content"><a class="title" href="/posts/dfdfdf4.html" title="数据库概述">数据库概述</a><time datetime="2025-07-09T17:28:46.000Z" title="发表于 2025-07-09 17:28:46">2025-07-09</time></div></div><div class="aside-list-item"><a class="thumbnail" href="/posts/490575ab.html" title="24工厂模式俗话解释"><img src="/bg/Image00024.webp" onerror="this.onerror=null;this.src='/img/404.jpg'" alt="24工厂模式俗话解释"/></a><div class="content"><a class="title" href="/posts/490575ab.html" title="24工厂模式俗话解释">24工厂模式俗话解释</a><time datetime="2025-07-09T17:28:46.000Z" title="发表于 2025-07-09 17:28:46">2025-07-09</time></div></div><div class="aside-list-item"><a class="thumbnail" href="/posts/364ea8cc.html" title="设计模式"><img src="/bg/Image00014.webp" onerror="this.onerror=null;this.src='/img/404.jpg'" alt="设计模式"/></a><div class="content"><a class="title" href="/posts/364ea8cc.html" title="设计模式">设计模式</a><time datetime="2025-07-09T17:28:46.000Z" title="发表于 2025-07-09 17:28:46">2025-07-09</time></div></div></div></div></div></div></main><footer id="footer"><div class="footer-other"><div class="footer-copyright"><span class="copyright">&copy;2020 - 2025 By 蓝桉</span><span class="framework-info"><span>框架 </span><a target="_blank" rel="noopener" href="https://hexo.io">Hexo 7.3.0</a><span class="footer-separator">|</span><span>主题 </span><a target="_blank" rel="noopener" href="https://github.com/jerryc127/hexo-theme-butterfly">Butterfly 5.4.2</a></span></div></div></footer></div><div id="rightside"><div id="rightside-config-hide"><button id="readmode" type="button" title="阅读模式"><i class="fas fa-book-open"></i></button><button id="darkmode" type="button" title="日间和夜间模式切换"><i class="fas fa-adjust"></i></button><button id="hide-aside-btn" type="button" title="单栏和双栏切换"><i class="fas fa-arrows-alt-h"></i></button></div><div id="rightside-config-show"><button id="rightside-config" type="button" title="设置"><i class="fas fa-cog fa-spin"></i></button><button class="close" id="mobile-toc-button" type="button" title="目录"><i class="fas fa-list-ul"></i></button><button id="go-up" type="button" title="回到顶部"><span class="scroll-percent"></span><i class="fas fa-arrow-up"></i></button></div></div><div><script src="/js/utils.js"></script><script src="/js/main.js"></script><div class="js-pjax"></div><div class="aplayer no-destroy" data-id="8152976493" data-server="netease" data-type="playlist"   data-order="list" data-fixed="true" data-preload="auto" data-autoplay="false" data-mutex="true" ></div><script async src="//at.alicdn.com/t/c/font_4379924_273fk05h86zi.js"></script><link rel="stylesheet" href="https://cdn.jsdelivr.net/gh/l-lin/font-awesome-animation/dist/font-awesome-animation.min.css"  media="defer" onload="this.media='all'"><script async src="//npm.elemecdn.com/pace-js@1.2.4/pace.min.js"></script><script defer src="https://npm.elemecdn.com/jquery@latest/dist/jquery.min.js"></script><script defer data-pjax src="/js/cat/cat.js"></script><script async data-pjax src="/js/meting/music_lanan.min.js"></script><script defer type="text/javascript" src="https://cdn1.tianli0.top/npm/sweetalert2@8.19.0/dist/sweetalert2.all.js"></script><script defer src="/js/day/lunar.js"></script><script defer src="/js/day/day.js"></script><script async data-pjax src="//busuanzi.ibruce.info/busuanzi/2.3/busuanzi.pure.mini.js"></script></div><!-- hexo injector body_end start --><script data-pjax>
+  function butterfly_clock_anzhiyu_injector_config(){
+    var parent_div_git = document.getElementsByClassName('sticky_layout')[0];
+    var item_html = '<div class="card-widget card-clock"><div class="card-glass"><div class="card-background"><div class="card-content"><div id="hexo_electric_clock"><img class="entered loading" id="card-clock-loading" src="https://cdn.cbd.int/hexo-butterfly-clock-anzhiyu/lib/loading.gif" style="height: 120px; width: 100%;" data-ll-status="loading"/></div></div></div></div></div>';
+    console.log('已挂载butterfly_clock_anzhiyu')
+    if(parent_div_git) {
+      parent_div_git.insertAdjacentHTML("afterbegin",item_html)
+    }
+  }
+  var elist = 'null'.split(',');
+  var cpage = location.pathname;
+  var epage = '/';
+  var qweather_key = '10a7db1c41b6489db9c830c668a18304';
+  var gaud_map_key = '82a64bc994fb6494830f157f319f9f69';
+  var baidu_ak_key = 'undefined';
+  var flag = 0;
+  var clock_rectangle = '113.34532,23.15624';
+  var clock_default_rectangle_enable = 'false';
+
+  for (var i=0;i<elist.length;i++){
+    if (cpage.includes(elist[i])){
+      flag++;
+    }
+  }
+
+  if ((epage ==='all')&&(flag == 0)){
+    butterfly_clock_anzhiyu_injector_config();
+  }
+  else if (epage === cpage){
+    butterfly_clock_anzhiyu_injector_config();
+  }
+  </script><script src="https://widget.qweather.net/simple/static/js/he-simple-common.js?v=2.0"></script><script data-pjax src="https://cdn.cbd.int/hexo-butterfly-clock-anzhiyu/lib/clock.min.js"></script><script data-pjax>
+  function butterfly_footer_beautify_injector_config(){
+    var parent_div_git = document.getElementById('footer-wrap');
+    var item_html = '<div id="workboard"></div><p id="ghbdages"><a class="github-badge" target="_blank" href="https://hexo.io/" style="margin-inline:5px" data-title="博客框架为Hexo_v5.4.0" title=""><img src="https://img.shields.io/badge/Frame-Hexo-blue?style=flat&amp;logo=hexo" alt=""/></a><a class="github-badge" target="_blank" href="https://butterfly.js.org/" style="margin-inline:5px" data-title="主题版本Butterfly_v4.2.2" title=""><img src="https://img.shields.io/badge/Theme-Butterfly-6513df?style=flat&amp;logo=bitdefender" alt=""/></a><a class="github-badge" target="_blank" href="https://www.jsdelivr.com/" style="margin-inline:5px" data-title="本站使用JsDelivr为静态资源提供CDN加速" title=""><img src="https://img.shields.io/badge/CDN-jsDelivr-orange?style=flat&amp;logo=jsDelivr" alt=""/></a><a class="github-badge" target="_blank" href="https://github.com/" style="margin-inline:5px" data-title="本站项目由Github托管" title=""><img src="https://img.shields.io/badge/Source-Github-d021d6?style=flat&amp;logo=GitHub" alt=""/></a><a class="github-badge" target="_blank" href="http://creativecommons.org/licenses/by-nc-sa/4.0/" style="margin-inline:5px" data-title="本站采用知识共享署名-非商业性使用-相同方式共享4.0国际许可协议进行许可" title=""><img src="https://img.shields.io/badge/Copyright-BY--NC--SA%204.0-d42328?style=flat&amp;logo=Claris" alt=""/></a></p>';
+    console.log('已挂载butterfly_footer_beautify')
+    parent_div_git.insertAdjacentHTML("beforeend",item_html)
+    }
+  var elist = 'null'.split(',');
+  var cpage = location.pathname;
+  var epage = 'all';
+  var flag = 0;
+
+  for (var i=0;i<elist.length;i++){
+    if (cpage.includes(elist[i])){
+      flag++;
+    }
+  }
+
+  if ((epage ==='all')&&(flag == 0)){
+    butterfly_footer_beautify_injector_config();
+  }
+  else if (epage === cpage){
+    butterfly_footer_beautify_injector_config();
+  }
+  </script><script async src="/js/runtime/runtime.min.js"></script><script async src="/js/font/ali_font_all.js"></script><div class="js-pjax"><script async="async">var arr = document.getElementsByClassName('recent-post-item');
+for(var i = 0;i<arr.length;i++){
+    arr[i].classList.add('wow');
+    arr[i].classList.add('animate__zoomIn');
+    arr[i].setAttribute('data-wow-duration', '1.5s');
+    arr[i].setAttribute('data-wow-delay', '200ms');
+    arr[i].setAttribute('data-wow-offset', '30');
+    arr[i].setAttribute('data-wow-iteration', '1');
+  }</script><script async="async">var arr = document.getElementsByClassName('card-widget');
+for(var i = 0;i<arr.length;i++){
+    arr[i].classList.add('wow');
+    arr[i].classList.add('animate__zoomIn');
+    arr[i].setAttribute('data-wow-duration', '');
+    arr[i].setAttribute('data-wow-delay', '200ms');
+    arr[i].setAttribute('data-wow-offset', '');
+    arr[i].setAttribute('data-wow-iteration', '');
+  }</script><script async="async">var arr = document.getElementsByClassName('flink-list-card');
+for(var i = 0;i<arr.length;i++){
+    arr[i].classList.add('wow');
+    arr[i].classList.add('animate__flipInY');
+    arr[i].setAttribute('data-wow-duration', '3s');
+    arr[i].setAttribute('data-wow-delay', '');
+    arr[i].setAttribute('data-wow-offset', '');
+    arr[i].setAttribute('data-wow-iteration', '');
+  }</script><script async="async">var arr = document.getElementsByClassName('flink-list-card');
+for(var i = 0;i<arr.length;i++){
+    arr[i].classList.add('wow');
+    arr[i].classList.add('animate__animated');
+    arr[i].setAttribute('data-wow-duration', '3s');
+    arr[i].setAttribute('data-wow-delay', '');
+    arr[i].setAttribute('data-wow-offset', '');
+    arr[i].setAttribute('data-wow-iteration', '');
+  }</script><script async="async">var arr = document.getElementsByClassName('article-sort-item');
+for(var i = 0;i<arr.length;i++){
+    arr[i].classList.add('wow');
+    arr[i].classList.add('animate__slideInRight');
+    arr[i].setAttribute('data-wow-duration', '1.5s');
+    arr[i].setAttribute('data-wow-delay', '');
+    arr[i].setAttribute('data-wow-offset', '');
+    arr[i].setAttribute('data-wow-iteration', '');
+  }</script><script async="async">var arr = document.getElementsByClassName('site-card');
+for(var i = 0;i<arr.length;i++){
+    arr[i].classList.add('wow');
+    arr[i].classList.add('animate__flipInY');
+    arr[i].setAttribute('data-wow-duration', '3s');
+    arr[i].setAttribute('data-wow-delay', '');
+    arr[i].setAttribute('data-wow-offset', '');
+    arr[i].setAttribute('data-wow-iteration', '');
+  }</script><script async="async">var arr = document.getElementsByClassName('site-card');
+for(var i = 0;i<arr.length;i++){
+    arr[i].classList.add('wow');
+    arr[i].classList.add('animate__animated');
+    arr[i].setAttribute('data-wow-duration', '3s');
+    arr[i].setAttribute('data-wow-delay', '');
+    arr[i].setAttribute('data-wow-offset', '');
+    arr[i].setAttribute('data-wow-iteration', '');
+  }</script></div><script defer src="https://cdn.cbd.int/hexo-butterfly-wowjs/lib/wow.min.js"></script><script defer src="https://cdn.cbd.int/hexo-butterfly-wowjs/lib/wow_init.js"></script><!-- hexo injector body_end end --><script src="/live2dw/lib/L2Dwidget.min.js?094cbace49a39548bed64abff5988b05"></script><script>L2Dwidget.init({"pluginRootPath":"live2dw/","pluginJsPath":"lib/","pluginModelPath":"assets/","tagMode":false,"debug":false,"model":{"jsonPath":"/live2dw/assets/shizuku.model.json"},"display":{"position":"right","width":150,"height":300},"mobile":{"show":false},"log":false});</script></body></html>

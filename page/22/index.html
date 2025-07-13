@@ -1,0 +1,374 @@
+<!DOCTYPE html><html lang="zh-CN" data-theme="light"><head><meta charset="UTF-8"><meta http-equiv="X-UA-Compatible" content="IE=edge"><meta name="viewport" content="width=device-width, initial-scale=1.0,viewport-fit=cover"><title>蓝桉`Blog - 桑榆非晚,柠月如风.</title><meta name="author" content="蓝桉,kt_zxh@163.com"><meta name="copyright" content="蓝桉"><meta name="format-detection" content="telephone=no"><meta name="theme-color" content="#ffffff"><meta name="description" content="追风赶月莫停留,平芜尽处是春山.愿你所有的坚强,都能换来繁花似锦.">
+<meta property="og:type" content="website">
+<meta property="og:title" content="蓝桉&#96;Blog">
+<meta property="og:url" content="https://ktzxy.github.io/page/22/index.html">
+<meta property="og:site_name" content="蓝桉&#96;Blog">
+<meta property="og:description" content="追风赶月莫停留,平芜尽处是春山.愿你所有的坚强,都能换来繁花似锦.">
+<meta property="og:locale" content="zh_CN">
+<meta property="og:image" content="https://ktzxy.github.io/img/avatar.webp">
+<meta property="article:author" content="蓝桉">
+<meta property="article:tag" content="生活,奋斗,蓝桉,博客,有趣的灵魂,hexo,HEXO,Blog,蓝桉博客">
+<meta name="twitter:card" content="summary">
+<meta name="twitter:image" content="https://ktzxy.github.io/img/avatar.webp"><script type="application/ld+json"></script><link rel="shortcut icon" href="/img/favicon.png"><link rel="canonical" href="https://ktzxy.github.io/page/22/index.html"><link rel="preconnect" href="//cdn.jsdelivr.net"/><link rel="preconnect" href="//busuanzi.ibruce.info"/><link rel="stylesheet" href="/css/index.css"><link rel="stylesheet" href="https://cdn.jsdelivr.net/npm/@fortawesome/fontawesome-free/css/all.min.css"><script>
+    (() => {
+      
+    const saveToLocal = {
+      set: (key, value, ttl) => {
+        if (!ttl) return
+        const expiry = Date.now() + ttl * 86400000
+        localStorage.setItem(key, JSON.stringify({ value, expiry }))
+      },
+      get: key => {
+        const itemStr = localStorage.getItem(key)
+        if (!itemStr) return undefined
+        const { value, expiry } = JSON.parse(itemStr)
+        if (Date.now() > expiry) {
+          localStorage.removeItem(key)
+          return undefined
+        }
+        return value
+      }
+    }
+
+    window.btf = {
+      saveToLocal,
+      getScript: (url, attr = {}) => new Promise((resolve, reject) => {
+        const script = document.createElement('script')
+        script.src = url
+        script.async = true
+        Object.entries(attr).forEach(([key, val]) => script.setAttribute(key, val))
+        script.onload = script.onreadystatechange = () => {
+          if (!script.readyState || /loaded|complete/.test(script.readyState)) resolve()
+        }
+        script.onerror = reject
+        document.head.appendChild(script)
+      }),
+      getCSS: (url, id) => new Promise((resolve, reject) => {
+        const link = document.createElement('link')
+        link.rel = 'stylesheet'
+        link.href = url
+        if (id) link.id = id
+        link.onload = link.onreadystatechange = () => {
+          if (!link.readyState || /loaded|complete/.test(link.readyState)) resolve()
+        }
+        link.onerror = reject
+        document.head.appendChild(link)
+      }),
+      addGlobalFn: (key, fn, name = false, parent = window) => {
+        if (!false && key.startsWith('pjax')) return
+        const globalFn = parent.globalFn || {}
+        globalFn[key] = globalFn[key] || {}
+        globalFn[key][name || Object.keys(globalFn[key]).length] = fn
+        parent.globalFn = globalFn
+      }
+    }
+  
+      
+      const activateDarkMode = () => {
+        document.documentElement.setAttribute('data-theme', 'dark')
+        if (document.querySelector('meta[name="theme-color"]') !== null) {
+          document.querySelector('meta[name="theme-color"]').setAttribute('content', '#0d0d0d')
+        }
+      }
+      const activateLightMode = () => {
+        document.documentElement.setAttribute('data-theme', 'light')
+        if (document.querySelector('meta[name="theme-color"]') !== null) {
+          document.querySelector('meta[name="theme-color"]').setAttribute('content', '#ffffff')
+        }
+      }
+
+      btf.activateDarkMode = activateDarkMode
+      btf.activateLightMode = activateLightMode
+
+      const theme = saveToLocal.get('theme')
+    
+          theme === 'dark' ? activateDarkMode() : theme === 'light' ? activateLightMode() : null
+        
+      
+      const asideStatus = saveToLocal.get('aside-status')
+      if (asideStatus !== undefined) {
+        document.documentElement.classList.toggle('hide-aside', asideStatus === 'hide')
+      }
+    
+      
+    const detectApple = () => {
+      if (/iPad|iPhone|iPod|Macintosh/.test(navigator.userAgent)) {
+        document.documentElement.classList.add('apple')
+      }
+    }
+    detectApple()
+  
+    })()
+  </script><script>const GLOBAL_CONFIG = {
+  root: '/',
+  algolia: undefined,
+  localSearch: undefined,
+  translate: undefined,
+  highlight: {"plugin":"highlight.js","highlightCopy":true,"highlightLang":true,"highlightHeightLimit":false,"highlightFullpage":false,"highlightMacStyle":false},
+  copy: {
+    success: '复制成功',
+    error: '复制失败',
+    noSupport: '浏览器不支持'
+  },
+  relativeDate: {
+    homepage: false,
+    post: false
+  },
+  runtime: '',
+  dateSuffix: {
+    just: '刚刚',
+    min: '分钟前',
+    hour: '小时前',
+    day: '天前',
+    month: '个月前'
+  },
+  copyright: undefined,
+  lightbox: 'null',
+  Snackbar: undefined,
+  infinitegrid: {
+    js: 'https://cdn.jsdelivr.net/npm/@egjs/infinitegrid/dist/infinitegrid.min.js',
+    buttonText: '加载更多'
+  },
+  isPhotoFigcaption: false,
+  islazyloadPlugin: false,
+  isAnchor: false,
+  percent: {
+    toc: true,
+    rightside: false,
+  },
+  autoDarkmode: false
+}</script><script id="config-diff">var GLOBAL_CONFIG_SITE = {
+  title: '蓝桉`Blog',
+  isHighlightShrink: false,
+  isToc: false,
+  pageType: 'home'
+}</script><link rel="stylesheet" href="/css/custom.css" media="defer" onload="this.media='all'"><link rel="stylesheet" href="//at.alicdn.com/t/c/font_4379924_273fk05h86zi.css" media="defer" onload="this.media='all'"><link rel="stylesheet" href="/css/progress_bar/progress_bar.css" media="defer" onload="this.media='all'"><link rel="stylesheet" href="/css/windmill/windmill.css"><link rel="stylesheet" href="/css/cat.css"><link rel="stylesheet" href="/css/meting/music_lanan.css"><div id="myscoll"></div><!-- hexo injector head_end start --><link rel="stylesheet" href="https://cdn.jsdelivr.net/gh/Zfour/Butterfly-double-row-display@1.00/cardlistpost.min.css"/>
+<style>#recent-posts > .recent-post-item >.recent-post-info > .article-meta-wrap > .tags:before {content:"\A";
+  white-space: pre;}#recent-posts > .recent-post-item >.recent-post-info > .article-meta-wrap > .tags > .article-meta__separator{display:none}</style>
+<link rel="stylesheet" href="https://cdn.cbd.int/hexo-butterfly-clock-anzhiyu/lib/clock.min.css" /><link rel="stylesheet" href="/css/runtime/runtime.min.css" media="print" onload="this.media='all'"><link rel="stylesheet" href="https://cdn.cbd.int/hexo-butterfly-tag-plugins-plus@latest/lib/assets/font-awesome-animation.min.css" media="defer" onload="this.media='all'"><link rel="stylesheet" href="https://npm.elemecdn.com/hexo-butterfly-tag-plugins-plus@latest/lib/tag_plugins.css" media="defer" onload="this.media='all'"><script src="https://npm.elemecdn.com/hexo-butterfly-tag-plugins-plus@latest/lib/assets/carousel-touch.js"></script><link rel="stylesheet" href="https://cdn.cbd.int/hexo-butterfly-wowjs/lib/animate.min.css" media="print" onload="this.media='screen'"><!-- hexo injector head_end end --><meta name="generator" content="Hexo 7.3.0"><link rel="alternate" href="/atom.xml" title="蓝桉`Blog" type="application/atom+xml">
+</head><body><div id="loading-box"><div class="loading-left-bg"></div><div class="loading-right-bg"></div><div class="spinner-box"><div class="configure-border-1"><div class="configure-core"></div></div><div class="configure-border-2"><div class="configure-core"></div></div><div class="loading-word">加载中...</div></div></div><script>(()=>{
+  const $loadingBox = document.getElementById('loading-box')
+  const $body = document.body
+  const preloader = {
+    endLoading: () => {
+      $body.style.overflow = ''
+      $loadingBox.classList.add('loaded')
+    },
+    initLoading: () => {
+      $body.style.overflow = 'hidden'
+      $loadingBox.classList.remove('loaded')
+    }
+  }
+
+  preloader.initLoading()
+  window.addEventListener('load', preloader.endLoading)
+
+  if (false) {
+    btf.addGlobalFn('pjaxSend', preloader.initLoading, 'preloader_init')
+    btf.addGlobalFn('pjaxComplete', preloader.endLoading, 'preloader_end')
+  }
+})()</script><div id="web_bg" style="background-image: url(/img/bg.webp);"></div><div id="an_music_bg"></div><div id="sidebar"><div id="menu-mask"></div><div id="sidebar-menus"><div class="avatar-img text-center"><img src="/img/avatar.webp" onerror="this.onerror=null;this.src='/img/friend_404.gif'" alt="avatar"/></div><div class="site-data text-center"><a href="/archives/"><div class="headline">文章</div><div class="length-num">264</div></a><a href="/tags/"><div class="headline">标签</div><div class="length-num">38</div></a><a href="/categories/"><div class="headline">分类</div><div class="length-num">37</div></a></div><div class="menus_items"><div class="menus_item"><a class="site-page faa-parent animated-hover" href="/"><i class="fa-fw icon-zhuye-"></i><svg class="icon faa-tada" aria-hidden="true"><use xlink:href="#icon-zhuye-"></use></svg><span> 首页</span></a></div><div class="menus_item"><a class="site-page faa-parent animated-hover" href="/archives/"><i class="fa-fw icon-shijianzhou"></i><svg class="icon faa-tada" aria-hidden="true"><use xlink:href="#icon-shijianzhou"></use></svg><span> 时间轴</span></a></div><div class="menus_item"><a class="site-page faa-parent animated-hover" href="/essay/"><i class="fa-fw icon-xiaoxi"></i><svg class="icon faa-tada" aria-hidden="true"><use xlink:href="#icon-xiaoxi"></use></svg><span> 闲言碎语</span></a></div><div class="menus_item"><a class="site-page faa-parent animated-hover" href="/music/"><i class="fa-fw icon-music"></i><svg class="icon faa-tada" aria-hidden="true"><use xlink:href="#icon-music"></use></svg><span> 音乐馆</span></a></div><div class="menus_item"><a class="site-page faa-parent animated-hover" href="/categories/"><i class="fa-fw icon-fenlei"></i><svg class="icon faa-tada" aria-hidden="true"><use xlink:href="#icon-fenlei"></use></svg><span> 分类</span></a></div><div class="menus_item"><a class="site-page faa-parent animated-hover" href="/fcircle/"><i class="fa-fw icon-pengyouquan"></i><svg class="icon faa-tada" aria-hidden="true"><use xlink:href="#icon-pengyouquan"></use></svg><span> 朋友圈</span></a></div><div class="menus_item"><a class="site-page faa-parent animated-hover" href="/comments/"><i class="fa-fw icon-xinfeng"></i><svg class="icon faa-tada" aria-hidden="true"><use xlink:href="#icon-xinfeng"></use></svg><span> 留言板</span></a></div><div class="menus_item"><a class="site-page faa-parent animated-hover" href="/link/"><i class="fa-fw icon-lianjie"></i><svg class="icon faa-tada" aria-hidden="true"><use xlink:href="#icon-lianjie"></use></svg><span> 友人帐</span></a></div><div class="menus_item"><a class="site-page faa-parent animated-hover" href="javascript:randomPost();"><i class="fa-fw icon-wodezhuifan"></i><svg class="icon faa-tada" aria-hidden="true"><use xlink:href="#icon-wodezhuifan"></use></svg><span> 随机访问</span></a></div><div class="menus_item"><a class="site-page faa-parent animated-hover" href="/about/"><i class="fa-fw icon-guanyuwomen2"></i><svg class="icon faa-tada" aria-hidden="true"><use xlink:href="#icon-guanyuwomen2"></use></svg><span> 关于</span></a></div></div></div></div><div class="page" id="body-wrap"><header class="full_page" id="page-header"><nav id="nav"><span id="blog-info"><a class="nav-site-title" href="/"><span class="site-name">蓝桉`Blog</span></a></span><div id="menus"><div class="menus_items"><div class="menus_item"><a class="site-page faa-parent animated-hover" href="/"><i class="fa-fw icon-zhuye-"></i><svg class="icon faa-tada" aria-hidden="true"><use xlink:href="#icon-zhuye-"></use></svg><span> 首页</span></a></div><div class="menus_item"><a class="site-page faa-parent animated-hover" href="/archives/"><i class="fa-fw icon-shijianzhou"></i><svg class="icon faa-tada" aria-hidden="true"><use xlink:href="#icon-shijianzhou"></use></svg><span> 时间轴</span></a></div><div class="menus_item"><a class="site-page faa-parent animated-hover" href="/essay/"><i class="fa-fw icon-xiaoxi"></i><svg class="icon faa-tada" aria-hidden="true"><use xlink:href="#icon-xiaoxi"></use></svg><span> 闲言碎语</span></a></div><div class="menus_item"><a class="site-page faa-parent animated-hover" href="/music/"><i class="fa-fw icon-music"></i><svg class="icon faa-tada" aria-hidden="true"><use xlink:href="#icon-music"></use></svg><span> 音乐馆</span></a></div><div class="menus_item"><a class="site-page faa-parent animated-hover" href="/categories/"><i class="fa-fw icon-fenlei"></i><svg class="icon faa-tada" aria-hidden="true"><use xlink:href="#icon-fenlei"></use></svg><span> 分类</span></a></div><div class="menus_item"><a class="site-page faa-parent animated-hover" href="/fcircle/"><i class="fa-fw icon-pengyouquan"></i><svg class="icon faa-tada" aria-hidden="true"><use xlink:href="#icon-pengyouquan"></use></svg><span> 朋友圈</span></a></div><div class="menus_item"><a class="site-page faa-parent animated-hover" href="/comments/"><i class="fa-fw icon-xinfeng"></i><svg class="icon faa-tada" aria-hidden="true"><use xlink:href="#icon-xinfeng"></use></svg><span> 留言板</span></a></div><div class="menus_item"><a class="site-page faa-parent animated-hover" href="/link/"><i class="fa-fw icon-lianjie"></i><svg class="icon faa-tada" aria-hidden="true"><use xlink:href="#icon-lianjie"></use></svg><span> 友人帐</span></a></div><div class="menus_item"><a class="site-page faa-parent animated-hover" href="javascript:randomPost();"><i class="fa-fw icon-wodezhuifan"></i><svg class="icon faa-tada" aria-hidden="true"><use xlink:href="#icon-wodezhuifan"></use></svg><span> 随机访问</span></a></div><div class="menus_item"><a class="site-page faa-parent animated-hover" href="/about/"><i class="fa-fw icon-guanyuwomen2"></i><svg class="icon faa-tada" aria-hidden="true"><use xlink:href="#icon-guanyuwomen2"></use></svg><span> 关于</span></a></div></div><div id="toggle-menu"><span class="site-page"><i class="fas fa-bars fa-fw"></i></span></div></div></nav><div id="site-info"><h1 id="site-title">蓝桉`Blog</h1><div id="site_social_icons"><a class="social-icon faa-parent animated-hover" href="https://github.com/ktzxy" target="_blank" title="Github"><svg class="social_icon faa-tada" aria-hidden="true"><use xlink:href="#icon-github"></use></svg></a><a class="social-icon faa-parent animated-hover" href="https://mail.qq.com/cgi-bin/qm_share?t=qm_mailme&amp;email=2251511764@qq.com" target="_blank" title="Email"><svg class="social_icon faa-tada" aria-hidden="true"><use xlink:href="#icon-youxiang"></use></svg></a><a class="social-icon faa-parent animated-hover" href="/atom.xml" target="_blank" title="RSS"><svg class="social_icon faa-tada" aria-hidden="true"><use xlink:href="#icon-RSS"></use></svg></a><a class="social-icon faa-parent animated-hover" href="https://space.bilibili.com/496148176" target="_blank" title="BiliBili"><svg class="social_icon faa-tada" aria-hidden="true"><use xlink:href="#icon-QX-BILIBILI"></use></svg></a><a class="social-icon faa-parent animated-hover" href="tencent://Message/?Uin=2251511764&amp;amp;websiteName=local.edu.com:8888=&amp;amp;Menu=yes" target="_blank" title="QQ"><svg class="social_icon faa-tada" aria-hidden="true"><use xlink:href="#icon-QQ"></use></svg></a></div></div><div id="scroll-down"><i class="fas fa-angle-down scroll-down-effects"></i></div></header><main class="layout" id="content-inner"><div class="recent-posts nc" id="recent-posts"><div class="recent-post-items"><div class="recent-post-item"><div class="post_cover left"><a href="/posts/86068ff9.html" title="Day-09-集合"><img class="post-bg" src="/bg/Image00022.webp" onerror="this.onerror=null;this.src='/img/404.jpg'" alt="Day-09-集合"></a></div><div class="recent-post-info"><a class="article-title" href="/posts/86068ff9.html" title="Day-09-集合">Day-09-集合</a><div class="article-meta-wrap"><span class="post-meta-date"><i class="far fa-calendar-alt"></i><span class="article-meta-label">发表于</span><time datetime="2025-07-09T17:28:45.000Z" title="发表于 2025-07-09 17:28:45">2025-07-09</time></span><span class="article-meta"><span class="article-meta-separator">|</span><i class="fas fa-inbox"></i><a class="article-meta__categories" href="/categories/Java/">Java</a></span></div><div class="content">Day-09-集合集合1.Java 集合框架概述1.集合框架与数组的对比及概述12345678910111213141516171819/** * 一、集合的框架 * * 1.集合、数组都是对多个数据进行存储操作的结构，简称Java容器。 *   说明；此时的存储，主要是指能存层面的存储，不涉及到持久化的存储（.txt,.jpg,.avi,数据库中） * * 2.1数组在存储多个数据封面的特点： *      》一旦初始化以后，它的长度就确定了。 *      》数组一旦定义好，它的数据类型也就确定了。我们就只能操作指定类型的数据了。 *      比如：String[] arr;int[] str; * 2.2数组在存储多个数据方面的特点： *      》一旦初始化以后，其长度就不可修改。 *      》数组中提供的方法非常有限，对于添加、删除、插入数据等操作，非常不便，同时效率不高。 *      》获取数组中实际元素的个数的需求，数组没有现成的属性或方法可用 *      》数组存储数据的特点：有序、可重复。对于无序、不可重复的需求，不能满足。 * *   * @cre...</div></div></div><div class="recent-post-item"><div class="post_cover right"><a href="/posts/e364fb8.html" title="Day-10-Junit&amp;注解&amp;枚举"><img class="post-bg" src="/bg/Image00009.webp" onerror="this.onerror=null;this.src='/img/404.jpg'" alt="Day-10-Junit&amp;注解&amp;枚举"></a></div><div class="recent-post-info"><a class="article-title" href="/posts/e364fb8.html" title="Day-10-Junit&amp;注解&amp;枚举">Day-10-Junit&amp;注解&amp;枚举</a><div class="article-meta-wrap"><span class="post-meta-date"><i class="far fa-calendar-alt"></i><span class="article-meta-label">发表于</span><time datetime="2025-07-09T17:28:45.000Z" title="发表于 2025-07-09 17:28:45">2025-07-09</time></span><span class="article-meta"><span class="article-meta-separator">|</span><i class="fas fa-inbox"></i><a class="article-meta__categories" href="/categories/Java/">Java</a></span></div><div class="content">﻿# Day-09-Junit&amp;注解&amp;枚举 【1】软件测试的目的:软件测试的目的是在规定的条件下对程序进行操作,以发现程序错误,衡量软件质量,并对其是否能满足设计要求进行评估的过程 【2】测试分类:    (1)黑盒测试:软件的黑盒测试意味着测试要在软件的接口处进行。这种方法是把测试对象看做一个黑盒子,测试人员完全不考虑程序内部的逻辑结构和内部特性只依据程序的需求规格说明书,检查程序的功能是否符合它的功能说明。因此黑盒测试又叫功能测试。    (2)白盒测试:软件的白盒测试是对软件的过程性细节做细致的检查。这种方法是把测试对象看做一个打开的盒子,它允许测试人员利用程序内部的逻辑结构及有关信息设计或选择测试用例对程序的所有逻辑路径进行测试、通过在不同点检查程序状态.确定实际状态是否与预期的状态一致。因此白盒测试又称为结构测试。  在没有使用Junit的时候，缺点: ​    (1）测试一定走main方法，是程序的入口，main方法的格式必须不能写错。 ​    (2）要是在同一个main方法中测试的话，那么不需要测试的东西必须注释掉。 ​    (3)测试逻辑如果分...</div></div></div><div class="recent-post-item"><div class="post_cover left"><a href="/posts/64bf1459.html" title="Day-11-IO流"><img class="post-bg" src="/bg/touxiang.webp" onerror="this.onerror=null;this.src='/img/404.jpg'" alt="Day-11-IO流"></a></div><div class="recent-post-info"><a class="article-title" href="/posts/64bf1459.html" title="Day-11-IO流">Day-11-IO流</a><div class="article-meta-wrap"><span class="post-meta-date"><i class="far fa-calendar-alt"></i><span class="article-meta-label">发表于</span><time datetime="2025-07-09T17:28:45.000Z" title="发表于 2025-07-09 17:28:45">2025-07-09</time></span><span class="article-meta"><span class="article-meta-separator">|</span><i class="fas fa-inbox"></i><a class="article-meta__categories" href="/categories/Java/">Java</a></span></div><div class="content">﻿# Day-10-IO流 File类【1】对文件进行操作： 1234567891011121314151617181920212223242526272829//将文件封装为一个File类的对象：File f = new File(&quot;E:\\test.txt&quot;);File f2 = new File(&quot;E:/test.txt&quot;);//File.separator属性帮我们获取当前操作系统的路径拼接符号File f3 = new File(&quot;E:&quot;+File.separator+&quot;test.txt&quot;); //建议使用这种//常用方法：System.out.println(&quot;文件是否可读&quot;+f.canRead());System.out.println(&quot;文件是否可写&quot;+f.canWrite());System.out.println(&quot;文件的名字&quot;+f.getName());System.out.println(&quot;文件上级目录&qu...</div></div></div><div class="recent-post-item"><div class="post_cover right"><a href="/posts/2bac2ea1.html" title="Day-12-网络编程"><img class="post-bg" src="/bg/Image00020.webp" onerror="this.onerror=null;this.src='/img/404.jpg'" alt="Day-12-网络编程"></a></div><div class="recent-post-info"><a class="article-title" href="/posts/2bac2ea1.html" title="Day-12-网络编程">Day-12-网络编程</a><div class="article-meta-wrap"><span class="post-meta-date"><i class="far fa-calendar-alt"></i><span class="article-meta-label">发表于</span><time datetime="2025-07-09T17:28:45.000Z" title="发表于 2025-07-09 17:28:45">2025-07-09</time></span><span class="article-meta"><span class="article-meta-separator">|</span><i class="fas fa-inbox"></i><a class="article-meta__categories" href="/categories/Java/">Java</a></span></div><div class="content">﻿# Day-11-网络编程 引入【1】网络编程:把分布在不同地理区域的计算机与专门的外部设备用通信线路互连成一个规模大、功能强的网络系统，从而使众多的计算机可以方便地互相传递信息、共享硬件、软件、数据信息等资源。 设备之间在网络中进行数据的传输，发送/接收数据。  【2】通信的两个重要要素：IP+PORT  【3】设备之间进行传输的时候，必须遵照一定的规则—》通信协议  lnetAddress 、lnetSocketAddress【1】 lnetAddress —-》封装了IP 12345678910111213141516171819202122package com.zy.test1;import java.net.InetAddress;import java.net.UnknownHostException;/** * @Auther: 赵羽 * @Description: com.zy.test1 * @version: 1.0 */public class Test1 &#123;    public static void main(String[] args) ...</div></div></div><div class="recent-post-item"><div class="post_cover left"><a href="/posts/68dd1c34.html" title="Day-13-多线程"><img class="post-bg" src="/bg/Image00029.webp" onerror="this.onerror=null;this.src='/img/404.jpg'" alt="Day-13-多线程"></a></div><div class="recent-post-info"><a class="article-title" href="/posts/68dd1c34.html" title="Day-13-多线程">Day-13-多线程</a><div class="article-meta-wrap"><span class="post-meta-date"><i class="far fa-calendar-alt"></i><span class="article-meta-label">发表于</span><time datetime="2025-07-09T17:28:45.000Z" title="发表于 2025-07-09 17:28:45">2025-07-09</time></span><span class="article-meta"><span class="article-meta-separator">|</span><i class="fas fa-inbox"></i><a class="article-meta__categories" href="/categories/Java/">Java</a></span></div><div class="content">﻿# Day-12-多线程 简介线程：在多任务操作系统中，每个运行的程序都是一个进程，用来执行不同的任务，而在一个进程中还可以有多个执行单元同时运行，来同时完成一个或多个程序任务，这些执行单元可以看做程序执行的一条条线索，被称为线程。 注意︰操作系统中的每一个进程中都至少存在一个线程，当一个Java程序启动时，就会产生一个进程，该进程中会默认创建一个线程，在这个线程上会运行main()方法中的代码。 多线程可以充分利用CPU资源,进一步提升程序执行效率。 总结： 线程就是独立的执行路径; 在程序运行时，即使没有自己创建线程，后台也会有多个线程，如主线程，gc线程;main()称之为主线程，为系统的入口，用于执行整个程序; 在一个进程中，如果开辟了多个线程，线程的运行由调度器安排调度，调度器是与操作系统紧密相关的，先后顺序是不能认为的干预的。 对同一份资源操作时，会存在资源抢夺的问题，需要加入并发控制;线程会带来额外的开销，如CPU调度时间，并发控制开销。 每个线程在自己的工作内存交互，内存控制不当会造成数据不一致 创建方式一：继承Thread类，重写run()方法 1234567...</div></div></div><div class="recent-post-item"><div class="post_cover right"><a href="/posts/8eb2595.html" title="Day-14-JVM入门"><img class="post-bg" src="/bg/Image00011.webp" onerror="this.onerror=null;this.src='/img/404.jpg'" alt="Day-14-JVM入门"></a></div><div class="recent-post-info"><a class="article-title" href="/posts/8eb2595.html" title="Day-14-JVM入门">Day-14-JVM入门</a><div class="article-meta-wrap"><span class="post-meta-date"><i class="far fa-calendar-alt"></i><span class="article-meta-label">发表于</span><time datetime="2025-07-09T17:28:45.000Z" title="发表于 2025-07-09 17:28:45">2025-07-09</time></span><span class="article-meta"><span class="article-meta-separator">|</span><i class="fas fa-inbox"></i><a class="article-meta__categories" href="/categories/Java/">Java</a></span></div><div class="content">Day-14-JVM入门JVM入门面试常见：  请你谈谈你对JVM的理解? java8虚拟机和之前的变化更新? 什么是OOM，什么是栈溢出StackOverFlowError? 怎么分析? JVM的常用调优参数有哪些? 内存快照如何抓取？怎么分析Dump文件？ 谈谈JVM中，类加载器你的认识？  1.JVM的位置 三种JVM:  Sun公司：HotSpot 用的最多 BEA：JRockit IBM：J9VM  我们学习都是：HotSpot 2.JVM的体系结构  jvm调优：99%都是在方法区和堆，大部分时间调堆。 JNI（java native interface）本地方法接口。      3.类加载器 作用：加载Class文件——如果new Student();（具体实例在堆里，引用变量名放栈里） 。 先来看看一个类加载到 JVM 的一个基本结构：    类是模板，对象是具体的，通过new来实例化对象。car1，car2，car3，名字在栈里面，真正的实例，具体的数据在堆里面，栈只是引用地址。   虚拟机自带的加载器 启动类（根）加载器 扩展类加载器 应用程序加载器  123...</div></div></div><div class="recent-post-item"><div class="post_cover left"><a href="/posts/4c92022d.html" title="Java基础-IO编程"><img class="post-bg" src="/bg/Image00008.webp" onerror="this.onerror=null;this.src='/img/404.jpg'" alt="Java基础-IO编程"></a></div><div class="recent-post-info"><a class="article-title" href="/posts/4c92022d.html" title="Java基础-IO编程">Java基础-IO编程</a><div class="article-meta-wrap"><span class="post-meta-date"><i class="far fa-calendar-alt"></i><span class="article-meta-label">发表于</span><time datetime="2025-07-09T17:28:45.000Z" title="发表于 2025-07-09 17:28:45">2025-07-09</time></span><span class="article-meta"><span class="article-meta-separator">|</span><i class="fas fa-inbox"></i><a class="article-meta__categories" href="/categories/Java/">Java</a></span></div><div class="content">1. IO 流1.1. 数据在计算机的表现形式所有数据(视频、音频、图片、文本文件)在计算机中都是由0和1组成。计算机只能识别0和1； 数据在计算机的表现形式就是：二进制数据。在数据传输过程中，一切数据(文本、图像、声音等)最终存储的均为一个个字节，即二进制数字。所以数据传输过程中使用二进制数据可以完成任意数据的传递，任何数据在传输过程中都是以0和1格式传输。 向一个文件中存储一定的数据(一些数字)，如果使用文本方式打开，则会以文本的方式解释数据。如果以视频的方式打开，则会以视频的方式解释数据。音频、可行执行文件等亦是如此。所以，在文件传输过程中，要时刻明确，传输的始终为二进制数据。 1.2. IO 的概念1.2.1. IO 操作IO 操作，是指输入和输出操作。  Input(输入操作)：数据从文件到程序的过程。 Output(输出操作)：数据从程序到文件的过程。  例如：当使用集合保存数据时，这些数据都存在于内存中，一旦程序运行结束，这些数据将会从内存中清除，下次再想使用这些数据，已经没有了。如果希望将运算结果永久地保存下来，可以使用 IO，将这些数据持久化存储起来。要把数据持...</div></div></div><div class="recent-post-item"><div class="post_cover right"><a href="/posts/b7433c83.html" title="Java基础-JDK"><img class="post-bg" src="/bg/Image00028.webp" onerror="this.onerror=null;this.src='/img/404.jpg'" alt="Java基础-JDK"></a></div><div class="recent-post-info"><a class="article-title" href="/posts/b7433c83.html" title="Java基础-JDK">Java基础-JDK</a><div class="article-meta-wrap"><span class="post-meta-date"><i class="far fa-calendar-alt"></i><span class="article-meta-label">发表于</span><time datetime="2025-07-09T17:28:45.000Z" title="发表于 2025-07-09 17:28:45">2025-07-09</time></span><span class="article-meta"><span class="article-meta-separator">|</span><i class="fas fa-inbox"></i><a class="article-meta__categories" href="/categories/Java/">Java</a></span></div><div class="content">1. JDK 概述JDK (Java Development Kit) 是 Java 语言的软件开发工具包(SDK)，主要用于移动设备、嵌入式设备上的 Java 应用程序。JDK 是整个 Java 开发的核心，它包含了 JAVA 的运行环境（JVM+Java 系统类库）和 JAVA 工具。  JDK 官网：https://www.oracle.com/java/  2. windows 系统安装 JDK2.1. JDK变量环境配置最好的配置方式：将位置切割成两段，一段用JAVA_HOME保存，一段用\bin保存。如下例： 12JAVA_HOME = C:\Program Files\Java\jdk1.8.0_91%JAVA_HOME%\bin  相等于 --&gt; C:\Program Files\Java\jdk1.8.0_91\bin  2.2. 安装多个 JDK安装过程都一样。只是配置环境变量时改动一下。分别将多个不同版本的jdk设置一个环境变量，然后最终让JAVA_HOME指定当前需要使用的版本的变量即可 123JAVA_HOME_8 = D:\development...</div></div></div><div class="recent-post-item"><div class="post_cover left"><a href="/posts/1c4cf2d9.html" title="Java基础-JDK常用API"><img class="post-bg" src="/bg/Image00019.webp" onerror="this.onerror=null;this.src='/img/404.jpg'" alt="Java基础-JDK常用API"></a></div><div class="recent-post-info"><a class="article-title" href="/posts/1c4cf2d9.html" title="Java基础-JDK常用API">Java基础-JDK常用API</a><div class="article-meta-wrap"><span class="post-meta-date"><i class="far fa-calendar-alt"></i><span class="article-meta-label">发表于</span><time datetime="2025-07-09T17:28:45.000Z" title="发表于 2025-07-09 17:28:45">2025-07-09</time></span><span class="article-meta"><span class="article-meta-separator">|</span><i class="fas fa-inbox"></i><a class="article-meta__categories" href="/categories/Java/">Java</a></span></div><div class="content">1. Date 类 (在util包中)通过该类可以获得当前的日期和时间。 1.1. Date 构造方法1public Date()  获得当前的系统时间，直接输出对象的结果是系统默认的显示格式。  1public Date(long date)  根据指定的毫秒值创建日期对象，返回指定毫秒值的日期对象，(从时间零点到指定时间为止)  1.2. Date常用成员方法1public long getTime();  获得当前时间的毫秒值 (从时间零点到当前时间之间共多少毫秒) 毫秒的概念： 1秒 = 1000毫秒 时间零点：1970年1月1日  00:00:00    1public void setTime(long time);  将时间设置到指定的毫秒值上  2. DateFormat 类 / SimpleDateFormat 子类2.1. DateFormat概念 DateFormat:日期格式化类； 是一个抽象类，不能直接创建对象。 可以使用其子类SimpleDateFormat来创建对象。重写了DateFormat所有抽象方法。   SimpleDateFormat:实际...</div></div></div><div class="recent-post-item"><div class="post_cover right"><a href="/posts/8bebd4ec.html" title="Java基础-Java8新特性"><img class="post-bg" src="/bg/Image00018.webp" onerror="this.onerror=null;this.src='/img/404.jpg'" alt="Java基础-Java8新特性"></a></div><div class="recent-post-info"><a class="article-title" href="/posts/8bebd4ec.html" title="Java基础-Java8新特性">Java基础-Java8新特性</a><div class="article-meta-wrap"><span class="post-meta-date"><i class="far fa-calendar-alt"></i><span class="article-meta-label">发表于</span><time datetime="2025-07-09T17:28:45.000Z" title="发表于 2025-07-09 17:28:45">2025-07-09</time></span><span class="article-meta"><span class="article-meta-separator">|</span><i class="fas fa-inbox"></i><a class="article-meta__categories" href="/categories/Java/">Java</a></span></div><div class="content">1. Java 8 新特性概述Java 8 (又称为 jdk 1.8) 是 Java 语言开发的一个主要版本。Oracle 公司于 2014 年 3 月 18 日发布 Java 8 ，它支持函数式编程，新的 JavaScript 引擎，新的日期 API，新的Stream API 等。Java8 新增了非常多的特性，常用有以下几个：  Lambda 表达式 − Lambda 允许把函数作为一个方法的参数（函数作为参数传递到方法中）。 方法引用 − 方法引用提供了非常有用的语法，可以直接引用已有 Java 类或对象（实例）的方法或构造器。与lambda联合使用，方法引用可以使语言的构造更紧凑简洁，减少冗余代码。 默认方法 − 默认方法就是一个在接口里面有了一个实现的方法。 新的编译工具 - 如：Nashorn引擎 jjs、 类依赖分析器jdeps。 Stream API − 新添加的 Stream API（java.util.stream） 把真正的函数式编程风格引入到Java中。 Date Time API − 加强对日期与时间的处理。 Optional 类 − Optional ...</div></div></div></div><nav id="pagination"><div class="pagination"><a class="extend prev" rel="prev" href="/page/21/#content-inner"><i class="fas fa-chevron-left fa-fw"></i></a><a class="page-number" href="/">1</a><span class="space">&hellip;</span><a class="page-number" href="/page/21/#content-inner">21</a><span class="page-number current">22</span><a class="page-number" href="/page/23/#content-inner">23</a><span class="space">&hellip;</span><a class="page-number" href="/page/27/#content-inner">27</a><a class="extend next" rel="next" href="/page/23/#content-inner"><i class="fas fa-chevron-right fa-fw"></i></a></div></nav></div><div class="aside-content" id="aside-content"><div class="card-widget card-info text-center"><div class="avatar-img"><img src="/img/avatar.webp" onerror="this.onerror=null;this.src='/img/friend_404.gif'" alt="avatar"/></div><div class="author-info-name">蓝桉</div><div class="author-info-description"><div style="line-height:1.38;margin:0.6rem 0;text-align:justify;color:rgba(255, 255, 255, 0.8);">这有关于<b style="color:#fff">生活、学习、技术</b>相关的问题和看法，还有<b style="color:#fff">文章教程</b>和<b style="color:#fff">分享</b>。</div><div style="line-height:1.38;margin:0.6rem 0;text-align:justify;color:rgba(255, 255, 255, 0.8);">相信你可以在这里找到对你有用的<b style="color:#fff">知识</b>和<b style="color:#fff">教程</b>。</div></div><div class="site-data"><a href="/archives/"><div class="headline">文章</div><div class="length-num">264</div></a><a href="/tags/"><div class="headline">标签</div><div class="length-num">38</div></a><a href="/categories/"><div class="headline">分类</div><div class="length-num">37</div></a></div><a id="card-info-btn" target="_blank" rel="noopener" href="https://github.com/ktzxy"><i class="fab fa-github"></i><span>Follow Me</span></a><div class="card-info-social-icons"><a class="social-icon faa-parent animated-hover" href="https://github.com/ktzxy" target="_blank" title="Github"><svg class="social_icon faa-tada" aria-hidden="true"><use xlink:href="#icon-github"></use></svg></a><a class="social-icon faa-parent animated-hover" href="https://mail.qq.com/cgi-bin/qm_share?t=qm_mailme&amp;email=2251511764@qq.com" target="_blank" title="Email"><svg class="social_icon faa-tada" aria-hidden="true"><use xlink:href="#icon-youxiang"></use></svg></a><a class="social-icon faa-parent animated-hover" href="/atom.xml" target="_blank" title="RSS"><svg class="social_icon faa-tada" aria-hidden="true"><use xlink:href="#icon-RSS"></use></svg></a><a class="social-icon faa-parent animated-hover" href="https://space.bilibili.com/496148176" target="_blank" title="BiliBili"><svg class="social_icon faa-tada" aria-hidden="true"><use xlink:href="#icon-QX-BILIBILI"></use></svg></a><a class="social-icon faa-parent animated-hover" href="tencent://Message/?Uin=2251511764&amp;amp;websiteName=local.edu.com:8888=&amp;amp;Menu=yes" target="_blank" title="QQ"><svg class="social_icon faa-tada" aria-hidden="true"><use xlink:href="#icon-QQ"></use></svg></a></div></div><div class="card-widget card-announcement"><div class="item-headline"><i class="fas fa-bullhorn fa-shake"></i><span>公告</span></div><div class="announcement_content">This is my Blog</div></div><div class="sticky_layout"><div class="card-widget card-recent-post"><div class="item-headline"><i class="fas fa-history"></i><span>最新文章</span></div><div class="aside-list"><div class="aside-list-item"><a class="thumbnail" href="/posts/a318ca1f.html" title="MySQL数据库150道高频面试题"><img src="/bg/Image00018.webp" onerror="this.onerror=null;this.src='/img/404.jpg'" alt="MySQL数据库150道高频面试题"/></a><div class="content"><a class="title" href="/posts/a318ca1f.html" title="MySQL数据库150道高频面试题">MySQL数据库150道高频面试题</a><time datetime="2025-07-09T17:28:46.000Z" title="发表于 2025-07-09 17:28:46">2025-07-09</time></div></div><div class="aside-list-item"><a class="thumbnail" href="/posts/8f9b37aa.html" title="技术同学必会的MySQL设计规约"><img src="/bg/Image00014.webp" onerror="this.onerror=null;this.src='/img/404.jpg'" alt="技术同学必会的MySQL设计规约"/></a><div class="content"><a class="title" href="/posts/8f9b37aa.html" title="技术同学必会的MySQL设计规约">技术同学必会的MySQL设计规约</a><time datetime="2025-07-09T17:28:46.000Z" title="发表于 2025-07-09 17:28:46">2025-07-09</time></div></div><div class="aside-list-item"><a class="thumbnail" href="/posts/dfdfdf4.html" title="数据库概述"><img src="/bg/Image00002.webp" onerror="this.onerror=null;this.src='/img/404.jpg'" alt="数据库概述"/></a><div class="content"><a class="title" href="/posts/dfdfdf4.html" title="数据库概述">数据库概述</a><time datetime="2025-07-09T17:28:46.000Z" title="发表于 2025-07-09 17:28:46">2025-07-09</time></div></div><div class="aside-list-item"><a class="thumbnail" href="/posts/490575ab.html" title="24工厂模式俗话解释"><img src="/bg/Image00024.webp" onerror="this.onerror=null;this.src='/img/404.jpg'" alt="24工厂模式俗话解释"/></a><div class="content"><a class="title" href="/posts/490575ab.html" title="24工厂模式俗话解释">24工厂模式俗话解释</a><time datetime="2025-07-09T17:28:46.000Z" title="发表于 2025-07-09 17:28:46">2025-07-09</time></div></div><div class="aside-list-item"><a class="thumbnail" href="/posts/364ea8cc.html" title="设计模式"><img src="/bg/Image00014.webp" onerror="this.onerror=null;this.src='/img/404.jpg'" alt="设计模式"/></a><div class="content"><a class="title" href="/posts/364ea8cc.html" title="设计模式">设计模式</a><time datetime="2025-07-09T17:28:46.000Z" title="发表于 2025-07-09 17:28:46">2025-07-09</time></div></div></div></div><div class="card-widget card-categories"><div class="item-headline">
+            <i class="fas fa-folder-open"></i>
+            <span>分类</span>
+            <a class="card-more-btn" href="/categories/" title="查看更多">
+      <i class="fas fa-angle-right"></i></a>
+          </div>
+          <ul class="card-category-list" id="aside-cat-list">
+            <li class="card-category-list-item "><a class="card-category-list-link" href="/categories/C/"><span class="card-category-list-name">C</span><span class="card-category-list-count">2</span></a></li><li class="card-category-list-item "><a class="card-category-list-link" href="/categories/C/"><span class="card-category-list-name">C++</span><span class="card-category-list-count">2</span></a></li><li class="card-category-list-item "><a class="card-category-list-link" href="/categories/Docker/"><span class="card-category-list-name">Docker</span><span class="card-category-list-count">11</span></a></li><li class="card-category-list-item "><a class="card-category-list-link" href="/categories/Factory-mode/"><span class="card-category-list-name">Factory mode</span><span class="card-category-list-count">1</span></a></li><li class="card-category-list-item "><a class="card-category-list-link" href="/categories/Git/"><span class="card-category-list-name">Git</span><span class="card-category-list-count">2</span></a></li><li class="card-category-list-item "><a class="card-category-list-link" href="/categories/Html/"><span class="card-category-list-name">Html</span><span class="card-category-list-count">1</span></a></li><li class="card-category-list-item "><a class="card-category-list-link" href="/categories/Java/"><span class="card-category-list-name">Java</span><span class="card-category-list-count">35</span></a></li><li class="card-category-list-item "><a class="card-category-list-link" href="/categories/Linux/"><span class="card-category-list-name">Linux</span><span class="card-category-list-count">1</span></a></li>
+          </ul></div><div class="card-widget card-tags"><div class="item-headline"><i class="fas fa-tags"></i><span>标签</span></div><div class="card-tag-cloud"><a href="/tags/Resume/" style="font-size: 1.1em; color: #999">Resume</a> <a href="/tags/C/" style="font-size: 1.15em; color: #999b9e">C</a> <a href="/tags/tomcat/" style="font-size: 1.25em; color: #999fa7">tomcat</a> <a href="/tags/%E6%95%B0%E6%8D%AE%E5%BA%93/" style="font-size: 1.45em; color: #99a7ba">数据库</a> <a href="/tags/Shell/" style="font-size: 1.15em; color: #999b9e">Shell</a> <a href="/tags/tools/" style="font-size: 1.15em; color: #999b9e">tools</a> <a href="/tags/Sql-Server/" style="font-size: 1.1em; color: #999">Sql Server</a> <a href="/tags/halo/" style="font-size: 1.15em; color: #999b9e">halo</a> <a href="/tags/webpack/" style="font-size: 1.35em; color: #99a3b1">webpack</a> <a href="/tags/%E6%9D%82%E8%B0%88/" style="font-size: 1.35em; color: #99a3b1">杂谈</a> <a href="/tags/Java/" style="font-size: 1.4em; color: #99a5b6">Java</a> <a href="/tags/%E5%8A%9B%E6%89%A3%E7%AC%94%E8%AE%B0/" style="font-size: 1.5em; color: #99a9bf">力扣笔记</a> <a href="/tags/Git/" style="font-size: 1.2em; color: #999da3">Git</a> <a href="/tags/%E5%B7%A5%E5%85%B7%E5%AD%A6%E4%B9%A0/" style="font-size: 1.15em; color: #999b9e">工具学习</a> <a href="/tags/nginx/" style="font-size: 1.2em; color: #999da3">nginx</a> <a href="/tags/MySQL/" style="font-size: 1.15em; color: #999b9e">MySQL</a> <a href="/tags/SSM%E6%95%B4%E5%90%88/" style="font-size: 1.1em; color: #999">SSM整合</a> <a href="/tags/%E8%BF%90%E7%BB%B4%E6%9D%82%E5%AD%A6/" style="font-size: 1.15em; color: #999b9e">运维杂学</a> <a href="/tags/SSM/" style="font-size: 1.1em; color: #999">SSM</a> <a href="/tags/Nginx/" style="font-size: 1.1em; color: #999">Nginx</a> <a href="/tags/%E9%94%99%E8%AF%AF%E9%9B%86%E9%94%A6/" style="font-size: 1.1em; color: #999">错误集锦</a> <a href="/tags/Docker/" style="font-size: 1.3em; color: #99a1ac">Docker</a> <a href="/tags/Factory-mode/" style="font-size: 1.1em; color: #999">Factory mode</a> <a href="/tags/SpringCloud/" style="font-size: 1.1em; color: #999">SpringCloud</a> <a href="/tags/Python/" style="font-size: 1.15em; color: #999b9e">Python</a> <a href="/tags/Windows/" style="font-size: 1.1em; color: #999">Windows</a> <a href="/tags/Linux/" style="font-size: 1.1em; color: #999">Linux</a> <a href="/tags/Spring/" style="font-size: 1.2em; color: #999da3">Spring</a> <a href="/tags/%E6%93%8D%E4%BD%9C%E7%B3%BB%E7%BB%9F/" style="font-size: 1.15em; color: #999b9e">操作系统</a> <a href="/tags/%E7%89%88%E6%9C%AC%E6%8E%A7%E5%88%B6/" style="font-size: 1.25em; color: #999fa7">版本控制</a> <a href="/tags/SpringBoot/" style="font-size: 1.15em; color: #999b9e">SpringBoot</a> <a href="/tags/Html/" style="font-size: 1.1em; color: #999">Html</a> <a href="/tags/Vue/" style="font-size: 1.1em; color: #999">Vue</a> <a href="/tags/%E8%AE%BE%E8%AE%A1%E6%A8%A1%E5%BC%8F/" style="font-size: 1.15em; color: #999b9e">设计模式</a> <a href="/tags/%E5%8D%9A%E5%AE%A2%E9%83%A8%E7%BD%B2/" style="font-size: 1.25em; color: #999fa7">博客部署</a> <a href="/tags/Mybatis/" style="font-size: 1.2em; color: #999da3">Mybatis</a> <a href="/tags/C/" style="font-size: 1.15em; color: #999b9e">C++</a> <a href="/tags/%E5%85%B6%E4%BB%96/" style="font-size: 1.2em; color: #999da3">其他</a></div></div><div class="card-widget card-archives">
+    <div class="item-headline">
+      <i class="fas fa-archive"></i>
+      <span>归档</span>
+      <a class="card-more-btn" href="/archives/"
+            title="查看更多">
+            <i class="fas fa-angle-right"></i>
+          </a>
+    </div>
+  
+    <ul class="card-archive-list">
+      
+        <li class="card-archive-list-item">
+          <a class="card-archive-list-link" href="/archives/2025/07/">
+            <span class="card-archive-list-date">
+              七月 2025
+            </span>
+            <span class="card-archive-list-count">246</span>
+          </a>
+        </li>
+      
+        <li class="card-archive-list-item">
+          <a class="card-archive-list-link" href="/archives/2024/11/">
+            <span class="card-archive-list-date">
+              十一月 2024
+            </span>
+            <span class="card-archive-list-count">1</span>
+          </a>
+        </li>
+      
+        <li class="card-archive-list-item">
+          <a class="card-archive-list-link" href="/archives/2024/10/">
+            <span class="card-archive-list-date">
+              十月 2024
+            </span>
+            <span class="card-archive-list-count">2</span>
+          </a>
+        </li>
+      
+        <li class="card-archive-list-item">
+          <a class="card-archive-list-link" href="/archives/2024/08/">
+            <span class="card-archive-list-date">
+              八月 2024
+            </span>
+            <span class="card-archive-list-count">1</span>
+          </a>
+        </li>
+      
+        <li class="card-archive-list-item">
+          <a class="card-archive-list-link" href="/archives/2024/06/">
+            <span class="card-archive-list-date">
+              六月 2024
+            </span>
+            <span class="card-archive-list-count">1</span>
+          </a>
+        </li>
+      
+        <li class="card-archive-list-item">
+          <a class="card-archive-list-link" href="/archives/2024/05/">
+            <span class="card-archive-list-date">
+              五月 2024
+            </span>
+            <span class="card-archive-list-count">1</span>
+          </a>
+        </li>
+      
+        <li class="card-archive-list-item">
+          <a class="card-archive-list-link" href="/archives/2024/04/">
+            <span class="card-archive-list-date">
+              四月 2024
+            </span>
+            <span class="card-archive-list-count">4</span>
+          </a>
+        </li>
+      
+        <li class="card-archive-list-item">
+          <a class="card-archive-list-link" href="/archives/2024/03/">
+            <span class="card-archive-list-date">
+              三月 2024
+            </span>
+            <span class="card-archive-list-count">1</span>
+          </a>
+        </li>
+      
+    </ul>
+  </div><div class="card-widget card-webinfo"><div class="item-headline"><i class="fas fa-chart-line"></i><span>网站信息</span></div><div class="webinfo"><div class="webinfo-item"><div class="item-name">文章数目 :</div><div class="item-count">264</div></div><div class="webinfo-item"><div class="item-name">本站访客数 :</div><div class="item-count" id="busuanzi_value_site_uv"><i class="fa-solid fa-spinner fa-spin"></i></div></div><div class="webinfo-item"><div class="item-name">本站总浏览量 :</div><div class="item-count" id="busuanzi_value_site_pv"><i class="fa-solid fa-spinner fa-spin"></i></div></div><div class="webinfo-item"><div class="item-name">最后更新时间 :</div><div class="item-count" id="last-push-date" data-lastPushDate="2025-07-13T15:45:57.160Z"><i class="fa-solid fa-spinner fa-spin"></i></div></div></div></div></div></div></main><footer id="footer"><div class="footer-other"><div class="footer-copyright"><span class="copyright">&copy;2020 - 2025 By 蓝桉</span><span class="framework-info"><span>框架 </span><a target="_blank" rel="noopener" href="https://hexo.io">Hexo 7.3.0</a><span class="footer-separator">|</span><span>主题 </span><a target="_blank" rel="noopener" href="https://github.com/jerryc127/hexo-theme-butterfly">Butterfly 5.4.2</a></span></div></div></footer></div><div id="rightside"><div id="rightside-config-hide"><button id="darkmode" type="button" title="日间和夜间模式切换"><i class="fas fa-adjust"></i></button><button id="hide-aside-btn" type="button" title="单栏和双栏切换"><i class="fas fa-arrows-alt-h"></i></button></div><div id="rightside-config-show"><button id="rightside-config" type="button" title="设置"><i class="fas fa-cog fa-spin"></i></button><button id="go-up" type="button" title="回到顶部"><span class="scroll-percent"></span><i class="fas fa-arrow-up"></i></button></div></div><div><script src="/js/utils.js"></script><script src="/js/main.js"></script><div class="js-pjax"></div><div class="aplayer no-destroy" data-id="8152976493" data-server="netease" data-type="playlist"   data-order="list" data-fixed="true" data-preload="auto" data-autoplay="false" data-mutex="true" ></div><script async src="//at.alicdn.com/t/c/font_4379924_273fk05h86zi.js"></script><link rel="stylesheet" href="https://cdn.jsdelivr.net/gh/l-lin/font-awesome-animation/dist/font-awesome-animation.min.css"  media="defer" onload="this.media='all'"><script async src="//npm.elemecdn.com/pace-js@1.2.4/pace.min.js"></script><script defer src="https://npm.elemecdn.com/jquery@latest/dist/jquery.min.js"></script><script defer data-pjax src="/js/cat/cat.js"></script><script async data-pjax src="/js/meting/music_lanan.min.js"></script><script defer type="text/javascript" src="https://cdn1.tianli0.top/npm/sweetalert2@8.19.0/dist/sweetalert2.all.js"></script><script defer src="/js/day/lunar.js"></script><script defer src="/js/day/day.js"></script><script async data-pjax src="//busuanzi.ibruce.info/busuanzi/2.3/busuanzi.pure.mini.js"></script></div><!-- hexo injector body_end start --><script data-pjax>
+  function butterfly_clock_anzhiyu_injector_config(){
+    var parent_div_git = document.getElementsByClassName('sticky_layout')[0];
+    var item_html = '<div class="card-widget card-clock"><div class="card-glass"><div class="card-background"><div class="card-content"><div id="hexo_electric_clock"><img class="entered loading" id="card-clock-loading" src="https://cdn.cbd.int/hexo-butterfly-clock-anzhiyu/lib/loading.gif" style="height: 120px; width: 100%;" data-ll-status="loading"/></div></div></div></div></div>';
+    console.log('已挂载butterfly_clock_anzhiyu')
+    if(parent_div_git) {
+      parent_div_git.insertAdjacentHTML("afterbegin",item_html)
+    }
+  }
+  var elist = 'null'.split(',');
+  var cpage = location.pathname;
+  var epage = '/';
+  var qweather_key = '10a7db1c41b6489db9c830c668a18304';
+  var gaud_map_key = '82a64bc994fb6494830f157f319f9f69';
+  var baidu_ak_key = 'undefined';
+  var flag = 0;
+  var clock_rectangle = '113.34532,23.15624';
+  var clock_default_rectangle_enable = 'false';
+
+  for (var i=0;i<elist.length;i++){
+    if (cpage.includes(elist[i])){
+      flag++;
+    }
+  }
+
+  if ((epage ==='all')&&(flag == 0)){
+    butterfly_clock_anzhiyu_injector_config();
+  }
+  else if (epage === cpage){
+    butterfly_clock_anzhiyu_injector_config();
+  }
+  </script><script src="https://widget.qweather.net/simple/static/js/he-simple-common.js?v=2.0"></script><script data-pjax src="https://cdn.cbd.int/hexo-butterfly-clock-anzhiyu/lib/clock.min.js"></script><script data-pjax>
+  function butterfly_footer_beautify_injector_config(){
+    var parent_div_git = document.getElementById('footer-wrap');
+    var item_html = '<div id="workboard"></div><p id="ghbdages"><a class="github-badge" target="_blank" href="https://hexo.io/" style="margin-inline:5px" data-title="博客框架为Hexo_v5.4.0" title=""><img src="https://img.shields.io/badge/Frame-Hexo-blue?style=flat&amp;logo=hexo" alt=""/></a><a class="github-badge" target="_blank" href="https://butterfly.js.org/" style="margin-inline:5px" data-title="主题版本Butterfly_v4.2.2" title=""><img src="https://img.shields.io/badge/Theme-Butterfly-6513df?style=flat&amp;logo=bitdefender" alt=""/></a><a class="github-badge" target="_blank" href="https://www.jsdelivr.com/" style="margin-inline:5px" data-title="本站使用JsDelivr为静态资源提供CDN加速" title=""><img src="https://img.shields.io/badge/CDN-jsDelivr-orange?style=flat&amp;logo=jsDelivr" alt=""/></a><a class="github-badge" target="_blank" href="https://github.com/" style="margin-inline:5px" data-title="本站项目由Github托管" title=""><img src="https://img.shields.io/badge/Source-Github-d021d6?style=flat&amp;logo=GitHub" alt=""/></a><a class="github-badge" target="_blank" href="http://creativecommons.org/licenses/by-nc-sa/4.0/" style="margin-inline:5px" data-title="本站采用知识共享署名-非商业性使用-相同方式共享4.0国际许可协议进行许可" title=""><img src="https://img.shields.io/badge/Copyright-BY--NC--SA%204.0-d42328?style=flat&amp;logo=Claris" alt=""/></a></p>';
+    console.log('已挂载butterfly_footer_beautify')
+    parent_div_git.insertAdjacentHTML("beforeend",item_html)
+    }
+  var elist = 'null'.split(',');
+  var cpage = location.pathname;
+  var epage = 'all';
+  var flag = 0;
+
+  for (var i=0;i<elist.length;i++){
+    if (cpage.includes(elist[i])){
+      flag++;
+    }
+  }
+
+  if ((epage ==='all')&&(flag == 0)){
+    butterfly_footer_beautify_injector_config();
+  }
+  else if (epage === cpage){
+    butterfly_footer_beautify_injector_config();
+  }
+  </script><script async src="/js/runtime/runtime.min.js"></script><script async src="/js/font/ali_font_all.js"></script><div class="js-pjax"><script async="async">var arr = document.getElementsByClassName('recent-post-item');
+for(var i = 0;i<arr.length;i++){
+    arr[i].classList.add('wow');
+    arr[i].classList.add('animate__zoomIn');
+    arr[i].setAttribute('data-wow-duration', '1.5s');
+    arr[i].setAttribute('data-wow-delay', '200ms');
+    arr[i].setAttribute('data-wow-offset', '30');
+    arr[i].setAttribute('data-wow-iteration', '1');
+  }</script><script async="async">var arr = document.getElementsByClassName('card-widget');
+for(var i = 0;i<arr.length;i++){
+    arr[i].classList.add('wow');
+    arr[i].classList.add('animate__zoomIn');
+    arr[i].setAttribute('data-wow-duration', '');
+    arr[i].setAttribute('data-wow-delay', '200ms');
+    arr[i].setAttribute('data-wow-offset', '');
+    arr[i].setAttribute('data-wow-iteration', '');
+  }</script><script async="async">var arr = document.getElementsByClassName('flink-list-card');
+for(var i = 0;i<arr.length;i++){
+    arr[i].classList.add('wow');
+    arr[i].classList.add('animate__flipInY');
+    arr[i].setAttribute('data-wow-duration', '3s');
+    arr[i].setAttribute('data-wow-delay', '');
+    arr[i].setAttribute('data-wow-offset', '');
+    arr[i].setAttribute('data-wow-iteration', '');
+  }</script><script async="async">var arr = document.getElementsByClassName('flink-list-card');
+for(var i = 0;i<arr.length;i++){
+    arr[i].classList.add('wow');
+    arr[i].classList.add('animate__animated');
+    arr[i].setAttribute('data-wow-duration', '3s');
+    arr[i].setAttribute('data-wow-delay', '');
+    arr[i].setAttribute('data-wow-offset', '');
+    arr[i].setAttribute('data-wow-iteration', '');
+  }</script><script async="async">var arr = document.getElementsByClassName('article-sort-item');
+for(var i = 0;i<arr.length;i++){
+    arr[i].classList.add('wow');
+    arr[i].classList.add('animate__slideInRight');
+    arr[i].setAttribute('data-wow-duration', '1.5s');
+    arr[i].setAttribute('data-wow-delay', '');
+    arr[i].setAttribute('data-wow-offset', '');
+    arr[i].setAttribute('data-wow-iteration', '');
+  }</script><script async="async">var arr = document.getElementsByClassName('site-card');
+for(var i = 0;i<arr.length;i++){
+    arr[i].classList.add('wow');
+    arr[i].classList.add('animate__flipInY');
+    arr[i].setAttribute('data-wow-duration', '3s');
+    arr[i].setAttribute('data-wow-delay', '');
+    arr[i].setAttribute('data-wow-offset', '');
+    arr[i].setAttribute('data-wow-iteration', '');
+  }</script><script async="async">var arr = document.getElementsByClassName('site-card');
+for(var i = 0;i<arr.length;i++){
+    arr[i].classList.add('wow');
+    arr[i].classList.add('animate__animated');
+    arr[i].setAttribute('data-wow-duration', '3s');
+    arr[i].setAttribute('data-wow-delay', '');
+    arr[i].setAttribute('data-wow-offset', '');
+    arr[i].setAttribute('data-wow-iteration', '');
+  }</script></div><script defer src="https://cdn.cbd.int/hexo-butterfly-wowjs/lib/wow.min.js"></script><script defer src="https://cdn.cbd.int/hexo-butterfly-wowjs/lib/wow_init.js"></script><!-- hexo injector body_end end --><script src="/live2dw/lib/L2Dwidget.min.js?094cbace49a39548bed64abff5988b05"></script><script>L2Dwidget.init({"pluginRootPath":"live2dw/","pluginJsPath":"lib/","pluginModelPath":"assets/","tagMode":false,"debug":false,"model":{"jsonPath":"/live2dw/assets/shizuku.model.json"},"display":{"position":"right","width":150,"height":300},"mobile":{"show":false},"log":false});</script></body></html>

@@ -1,0 +1,951 @@
+<!DOCTYPE html><html lang="zh-CN" data-theme="light"><head><meta charset="UTF-8"><meta http-equiv="X-UA-Compatible" content="IE=edge"><meta name="viewport" content="width=device-width, initial-scale=1.0,viewport-fit=cover"><title>MySQL-事务 | 蓝桉`Blog</title><meta name="author" content="蓝桉,kt_zxh@163.com"><meta name="copyright" content="蓝桉"><meta name="format-detection" content="telephone=no"><meta name="theme-color" content="#ffffff"><meta name="description" content="1. 事务(transaction)的概念在实际的业务开发中，有些业务操作要多次访问数据库。一个业务要发送多条 SQL 语句给数据库执行。需要将多次访问数据库的操作视为一个整体来执行，要么全部执行成功。要么全部执行失败。 事务就是数据库管理系统（DBMS）执行过程中的一个逻辑单位（不可再进行分割），由一个有限的数据库操作序列构成（多个 DML 语句，select 语句不包含事务），要不全部成功，要">
+<meta property="og:type" content="article">
+<meta property="og:title" content="MySQL-事务">
+<meta property="og:url" content="https://ktzxy.github.io/posts/954a7268.html">
+<meta property="og:site_name" content="蓝桉&#96;Blog">
+<meta property="og:description" content="1. 事务(transaction)的概念在实际的业务开发中，有些业务操作要多次访问数据库。一个业务要发送多条 SQL 语句给数据库执行。需要将多次访问数据库的操作视为一个整体来执行，要么全部执行成功。要么全部执行失败。 事务就是数据库管理系统（DBMS）执行过程中的一个逻辑单位（不可再进行分割），由一个有限的数据库操作序列构成（多个 DML 语句，select 语句不包含事务），要不全部成功，要">
+<meta property="og:locale" content="zh_CN">
+<meta property="og:image" content="https://ktzxy.github.io/bg/Image00015.webp">
+<meta property="article:published_time" content="2025-07-09T17:28:46.000Z">
+<meta property="article:modified_time" content="2025-07-13T15:45:18.450Z">
+<meta property="article:author" content="蓝桉">
+<meta property="article:tag" content="数据库">
+<meta name="twitter:card" content="summary">
+<meta name="twitter:image" content="https://ktzxy.github.io/bg/Image00015.webp"><script type="application/ld+json">{
+  "@context": "https://schema.org",
+  "@type": "BlogPosting",
+  "headline": "MySQL-事务",
+  "url": "https://ktzxy.github.io/posts/954a7268.html",
+  "image": "https://ktzxy.github.io/bg/Image00015.webp",
+  "datePublished": "2025-07-09T17:28:46.000Z",
+  "dateModified": "2025-07-13T15:45:18.450Z",
+  "author": [
+    {
+      "@type": "Person",
+      "name": "蓝桉",
+      "url": "https://ktzxy.github.io"
+    }
+  ]
+}</script><link rel="shortcut icon" href="/img/favicon.png"><link rel="canonical" href="https://ktzxy.github.io/posts/954a7268.html"><link rel="preconnect" href="//cdn.jsdelivr.net"/><link rel="preconnect" href="//busuanzi.ibruce.info"/><link rel="stylesheet" href="/css/index.css"><link rel="stylesheet" href="https://cdn.jsdelivr.net/npm/@fortawesome/fontawesome-free/css/all.min.css"><script>
+    (() => {
+      
+    const saveToLocal = {
+      set: (key, value, ttl) => {
+        if (!ttl) return
+        const expiry = Date.now() + ttl * 86400000
+        localStorage.setItem(key, JSON.stringify({ value, expiry }))
+      },
+      get: key => {
+        const itemStr = localStorage.getItem(key)
+        if (!itemStr) return undefined
+        const { value, expiry } = JSON.parse(itemStr)
+        if (Date.now() > expiry) {
+          localStorage.removeItem(key)
+          return undefined
+        }
+        return value
+      }
+    }
+
+    window.btf = {
+      saveToLocal,
+      getScript: (url, attr = {}) => new Promise((resolve, reject) => {
+        const script = document.createElement('script')
+        script.src = url
+        script.async = true
+        Object.entries(attr).forEach(([key, val]) => script.setAttribute(key, val))
+        script.onload = script.onreadystatechange = () => {
+          if (!script.readyState || /loaded|complete/.test(script.readyState)) resolve()
+        }
+        script.onerror = reject
+        document.head.appendChild(script)
+      }),
+      getCSS: (url, id) => new Promise((resolve, reject) => {
+        const link = document.createElement('link')
+        link.rel = 'stylesheet'
+        link.href = url
+        if (id) link.id = id
+        link.onload = link.onreadystatechange = () => {
+          if (!link.readyState || /loaded|complete/.test(link.readyState)) resolve()
+        }
+        link.onerror = reject
+        document.head.appendChild(link)
+      }),
+      addGlobalFn: (key, fn, name = false, parent = window) => {
+        if (!false && key.startsWith('pjax')) return
+        const globalFn = parent.globalFn || {}
+        globalFn[key] = globalFn[key] || {}
+        globalFn[key][name || Object.keys(globalFn[key]).length] = fn
+        parent.globalFn = globalFn
+      }
+    }
+  
+      
+      const activateDarkMode = () => {
+        document.documentElement.setAttribute('data-theme', 'dark')
+        if (document.querySelector('meta[name="theme-color"]') !== null) {
+          document.querySelector('meta[name="theme-color"]').setAttribute('content', '#0d0d0d')
+        }
+      }
+      const activateLightMode = () => {
+        document.documentElement.setAttribute('data-theme', 'light')
+        if (document.querySelector('meta[name="theme-color"]') !== null) {
+          document.querySelector('meta[name="theme-color"]').setAttribute('content', '#ffffff')
+        }
+      }
+
+      btf.activateDarkMode = activateDarkMode
+      btf.activateLightMode = activateLightMode
+
+      const theme = saveToLocal.get('theme')
+    
+          theme === 'dark' ? activateDarkMode() : theme === 'light' ? activateLightMode() : null
+        
+      
+      const asideStatus = saveToLocal.get('aside-status')
+      if (asideStatus !== undefined) {
+        document.documentElement.classList.toggle('hide-aside', asideStatus === 'hide')
+      }
+    
+      
+    const detectApple = () => {
+      if (/iPad|iPhone|iPod|Macintosh/.test(navigator.userAgent)) {
+        document.documentElement.classList.add('apple')
+      }
+    }
+    detectApple()
+  
+    })()
+  </script><script>const GLOBAL_CONFIG = {
+  root: '/',
+  algolia: undefined,
+  localSearch: undefined,
+  translate: undefined,
+  highlight: {"plugin":"highlight.js","highlightCopy":true,"highlightLang":true,"highlightHeightLimit":false,"highlightFullpage":false,"highlightMacStyle":false},
+  copy: {
+    success: '复制成功',
+    error: '复制失败',
+    noSupport: '浏览器不支持'
+  },
+  relativeDate: {
+    homepage: false,
+    post: false
+  },
+  runtime: '',
+  dateSuffix: {
+    just: '刚刚',
+    min: '分钟前',
+    hour: '小时前',
+    day: '天前',
+    month: '个月前'
+  },
+  copyright: undefined,
+  lightbox: 'null',
+  Snackbar: undefined,
+  infinitegrid: {
+    js: 'https://cdn.jsdelivr.net/npm/@egjs/infinitegrid/dist/infinitegrid.min.js',
+    buttonText: '加载更多'
+  },
+  isPhotoFigcaption: false,
+  islazyloadPlugin: false,
+  isAnchor: false,
+  percent: {
+    toc: true,
+    rightside: false,
+  },
+  autoDarkmode: false
+}</script><script id="config-diff">var GLOBAL_CONFIG_SITE = {
+  title: 'MySQL-事务',
+  isHighlightShrink: false,
+  isToc: true,
+  pageType: 'post'
+}</script><link rel="stylesheet" href="/css/custom.css" media="defer" onload="this.media='all'"><link rel="stylesheet" href="//at.alicdn.com/t/c/font_4379924_273fk05h86zi.css" media="defer" onload="this.media='all'"><link rel="stylesheet" href="/css/progress_bar/progress_bar.css" media="defer" onload="this.media='all'"><link rel="stylesheet" href="/css/windmill/windmill.css"><link rel="stylesheet" href="/css/cat.css"><link rel="stylesheet" href="/css/meting/music_lanan.css"><div id="myscoll"></div><!-- hexo injector head_end start --><link rel="stylesheet" href="https://cdn.jsdelivr.net/gh/Zfour/Butterfly-double-row-display@1.00/cardlistpost.min.css"/>
+<style>#recent-posts > .recent-post-item >.recent-post-info > .article-meta-wrap > .tags:before {content:"\A";
+  white-space: pre;}#recent-posts > .recent-post-item >.recent-post-info > .article-meta-wrap > .tags > .article-meta__separator{display:none}</style>
+<link rel="stylesheet" href="https://cdn.cbd.int/hexo-butterfly-clock-anzhiyu/lib/clock.min.css" /><link rel="stylesheet" href="/css/runtime/runtime.min.css" media="print" onload="this.media='all'"><link rel="stylesheet" href="https://cdn.cbd.int/hexo-butterfly-tag-plugins-plus@latest/lib/assets/font-awesome-animation.min.css" media="defer" onload="this.media='all'"><link rel="stylesheet" href="https://npm.elemecdn.com/hexo-butterfly-tag-plugins-plus@latest/lib/tag_plugins.css" media="defer" onload="this.media='all'"><script src="https://npm.elemecdn.com/hexo-butterfly-tag-plugins-plus@latest/lib/assets/carousel-touch.js"></script><link rel="stylesheet" href="https://cdn.cbd.int/hexo-butterfly-wowjs/lib/animate.min.css" media="print" onload="this.media='screen'"><!-- hexo injector head_end end --><meta name="generator" content="Hexo 7.3.0"><link rel="alternate" href="/atom.xml" title="蓝桉`Blog" type="application/atom+xml">
+</head><body><div id="loading-box"><div class="loading-left-bg"></div><div class="loading-right-bg"></div><div class="spinner-box"><div class="configure-border-1"><div class="configure-core"></div></div><div class="configure-border-2"><div class="configure-core"></div></div><div class="loading-word">加载中...</div></div></div><script>(()=>{
+  const $loadingBox = document.getElementById('loading-box')
+  const $body = document.body
+  const preloader = {
+    endLoading: () => {
+      $body.style.overflow = ''
+      $loadingBox.classList.add('loaded')
+    },
+    initLoading: () => {
+      $body.style.overflow = 'hidden'
+      $loadingBox.classList.remove('loaded')
+    }
+  }
+
+  preloader.initLoading()
+  window.addEventListener('load', preloader.endLoading)
+
+  if (false) {
+    btf.addGlobalFn('pjaxSend', preloader.initLoading, 'preloader_init')
+    btf.addGlobalFn('pjaxComplete', preloader.endLoading, 'preloader_end')
+  }
+})()</script><div id="web_bg" style="background-image: url(/img/bg.webp);"></div><div id="an_music_bg"></div><div id="sidebar"><div id="menu-mask"></div><div id="sidebar-menus"><div class="avatar-img text-center"><img src="/img/avatar.webp" onerror="this.onerror=null;this.src='/img/friend_404.gif'" alt="avatar"/></div><div class="site-data text-center"><a href="/archives/"><div class="headline">文章</div><div class="length-num">264</div></a><a href="/tags/"><div class="headline">标签</div><div class="length-num">38</div></a><a href="/categories/"><div class="headline">分类</div><div class="length-num">37</div></a></div><div class="menus_items"><div class="menus_item"><a class="site-page faa-parent animated-hover" href="/"><i class="fa-fw icon-zhuye-"></i><svg class="icon faa-tada" aria-hidden="true"><use xlink:href="#icon-zhuye-"></use></svg><span> 首页</span></a></div><div class="menus_item"><a class="site-page faa-parent animated-hover" href="/archives/"><i class="fa-fw icon-shijianzhou"></i><svg class="icon faa-tada" aria-hidden="true"><use xlink:href="#icon-shijianzhou"></use></svg><span> 时间轴</span></a></div><div class="menus_item"><a class="site-page faa-parent animated-hover" href="/essay/"><i class="fa-fw icon-xiaoxi"></i><svg class="icon faa-tada" aria-hidden="true"><use xlink:href="#icon-xiaoxi"></use></svg><span> 闲言碎语</span></a></div><div class="menus_item"><a class="site-page faa-parent animated-hover" href="/music/"><i class="fa-fw icon-music"></i><svg class="icon faa-tada" aria-hidden="true"><use xlink:href="#icon-music"></use></svg><span> 音乐馆</span></a></div><div class="menus_item"><a class="site-page faa-parent animated-hover" href="/categories/"><i class="fa-fw icon-fenlei"></i><svg class="icon faa-tada" aria-hidden="true"><use xlink:href="#icon-fenlei"></use></svg><span> 分类</span></a></div><div class="menus_item"><a class="site-page faa-parent animated-hover" href="/fcircle/"><i class="fa-fw icon-pengyouquan"></i><svg class="icon faa-tada" aria-hidden="true"><use xlink:href="#icon-pengyouquan"></use></svg><span> 朋友圈</span></a></div><div class="menus_item"><a class="site-page faa-parent animated-hover" href="/comments/"><i class="fa-fw icon-xinfeng"></i><svg class="icon faa-tada" aria-hidden="true"><use xlink:href="#icon-xinfeng"></use></svg><span> 留言板</span></a></div><div class="menus_item"><a class="site-page faa-parent animated-hover" href="/link/"><i class="fa-fw icon-lianjie"></i><svg class="icon faa-tada" aria-hidden="true"><use xlink:href="#icon-lianjie"></use></svg><span> 友人帐</span></a></div><div class="menus_item"><a class="site-page faa-parent animated-hover" href="javascript:randomPost();"><i class="fa-fw icon-wodezhuifan"></i><svg class="icon faa-tada" aria-hidden="true"><use xlink:href="#icon-wodezhuifan"></use></svg><span> 随机访问</span></a></div><div class="menus_item"><a class="site-page faa-parent animated-hover" href="/about/"><i class="fa-fw icon-guanyuwomen2"></i><svg class="icon faa-tada" aria-hidden="true"><use xlink:href="#icon-guanyuwomen2"></use></svg><span> 关于</span></a></div></div></div></div><div class="post" id="body-wrap"><header class="post-bg" id="page-header" style="background-image: url(/bg/Image00015.webp);"><nav id="nav"><span id="blog-info"><a class="nav-site-title" href="/"><span class="site-name">蓝桉`Blog</span></a><a class="nav-page-title" href="/"><span class="site-name">MySQL-事务</span><span class="site-name"><i class="fa-solid fa-circle-arrow-left"></i><span>  返回首页</span></span></a></span><div id="menus"><div class="menus_items"><div class="menus_item"><a class="site-page faa-parent animated-hover" href="/"><i class="fa-fw icon-zhuye-"></i><svg class="icon faa-tada" aria-hidden="true"><use xlink:href="#icon-zhuye-"></use></svg><span> 首页</span></a></div><div class="menus_item"><a class="site-page faa-parent animated-hover" href="/archives/"><i class="fa-fw icon-shijianzhou"></i><svg class="icon faa-tada" aria-hidden="true"><use xlink:href="#icon-shijianzhou"></use></svg><span> 时间轴</span></a></div><div class="menus_item"><a class="site-page faa-parent animated-hover" href="/essay/"><i class="fa-fw icon-xiaoxi"></i><svg class="icon faa-tada" aria-hidden="true"><use xlink:href="#icon-xiaoxi"></use></svg><span> 闲言碎语</span></a></div><div class="menus_item"><a class="site-page faa-parent animated-hover" href="/music/"><i class="fa-fw icon-music"></i><svg class="icon faa-tada" aria-hidden="true"><use xlink:href="#icon-music"></use></svg><span> 音乐馆</span></a></div><div class="menus_item"><a class="site-page faa-parent animated-hover" href="/categories/"><i class="fa-fw icon-fenlei"></i><svg class="icon faa-tada" aria-hidden="true"><use xlink:href="#icon-fenlei"></use></svg><span> 分类</span></a></div><div class="menus_item"><a class="site-page faa-parent animated-hover" href="/fcircle/"><i class="fa-fw icon-pengyouquan"></i><svg class="icon faa-tada" aria-hidden="true"><use xlink:href="#icon-pengyouquan"></use></svg><span> 朋友圈</span></a></div><div class="menus_item"><a class="site-page faa-parent animated-hover" href="/comments/"><i class="fa-fw icon-xinfeng"></i><svg class="icon faa-tada" aria-hidden="true"><use xlink:href="#icon-xinfeng"></use></svg><span> 留言板</span></a></div><div class="menus_item"><a class="site-page faa-parent animated-hover" href="/link/"><i class="fa-fw icon-lianjie"></i><svg class="icon faa-tada" aria-hidden="true"><use xlink:href="#icon-lianjie"></use></svg><span> 友人帐</span></a></div><div class="menus_item"><a class="site-page faa-parent animated-hover" href="javascript:randomPost();"><i class="fa-fw icon-wodezhuifan"></i><svg class="icon faa-tada" aria-hidden="true"><use xlink:href="#icon-wodezhuifan"></use></svg><span> 随机访问</span></a></div><div class="menus_item"><a class="site-page faa-parent animated-hover" href="/about/"><i class="fa-fw icon-guanyuwomen2"></i><svg class="icon faa-tada" aria-hidden="true"><use xlink:href="#icon-guanyuwomen2"></use></svg><span> 关于</span></a></div></div><div id="toggle-menu"><span class="site-page"><i class="fas fa-bars fa-fw"></i></span></div></div></nav><div id="post-info"><h1 class="post-title">MySQL-事务</h1><div id="post-meta"><div class="meta-firstline"><span class="post-meta-date"><i class="far fa-calendar-alt fa-fw post-meta-icon"></i><span class="post-meta-label">发表于</span><time class="post-meta-date-created" datetime="2025-07-09T17:28:46.000Z" title="发表于 2025-07-09 17:28:46">2025-07-09</time><span class="post-meta-separator">|</span><i class="fas fa-history fa-fw post-meta-icon"></i><span class="post-meta-label">更新于</span><time class="post-meta-date-updated" datetime="2025-07-13T15:45:18.450Z" title="更新于 2025-07-13 15:45:18">2025-07-13</time></span><span class="post-meta-categories"><span class="post-meta-separator">|</span><i class="fas fa-inbox fa-fw post-meta-icon"></i><a class="post-meta-categories" href="/categories/%E6%95%B0%E6%8D%AE%E5%BA%93/">数据库</a></span></div><div class="meta-secondline"><span class="post-meta-separator">|</span><span class="post-meta-pv-cv" id="" data-flag-title=""><i class="far fa-eye fa-fw post-meta-icon"></i><span class="post-meta-label">浏览量:</span><span id="busuanzi_value_page_pv"><i class="fa-solid fa-spinner fa-spin"></i></span></span></div></div></div></header><main class="layout" id="content-inner"><div id="post"><article class="container post-content" id="article-container"><h2 id="1-事务-transaction-的概念"><a href="#1-事务-transaction-的概念" class="headerlink" title="1. 事务(transaction)的概念"></a>1. 事务(transaction)的概念</h2><p>在实际的业务开发中，有些业务操作要多次访问数据库。一个业务要发送多条 SQL 语句给数据库执行。需要将多次访问数据库的操作视为一个整体来执行，要么全部执行成功。要么全部执行失败。</p>
+<p>事务就是数据库管理系统（DBMS）执行过程中的一个逻辑单位（不可再进行分割），由一个有限的数据库操作序列构成（多个 DML 语句，<code>select</code> 语句不包含事务），要不全部成功，要不全部不成功。如果其中有一条 SQL 语句执行失败，那么之前已经成功的SQL语句都要进行事务的回滚（撤销）。</p>
+<h2 id="2-事务特性"><a href="#2-事务特性" class="headerlink" title="2. 事务特性"></a>2. 事务特性</h2><p>事务应该具有4个属性：原子性、一致性、隔离性、持久性。这四个属性通常称为 ACID 特性。</p>
+<p><img src="https://gitee.com/Bluetom/img2/raw/master/img20240905/202410251024579.png" alt=""></p>
+<h3 id="2-1-原子性（Atomicity）"><a href="#2-1-原子性（Atomicity）" class="headerlink" title="2.1. 原子性（Atomicity）"></a>2.1. 原子性（Atomicity）</h3><p>原子性：事务操作中的所有SQL语句不可再分割，要么全部执行成功，要么全部执行失败。对于一个事务来说，不能只执行其中的一部分操作。</p>
+<figure class="highlight plaintext"><table><tr><td class="gutter"><pre><span class="line">1</span><br><span class="line">2</span><br><span class="line">3</span><br><span class="line">4</span><br></pre></td><td class="code"><pre><span class="line">示例：</span><br><span class="line">A卡扣除500元</span><br><span class="line">B卡增加500元</span><br><span class="line">在整个事务操作中，A卡与B卡要同时成功或者同时失败，不能只出现扣除或者只出现增加的情况</span><br></pre></td></tr></table></figure>
+<h3 id="2-2-一致性（Consistency）"><a href="#2-2-一致性（Consistency）" class="headerlink" title="2.2. 一致性（Consistency）"></a>2.2. 一致性（Consistency）</h3><p>一致性：事务将数据库从一种一致性转换到另外一种一致性状态，事务开始之前和事务结束之后的数据要保持一致。</p>
+<figure class="highlight plaintext"><table><tr><td class="gutter"><pre><span class="line">1</span><br><span class="line">2</span><br><span class="line">3</span><br><span class="line">4</span><br></pre></td><td class="code"><pre><span class="line">示例：</span><br><span class="line">A卡扣除500元</span><br><span class="line">B卡增加500元</span><br><span class="line">在整个事务操作前后，A卡与B卡的总和前后一致</span><br></pre></td></tr></table></figure>
+<h3 id="2-3-隔离性（Isolation）"><a href="#2-3-隔离性（Isolation）" class="headerlink" title="2.3. 隔离性（Isolation）"></a>2.3. 隔离性（Isolation）</h3><p>多个事务的操作是互不干扰的，一个事务的执行不能被其他事务干扰。即一个事务内部的操作及使用的数据对并发的其他事务是隔离的，并发执行的各个事务之间不能互相干扰。</p>
+<figure class="highlight plaintext"><table><tr><td class="gutter"><pre><span class="line">1</span><br><span class="line">2</span><br><span class="line">3</span><br><span class="line">4</span><br><span class="line">5</span><br><span class="line">6</span><br><span class="line">7</span><br></pre></td><td class="code"><pre><span class="line">示例：</span><br><span class="line">A卡余额为1200元、B卡余额为300元</span><br><span class="line">A卡两次转入B卡，分别都是500元</span><br><span class="line">从理论上完成以上两次转账后，A卡余额为200元，B卡的余额为1300元</span><br><span class="line"></span><br><span class="line">如果将A卡两次转入B卡的操作分别称为T1和T2，在现实世界中T1和T2应该是没有关系的两次操作，但在真实的数据库操作中，可能会出现T1与T2的操作是交替执行的。</span><br><span class="line">此时，T1与T2都先读取了A卡的余额，然后T1基于原来A卡的余额去减操作并分别更新A、B卡，而T2因为某些原因，读取余额后等待了一段时间才继续操作，此时T2的减操作还是基于A卡最原来的余额。所以两次减操作后，其实相当于A卡只减了一次，而B卡却加了两次。</span><br></pre></td></tr></table></figure>
+<p><img src="https://gitee.com/Bluetom/img2/raw/master/img20240905/202410251024580.jpg" alt=""></p>
+<blockquote>
+<p>对于现实世界中状态转换对应的某些数据库操作来说，不仅要保证这些操作以原子性的方式执行完成，而且要保证其它的状态转换不会影响到本次状态转换，这个规则被称之为隔离性。</p>
+</blockquote>
+<h3 id="2-4-持久性（Durability）"><a href="#2-4-持久性（Durability）" class="headerlink" title="2.4. 持久性（Durability）"></a>2.4. 持久性（Durability）</h3><p>事务一旦提交，则其所做的修改就会永久保存到数据库中，是不可逆的。此时即使系统崩溃，已经提交的修改数据也不会丢失。</p>
+<h2 id="3-事务隔离级别"><a href="#3-事务隔离级别" class="headerlink" title="3. 事务隔离级别"></a>3. 事务隔离级别</h2><h3 id="3-1-事务并发引发的问题"><a href="#3-1-事务并发引发的问题" class="headerlink" title="3.1. 事务并发引发的问题"></a>3.1. 事务并发引发的问题</h3><p>MySQL 是一个客户端/服务器架构的软件，对于同一个服务器来说，可以有若干个客户端与之连接，每个客户端与服务器连接上之后，就可以称之为一个会话（Session）。每个客户端都可以在自己的会话中向服务器发出请求语句，一个请求语句可能是某个事务的一部分，也就是对于服务器来说可能同时处理多个事务。</p>
+<p>事务有一个称之为隔离性的特性，理论上在某个事务对某个数据进行访问时，其他事务应该进行排队，当该事务提交之后，其他事务才可以继续访问这个数据，这样的话并发事务的执行就变成了串行化执行。但是对串行化执行性能影响太大，既想保持事务的一定的隔离性，又想让服务器在处理访问同一数据的多个事务时性能尽量高些，当舍弃隔离性的时候，可能会带来以下一些数据问题。</p>
+<h4 id="3-1-1-脏读（Dirty-Read）"><a href="#3-1-1-脏读（Dirty-Read）" class="headerlink" title="3.1.1. 脏读（Dirty Read）"></a>3.1.1. 脏读（Dirty Read）</h4><p>一个事务读取到了另一个事务中修改但未提交的数据。</p>
+<p><img src="https://gitee.com/Bluetom/img2/raw/master/img20240905/202410251024581.png" alt=""></p>
+<h4 id="3-1-2-不可重复读（Non-Repeatable-Read）"><a href="#3-1-2-不可重复读（Non-Repeatable-Read）" class="headerlink" title="3.1.2. 不可重复读（Non-Repeatable Read）"></a>3.1.2. 不可重复读（Non-Repeatable Read）</h4><p>一个事务多次读取的数据内容不一致，称之为不可重复读。通常要求是同一个事务中多次读取时数据，结果都应该是一致的。一般是由于另一个事务 <code>update</code> 语句修改数据后并提交后引发。</p>
+<p><img src="https://gitee.com/Bluetom/img2/raw/master/img20240905/202410251024582.png" alt=""></p>
+<h4 id="3-1-3-幻读（Phantom）"><a href="#3-1-3-幻读（Phantom）" class="headerlink" title="3.1.3. 幻读（Phantom）"></a>3.1.3. 幻读（Phantom）</h4><p>一个事务中多次查询的数据的记录数不一致。要求在一个事务多次读取的数据的数量是一致的，一般是由另一个事务的 <code>insert</code> 或 <code>delete</code> 引发。</p>
+<p><img src="https://gitee.com/Bluetom/img2/raw/master/img20240905/202410251024583.png" alt=""></p>
+<blockquote>
+<p>有一点值得注意：如果事务2是删除了符合的记录而不是插入新记录，事务1之后再根据相同的条件读取的记录变少了，这种现象算不算幻读呢？</p>
+<p>在 SQL92 标准中，这个上面的示例是属于幻读，但在 MySQL 中规定这种现象不属于“幻读”，而是被归纳到“不可重复读”，幻读强调的是一个事务按照某个相同条件多次读取记录时，后读取时读到了之前没有读到的记录。</p>
+</blockquote>
+<h4 id="3-1-4-更新丢失-Lost-Update-或脏写"><a href="#3-1-4-更新丢失-Lost-Update-或脏写" class="headerlink" title="3.1.4. 更新丢失(Lost Update)或脏写"></a>3.1.4. 更新丢失(Lost Update)或脏写</h4><p>当两个或多个事务选择同一行数据修改，有可能发生某个事务更新丢失问题，即最后的更新覆盖了由其他事务所做的更新。</p>
+<p>例如：事务1读取某表中的数据<code>A=20</code>，事务2也读取<code>A=20</code>，事务1修改<code>A=A-1</code>，事务2也修改<code>A=A-1</code>，最终结果<code>A=19</code>，事务1的修改被丢失。</p>
+<h4 id="3-1-5-不可重复读与幻读的区别"><a href="#3-1-5-不可重复读与幻读的区别" class="headerlink" title="3.1.5. 不可重复读与幻读的区别"></a>3.1.5. 不可重复读与幻读的区别</h4><p>不可重复读与幻读的区别在于：</p>
+<ul>
+<li>不可重复读是指在同一个事务内，多次读取同一条数据的结果不一样。一般由于另一个事务 <code>update</code> 语句修改数据后并提交后引发。</li>
+<li>而幻读是指在同一个事务内，多次读取同一个范围内的数据，结果不一样。一般是由另一个事务的 <code>insert</code> 或 <code>delete</code> 引发。</li>
+</ul>
+<h3 id="3-2-隔离级别的作用"><a href="#3-2-隔离级别的作用" class="headerlink" title="3.2. 隔离级别的作用"></a>3.2. 隔离级别的作用</h3><p>隔离级别就用来解决并发访问存在的问题。隔离级别越低，越严重的问题就越可能发生。在 SQL 标准中设立了4个隔离级别。</p>
+<blockquote>
+<p>并发事务问题按严重性排序：<code>脏读 &gt; 不可重复读 &gt; 幻读</code></p>
+</blockquote>
+<h4 id="3-2-1-常用数据库支持与默认的隔离级别"><a href="#3-2-1-常用数据库支持与默认的隔离级别" class="headerlink" title="3.2.1. 常用数据库支持与默认的隔离级别"></a>3.2.1. 常用数据库支持与默认的隔离级别</h4><p>SQL92 标准的隔离级别分类表如下：</p>
+<div class="table-container">
+<table>
+<thead>
+<tr>
+<th style="text-align:center">级别</th>
+<th>名字</th>
+<th>隔离级别</th>
+<th style="text-align:center">脏读</th>
+<th style="text-align:center">不可重复读</th>
+<th style="text-align:center">幻读</th>
+<th>概述</th>
+</tr>
+</thead>
+<tbody>
+<tr>
+<td style="text-align:center">1</td>
+<td>读未提交</td>
+<td>read uncommitted</td>
+<td style="text-align:center">√</td>
+<td style="text-align:center">√</td>
+<td style="text-align:center">√</td>
+<td>一个事务读取到了另一个事务未提交的数据</td>
+</tr>
+<tr>
+<td style="text-align:center">2</td>
+<td>读已提交</td>
+<td>read committed</td>
+<td style="text-align:center">×</td>
+<td style="text-align:center">√</td>
+<td style="text-align:center">√</td>
+<td>一个事务读取到另一个事务已经提交的数据</td>
+</tr>
+<tr>
+<td style="text-align:center">3</td>
+<td>可重复读</td>
+<td>repeatable read</td>
+<td style="text-align:center">×</td>
+<td style="text-align:center">×</td>
+<td style="text-align:center">√</td>
+<td>同一个事务中多次读取数据内容一致</td>
+</tr>
+<tr>
+<td style="text-align:center">4</td>
+<td>串行化</td>
+<td>serializable</td>
+<td style="text-align:center">×</td>
+<td style="text-align:center">×</td>
+<td style="text-align:center">×</td>
+<td>同时只能有一个事务执行。相当于单线程</td>
+</tr>
+</tbody>
+</table>
+</div>
+<blockquote>
+<p>注：√ 代表存在的问题。<strong>一般只要求使用到级别3可重复读即可</strong>。<font color=red><strong>MySQL 的隔离级别与 SQL92 标准有点差别，MySQL 的可重复读级别基本上已经解决了“幻读”的问题</strong></font></p>
+</blockquote>
+<p>不同的数据库厂商对 SQL 标准中规定的四种隔离级别支持不一样。</p>
+<ul>
+<li>Oracle 就只支持 READ COMMITTED 和 SERIALIZABLE 隔离级别。</li>
+<li>MySQL 虽然支持 4 种隔离级别，但与 SQL 标准中所规定的各级隔离级别允许发生的问题却有些出入，MySQL 在 REPEATABLE READ 隔离级别下，是可以禁止幻读问题的发生的。</li>
+</ul>
+<p>不同数据库厂商默认的隔离级别</p>
+<ul>
+<li>MySQL: 可重复读（REPEATABLE READ）</li>
+<li>Qracle、SQL Server: 读已提交（READ COMMITTED）</li>
+</ul>
+<h4 id="3-2-2-设置事务的隔离级别"><a href="#3-2-2-设置事务的隔离级别" class="headerlink" title="3.2.2. 设置事务的隔离级别"></a>3.2.2. 设置事务的隔离级别</h4><p>修改事务的隔离级别的命令：</p>
+<figure class="highlight sql"><table><tr><td class="gutter"><pre><span class="line">1</span><br></pre></td><td class="code"><pre><span class="line"><span class="keyword">SET</span> [<span class="keyword">GLOBAL</span><span class="operator">|</span>SESSION] TRANSACTION ISOLATION LEVEL level;</span><br></pre></td></tr></table></figure>
+<p>其中的<code>level</code>可选值有4个：<code>REPEATABLE READ</code> | <code>READ COMMITTED</code> | <code>READ UNCOMMITTED</code> | <code>SERIALIZABLE</code></p>
+<p>设置事务的隔离级别的语句中，在<code>SET</code>关键字后可以放置<code>GLOBAL</code>关键字、<code>SESSION</code>关键字或者什么都不放，这样会对不同范围的事务产生不同的影响，具体如下：</p>
+<ul>
+<li><strong>使用 <code>GLOBAL</code> 关键字（在全局范围影响）</strong>：</li>
+</ul>
+<figure class="highlight sql"><table><tr><td class="gutter"><pre><span class="line">1</span><br><span class="line">2</span><br></pre></td><td class="code"><pre><span class="line"><span class="comment">-- 示例：只对执行完该语句之后产生的会话起作用。当前已经存在的会话无效。</span></span><br><span class="line"><span class="keyword">SET</span> <span class="keyword">GLOBAL</span> TRANSACTION ISOLATION LEVEL SERIALIZABLE;</span><br></pre></td></tr></table></figure>
+<ul>
+<li><strong>使用 <code>SESSION</code> 关键字（在会话范围影响）</strong>：</li>
+</ul>
+<figure class="highlight sql"><table><tr><td class="gutter"><pre><span class="line">1</span><br><span class="line">2</span><br></pre></td><td class="code"><pre><span class="line"><span class="comment">-- 对当前会话的所有后续的事务有效。该语句可以在已经开启的事务中间执行，但不会影响当前正在执行的事务。如果在事务之间执行，则对后续的事务有效。</span></span><br><span class="line"><span class="keyword">SET</span> SESSION TRANSACTION ISOLATION LEVEL SERIALIZABLE;</span><br></pre></td></tr></table></figure>
+<ul>
+<li><strong>上述两个关键字都不用（只对执行语句后的下一个事务产生影响）</strong>：</li>
+</ul>
+<figure class="highlight sql"><table><tr><td class="gutter"><pre><span class="line">1</span><br><span class="line">2</span><br></pre></td><td class="code"><pre><span class="line"><span class="comment">-- 只对当前会话中下一个即将开启的事务有效。下一个事务执行完后，后续事务将恢复到之前的隔离级别。该语句不能在已经开启的事务中间执行，会报错的。</span></span><br><span class="line"><span class="keyword">SET</span> TRANSACTION ISOLATION LEVEL SERIALIZABLE;</span><br></pre></td></tr></table></figure>
+<ul>
+<li><strong>在服务器启动时想改变事务的默认隔离级别，修改启动参数<code>transaction-isolation</code>的值。</strong></li>
+</ul>
+<figure class="highlight bash"><table><tr><td class="gutter"><pre><span class="line">1</span><br><span class="line">2</span><br></pre></td><td class="code"><pre><span class="line"><span class="comment"># 默认隔离级别就从原来的REPEATABLE READ 变成了 SERIALIZABLE。</span></span><br><span class="line">--transaction-isolation=SERIALIZABLE</span><br></pre></td></tr></table></figure>
+<h4 id="3-2-3-MySQL数据库查看当前事务的隔离级别的命令"><a href="#3-2-3-MySQL数据库查看当前事务的隔离级别的命令" class="headerlink" title="3.2.3. MySQL数据库查看当前事务的隔离级别的命令"></a>3.2.3. MySQL数据库查看当前事务的隔离级别的命令</h4><p>想要查看当前会话默认的隔离级别可以通过查看系统变量<code>transaction_isolation</code>的值</p>
+<figure class="highlight sql"><table><tr><td class="gutter"><pre><span class="line">1</span><br><span class="line">2</span><br><span class="line">3</span><br><span class="line">4</span><br><span class="line">5</span><br><span class="line">6</span><br><span class="line">7</span><br><span class="line">8</span><br></pre></td><td class="code"><pre><span class="line"><span class="comment">-- 传统写法</span></span><br><span class="line"><span class="keyword">SHOW</span> VARIABLES <span class="keyword">LIKE</span> <span class="string">&#x27;transaction_isolation&#x27;</span>;</span><br><span class="line"></span><br><span class="line"><span class="comment">-- 简便的写法：5.7.20版本后</span></span><br><span class="line"><span class="keyword">SELECT</span> @<span class="variable">@transaction_isolation</span>;</span><br><span class="line"></span><br><span class="line"><span class="comment">-- 简便的写法：在 MySQL 5.7.20 的版本中引入来替换tx_isolation的，以前的版本将上述用到系统变量transaction_isolation 的地方替换为 tx_isolation。</span></span><br><span class="line"><span class="keyword">SELECT</span> @<span class="variable">@tx_isolation</span>;</span><br></pre></td></tr></table></figure>
+<h2 id="4-MySQL-事务操作"><a href="#4-MySQL-事务操作" class="headerlink" title="4. MySQL 事务操作"></a>4. MySQL 事务操作</h2><h3 id="4-1-事务基础操作流程"><a href="#4-1-事务基础操作流程" class="headerlink" title="4.1. 事务基础操作流程"></a>4.1. 事务基础操作流程</h3><ol>
+<li>开启事务。任何一条DML语句(insert、update、delete)执行，标志事务的开启<blockquote>
+<p>Notes: <font color=red><strong>开启一个新的事务，之前的事务会自动提交</strong></font></p>
+</blockquote>
+</li>
+<li>提交事务，将所有的DML语句操作历史记录和底层硬盘数据来一次同步。<font color=red><strong>一旦事务提交了，无法通过回滚撤消</strong></font></li>
+<li>回滚事务，将所有的DML语句操作历史记录全部清空</li>
+</ol>
+<h3 id="4-2-自动事务提交模式（MySQL-默认）"><a href="#4-2-自动事务提交模式（MySQL-默认）" class="headerlink" title="4.2. 自动事务提交模式（MySQL 默认）"></a>4.2. 自动事务提交模式（MySQL 默认）</h3><p>MySQL 默认是每一条 DML(增删改)语句都是一个单独的事务，每条语句都会自动开启一个事务，并且执行完毕后自动提交事务。也就是说，当执行完一条DML语句时，MySQL会立即隐式的通过 <code>commit</code> 提交事务。</p>
+<h3 id="4-3-显式事务提交模式"><a href="#4-3-显式事务提交模式" class="headerlink" title="4.3. 显式事务提交模式"></a>4.3. 显式事务提交模式</h3><h4 id="4-3-1-控制事务方式1"><a href="#4-3-1-控制事务方式1" class="headerlink" title="4.3.1. 控制事务方式1"></a>4.3.1. 控制事务方式1</h4><p>MySQL中全局变量<code>autocommit</code>默认值是1，自动提交事务。通过以下语句可以查询当前事务的提交方式参数值：</p>
+<figure class="highlight sql"><table><tr><td class="gutter"><pre><span class="line">1</span><br></pre></td><td class="code"><pre><span class="line"><span class="keyword">select</span> @<span class="variable">@autocommit</span>;</span><br></pre></td></tr></table></figure>
+<ol>
+<li>设置全局开启/禁止提交事务（0 关闭，1 开启）。关闭自动提交后，需要手动提交事务</li>
+</ol>
+<figure class="highlight sql"><table><tr><td class="gutter"><pre><span class="line">1</span><br></pre></td><td class="code"><pre><span class="line"><span class="keyword">set</span> @<span class="variable">@autocommit</span> <span class="operator">=</span> <span class="number">0</span>;</span><br></pre></td></tr></table></figure>
+<ol>
+<li>提交事务</li>
+</ol>
+<figure class="highlight sql"><table><tr><td class="gutter"><pre><span class="line">1</span><br></pre></td><td class="code"><pre><span class="line"><span class="keyword">COMMIT</span>;</span><br></pre></td></tr></table></figure>
+<ol>
+<li>回滚事务</li>
+</ol>
+<figure class="highlight sql"><table><tr><td class="gutter"><pre><span class="line">1</span><br></pre></td><td class="code"><pre><span class="line"><span class="keyword">ROLLBACK</span>;</span><br></pre></td></tr></table></figure>
+<blockquote>
+<p>Notes: 此方式是修改了全局的事务的自动提交行为。若把默认的自动提交修改为了手动提交，此时往后执行的 DML 语句都不会提交，需要手动的执行提交操作。</p>
+</blockquote>
+<h4 id="4-3-2-控制事务方式2"><a href="#4-3-2-控制事务方式2" class="headerlink" title="4.3.2. 控制事务方式2"></a>4.3.2. 控制事务方式2</h4><ol>
+<li>开启事务。</li>
+</ol>
+<figure class="highlight sql"><table><tr><td class="gutter"><pre><span class="line">1</span><br></pre></td><td class="code"><pre><span class="line"><span class="keyword">start</span> transaction;</span><br></pre></td></tr></table></figure>
+<ol>
+<li>提交事务</li>
+</ol>
+<figure class="highlight sql"><table><tr><td class="gutter"><pre><span class="line">1</span><br></pre></td><td class="code"><pre><span class="line"><span class="keyword">COMMIT</span>;</span><br></pre></td></tr></table></figure>
+<ol>
+<li>回滚事务</li>
+</ol>
+<figure class="highlight sql"><table><tr><td class="gutter"><pre><span class="line">1</span><br></pre></td><td class="code"><pre><span class="line"><span class="keyword">ROLLBACK</span>;</span><br></pre></td></tr></table></figure>
+<blockquote>
+<p>Notes: 此方式是开启一次性事务，针对本次一系列的操作。一旦开启事务，接下来的所有的SQL语句都是在同一个事务中，直到提交或回滚，该事务才会结束。</p>
+</blockquote>
+<h3 id="4-4-隐式提交模式"><a href="#4-4-隐式提交模式" class="headerlink" title="4.4. 隐式提交模式"></a>4.4. 隐式提交模式</h3><p>当使用<code>START TRANSACTION</code>或者<code>BEGIN</code>语句开启了一个事务，或者把系统变量<code>autocommit</code>的值设置为<code>OFF</code>时，事务就不会进行自动提交，但是如果期间输入了某些语句之后就会MySQL会自动将事务提交，像输入了<code>COMMIT</code>语句一样，这种因为某些特殊的语句而导致事务提交的情况称为隐式提交。</p>
+<h4 id="4-4-1-执行DDL语句"><a href="#4-4-1-执行DDL语句" class="headerlink" title="4.4.1. 执行DDL语句"></a>4.4.1. 执行DDL语句</h4><p>执行了定义或修改数据库对象的数据定义语言（DDL），所谓的数据库对象，指的就是数据库、表、视图、存储过程等等这些东西。当使用<code>CREATE</code>、<code>ALTER</code>、<code>DROP</code>等语句去修改数据库对象时，就会隐式的提交前边语句所属于的事务</p>
+<figure class="highlight sql"><table><tr><td class="gutter"><pre><span class="line">1</span><br><span class="line">2</span><br><span class="line">3</span><br><span class="line">4</span><br><span class="line">5</span><br></pre></td><td class="code"><pre><span class="line"><span class="keyword">BEGIN</span>;</span><br><span class="line"><span class="keyword">SELECT</span> ... # 事务中的一条语句</span><br><span class="line"><span class="keyword">UPDATE</span> ... # 事务中的一条语句</span><br><span class="line">... # 事务中的其它语句</span><br><span class="line"><span class="keyword">CREATE TABLE</span> ... # 此语句会隐式的提交前边语句所属于的事务</span><br></pre></td></tr></table></figure>
+<h4 id="4-4-2-隐式使用或修改-mysql-数据库中的表"><a href="#4-4-2-隐式使用或修改-mysql-数据库中的表" class="headerlink" title="4.4.2. 隐式使用或修改 mysql 数据库中的表"></a>4.4.2. 隐式使用或修改 mysql 数据库中的表</h4><p>当使用 <code>ALTER USER</code>、<code>CREATE USER</code>、<code>DROP USER</code>、<code>GRANT</code>、<code>RENAME USER</code>、<code>REVOKE</code>、<code>SET PASSWORD</code>等语句时也会隐式的提交前边语句所属于的事务。</p>
+<h4 id="4-4-3-事务控制或关于锁定的语句"><a href="#4-4-3-事务控制或关于锁定的语句" class="headerlink" title="4.4.3. 事务控制或关于锁定的语句"></a>4.4.3. 事务控制或关于锁定的语句</h4><ul>
+<li>在一个会话里，一个事务还没提交或者回滚时又使用 <code>START TRANSACTION</code> 或者 <code>BEGIN</code> 语句开启了另一个事务时，会隐式的提交上一个事务。</li>
+</ul>
+<figure class="highlight sql"><table><tr><td class="gutter"><pre><span class="line">1</span><br><span class="line">2</span><br><span class="line">3</span><br><span class="line">4</span><br><span class="line">5</span><br></pre></td><td class="code"><pre><span class="line"><span class="keyword">BEGIN</span>;</span><br><span class="line"><span class="keyword">SELECT</span> ... # 事务中的一条语句</span><br><span class="line"><span class="keyword">UPDATE</span> ... # 事务中的一条语句</span><br><span class="line">... # 事务中的其它语句</span><br><span class="line"><span class="keyword">BEGIN</span>; # 此语句会隐式的提交前边语句所属于的事务</span><br></pre></td></tr></table></figure>
+<ul>
+<li>当前的<code>autocommit</code>系统变量的值为<code>OFF</code>，然后手动把它修改为<code>ON</code>时，也会隐式的提交前边语句所属的事务。</li>
+<li>使用<code>LOCK TABLES</code>、<code>UNLOCK TABLES</code> 等关于锁定的语句也会隐式的提交前边语句所属的事务。</li>
+</ul>
+<h4 id="4-4-4-加载数据的语句"><a href="#4-4-4-加载数据的语句" class="headerlink" title="4.4.4. 加载数据的语句"></a>4.4.4. 加载数据的语句</h4><p>使用 <code>LOAD DATA</code> 语句来批量往数据库中导入数据时，也会隐式的提交前边语句所属的事务。</p>
+<h4 id="4-4-5-关于-MySQL-复制的一些语句"><a href="#4-4-5-关于-MySQL-复制的一些语句" class="headerlink" title="4.4.5. 关于 MySQL 复制的一些语句"></a>4.4.5. 关于 MySQL 复制的一些语句</h4><p>使用<code>START SLAVE</code>、<code>STOP SLAVE</code>、<code>RESET SLAVE</code>、<code>CHANGE MASTER TO</code>等语句时也会隐式的提交前边语句所属的事务。</p>
+<h4 id="4-4-6-其它的相关语句"><a href="#4-4-6-其它的相关语句" class="headerlink" title="4.4.6. 其它的相关语句"></a>4.4.6. 其它的相关语句</h4><p>使用<code>ANALYZE TABLE</code>、<code>CACHE INDEX</code>、<code>CHECK TABLE</code>、<code>FLUSH</code>、<code>LOAD INDEX INTOCACHE</code>、<code>OPTIMIZE TABLE</code>、<code>REPAIR TABLE、RESET</code>等语句也会隐式的提交前边语句所属的事务。</p>
+<h3 id="4-5-保存点"><a href="#4-5-保存点" class="headerlink" title="4.5. 保存点"></a>4.5. 保存点</h3><p>如果你开启了一个事务，执行了很多语句，忽然发现某条语句有点问题，使用 <code>ROLLBACK</code> 语句来让数据库状态恢复到事务执行之前的样子，然后一切从头再来，但是可能根据业务和数据的变化，不需要全部回滚。所以 MySQL 里提出了一个保存点（英文：savepoint）的概念，就是在事务对应的数据库语句中打几个点，在调用 <code>ROLLBACK</code> 语句时可以指定会滚到哪个点，而不是回到最初的原点。</p>
+<h4 id="4-5-1-基础语法"><a href="#4-5-1-基础语法" class="headerlink" title="4.5.1. 基础语法"></a>4.5.1. 基础语法</h4><p>定义保存点的语法如下：</p>
+<figure class="highlight sql"><table><tr><td class="gutter"><pre><span class="line">1</span><br></pre></td><td class="code"><pre><span class="line"><span class="keyword">SAVEPOINT</span> 保存点名称;</span><br></pre></td></tr></table></figure>
+<p>当想回滚到某个保存点时，可以使用下边这个语句（下边语句中的单词WORK 和 SAVEPOINT 是可有可无的）：</p>
+<figure class="highlight sql"><table><tr><td class="gutter"><pre><span class="line">1</span><br></pre></td><td class="code"><pre><span class="line"><span class="keyword">ROLLBACK</span> <span class="keyword">TO</span> [<span class="keyword">SAVEPOINT</span>] 保存点名称;</span><br></pre></td></tr></table></figure>
+<p>删除某个保存点语句：</p>
+<figure class="highlight sql"><table><tr><td class="gutter"><pre><span class="line">1</span><br></pre></td><td class="code"><pre><span class="line"><span class="keyword">RELEASE</span> <span class="keyword">SAVEPOINT</span> 保存点名称;</span><br></pre></td></tr></table></figure>
+<blockquote>
+<p><em>注：很少会使用，通常在存储过程中有可能会用到</em></p>
+</blockquote>
+<h4 id="4-5-2-保存点示例"><a href="#4-5-2-保存点示例" class="headerlink" title="4.5.2. 保存点示例"></a>4.5.2. 保存点示例</h4><figure class="highlight sql"><table><tr><td class="gutter"><pre><span class="line">1</span><br><span class="line">2</span><br><span class="line">3</span><br><span class="line">4</span><br><span class="line">5</span><br><span class="line">6</span><br><span class="line">7</span><br><span class="line">8</span><br><span class="line">9</span><br><span class="line">10</span><br><span class="line">11</span><br><span class="line">12</span><br></pre></td><td class="code"><pre><span class="line"><span class="comment">-- 自动提交事务是开启的</span></span><br><span class="line"><span class="keyword">show</span> variables <span class="keyword">like</span> <span class="string">&#x27;%autocommit%&#x27;</span>;</span><br><span class="line"><span class="keyword">set</span> autocommit<span class="operator">=</span><span class="number">0</span>;</span><br><span class="line"><span class="keyword">insert into</span> testdemo <span class="keyword">values</span>(<span class="number">5</span>,<span class="number">5</span>,<span class="number">5</span>);</span><br><span class="line"><span class="keyword">savepoint</span> order_exp;</span><br><span class="line"><span class="keyword">insert into</span> testdemo <span class="keyword">values</span>(<span class="number">6</span>,<span class="number">6</span>,<span class="number">6</span>);</span><br><span class="line"><span class="keyword">savepoint</span> order_exp_2;</span><br><span class="line"><span class="keyword">insert into</span> testdemo <span class="keyword">values</span>(<span class="number">7</span>,<span class="number">7</span>,<span class="number">7</span>);</span><br><span class="line"><span class="keyword">savepoint</span> s3;</span><br><span class="line"><span class="keyword">select</span> <span class="operator">*</span> <span class="keyword">from</span> testdemo;</span><br><span class="line"><span class="keyword">rollback</span> <span class="keyword">to</span> <span class="keyword">savepoint</span> order_exp_2;</span><br><span class="line"><span class="keyword">rollback</span>;</span><br></pre></td></tr></table></figure>
+<h3 id="4-6-事务注意事项"><a href="#4-6-事务注意事项" class="headerlink" title="4.6. 事务注意事项"></a>4.6. 事务注意事项</h3><p>可重复读（repeatable read）的隔离级别下使用了MVCC(multi-version concurrency control)机制，select 操作是快照读（历史版本）；insert、update 和 delete 等操作是当前读（当前版本）。</p>
+<p>即当开启事务后，后面多次查询的数据均为首次查询时的快照数据，不会受其他后面提交事务的影响；而使用更新操作时，则会读取当前最新的数据，因此一般在事务更新数据，都尽量使用以下方式进行更新，</p>
+<figure class="highlight sql"><table><tr><td class="gutter"><pre><span class="line">1</span><br></pre></td><td class="code"><pre><span class="line"><span class="keyword">UPDATE</span> account <span class="keyword">SET</span> balance <span class="operator">=</span> balance <span class="operator">-</span> <span class="number">50</span> <span class="keyword">WHERE</span>	id <span class="operator">=</span> <span class="number">1</span>;</span><br></pre></td></tr></table></figure>
+<p>并且在此事务更新后，会为这条数据上行锁，此时其他事务是无法操作此条数据。</p>
+<h2 id="5-事务使用的总结"><a href="#5-事务使用的总结" class="headerlink" title="5. 事务使用的总结"></a>5. 事务使用的总结</h2><h3 id="5-1-大事务的影响"><a href="#5-1-大事务的影响" class="headerlink" title="5.1. 大事务的影响"></a>5.1. 大事务的影响</h3><ul>
+<li>并发情况下，数据库连接池容易被撑爆</li>
+<li>锁定太多的数据，造成大量的阻塞和锁超时</li>
+<li>执行时间长，容易造成主从延迟</li>
+<li>回滚所需要的时间比较长</li>
+<li>undo log 膨胀</li>
+<li>容易导致死锁</li>
+</ul>
+<h3 id="5-2-事务优化"><a href="#5-2-事务优化" class="headerlink" title="5.2. 事务优化"></a>5.2. 事务优化</h3><ul>
+<li>将查询等数据准备操作放到事务外</li>
+<li>事务中避免远程调用，远程调用要设置超时，防止事务等待时间太久</li>
+<li>事务中避免一次性处理太多数据，可以拆分成多个事务分次处理</li>
+<li>更新等涉及加锁的操作尽可能放在事务靠后的位置</li>
+<li>能异步处理的尽量异步处理</li>
+<li>应用侧(业务代码)保证数据一致性，非事务执行</li>
+</ul>
+<h3 id="5-3-事务问题定位"><a href="#5-3-事务问题定位" class="headerlink" title="5.3. 事务问题定位"></a>5.3. 事务问题定位</h3><p>可以通过查询 MySQl 的系统数据库 <code>information_schema</code>.<code>innodb_trx</code>，查询指定执行耗时的事务信息</p>
+<figure class="highlight sql"><table><tr><td class="gutter"><pre><span class="line">1</span><br><span class="line">2</span><br><span class="line">3</span><br><span class="line">4</span><br><span class="line">5</span><br><span class="line">6</span><br><span class="line">7</span><br></pre></td><td class="code"><pre><span class="line"><span class="comment">-- 查询执行时间超过2秒的事务，用于定位超长事务问题</span></span><br><span class="line"><span class="keyword">SELECT</span></span><br><span class="line">	<span class="operator">*</span></span><br><span class="line"><span class="keyword">FROM</span></span><br><span class="line">	information_schema.innodb_trx</span><br><span class="line"><span class="keyword">WHERE</span></span><br><span class="line">	TIME_TO_SEC( timediff( now( ), trx_started ) ) <span class="operator">&gt;</span> <span class="number">2</span>;</span><br></pre></td></tr></table></figure>
+<p>使用 <code>kill 事务对应的线程id</code> 命令强制结束事务，即上面语句查出结果里的 <code>trx_mysql_thread_id</code> 字段的值</p>
+<h2 id="6-事务的底层原理"><a href="#6-事务的底层原理" class="headerlink" title="6. 事务的底层原理"></a>6. 事务的底层原理</h2><p>在事务的实现机制上，MySQL 采用的是 WAL（Write-ahead logging，预写式日志）机制来实现的。在使用 WAL 的系统中，所有的修改都先被写入到日志中，然后再被应用到系统中。通常包含 redo 和 undo 两部分信息。</p>
+<ul>
+<li>redo log 称为重做日志，每当有操作时，在数据变更之前将操作写入 redo log，这样当发生掉电之类的情况时系统可以在重启后继续操作。</li>
+<li>undo log 称为撤销日志，当一些变更执行到一半无法完成时，可以根据撤销日志恢复到变更之间的状态。</li>
+</ul>
+<p>其中事务的原子性、一致性、持久化，实际上是由 InnoDB 中的两份日志来保证的，一份是 redo log 日志，一份是 undo log 日志。而持久性是通过数据库的锁，加上 MVCC 来保证的。</p>
+<p><img src="https://gitee.com/Bluetom/img2/raw/master/img20240905/202410251024584.png" alt=""></p>
+<p>MySQL 中用 redo log 来在系统 Crash 重启之类的情况时修复数据（事务的持久性），而 undo log 来保证事务的原子性。</p>
+<h2 id="7-redo-log（重做日志）"><a href="#7-redo-log（重做日志）" class="headerlink" title="7. redo log（重做日志）"></a>7. redo log（重做日志）</h2><h3 id="7-1-redo-日志的作用"><a href="#7-1-redo-日志的作用" class="headerlink" title="7.1. redo 日志的作用"></a>7.1. redo 日志的作用</h3><p>InnoDB 存储引擎是以页为单位来管理存储空间，在进行的增删改查操作其实本质上都是在访问页面（包括读页面、写页面、创建新页面等操作）。而在访问页面之前，需要把在磁盘上的页缓存到内存中的 Buffer Pool，如果只在内存的 Buffer Pool 中修改了页面，假设在事务提交后突然发生了某个故障，导致内存中的数据都失效了，那么这个已经提交了的事务对数据库中所做的更改也就跟着丢失了。</p>
+<p>如果在事务提交完成之前把该事务所修改的所有页面都刷新到磁盘，会有以下问题：</p>
+<ul>
+<li>一个页面默认是 16KB 大小，只修改一个字节（或者一小部分内容）就要刷新 16KB 的数据，比较浪费。</li>
+<li>一个事务可能包含很多语句，即使是一条语句也可能修改许多页面，该事务修改的这些页面可能并不相邻，这就意味着在将某个事务修改的 Buffer Pool 中的页面刷新到磁盘时，会出现大量的随机 IO，效率很慢。</li>
+</ul>
+<p>为了已经提交了的事务对数据库中数据所做的修改永久生效，即使后来系统崩溃，在重启后也能把这种修改恢复出来。其实没有必要在每次事务提交时就把该事务在内存中修改过的全部页面刷新到磁盘，只需要把修改了内容记录下来即可。</p>
+<blockquote>
+<p>如：某个事务将系统表空间中的第 100 号页面中偏移量为 1000 处的那个字节的值 1 改成 2</p>
+</blockquote>
+<p>在事务提交时，把上述内容刷新到磁盘中，即使之后系统崩溃了，重启之后只要按照上述内容所记录的步骤重新更新一下数据页，那么该事务对数据库中所做的修改又可以被恢复出来，达到事务持久性的目的。因为在系统崩溃重启时需要按照上述内容所记录的步骤重新更新数据页，所以上述内容也被称之为重做日志，英文名为 redo log，也可以称之为 redo 日志。</p>
+<p>使用此方式相比前端事务提交时将所有修改过的内存中的页面刷新到磁盘的方式有以下优势：</p>
+<ul>
+<li><strong>redo 日志占用的空间非常小</strong>。存储表空间 ID、页号、偏移量以及需要更新的值所需的存储空间是很小的。</li>
+<li><strong>redo 日志是顺序写入磁盘的</strong>。在执行事务的过程中，每执行一条语句，就可能产生若干条 redo 日志，这些日志是按照产生的顺序写入磁盘的，也就是使用顺序 IO。</li>
+</ul>
+<p>该日志文件由两部分组成：<strong>重做日志缓冲（redo log buffer）</strong>以及<strong>重做日志文件（redo log file）</strong>，前者是在内存中，后者在磁盘中。当事务提交之后会把所有修改信息都存到该日志文件中，用于在刷新该页到磁盘，发生错误时，进行数据恢复使用。</p>
+<h3 id="7-2-redo-log-关键参数"><a href="#7-2-redo-log-关键参数" class="headerlink" title="7.2. redo log 关键参数"></a>7.2. redo log 关键参数</h3><figure class="highlight sql"><table><tr><td class="gutter"><pre><span class="line">1</span><br><span class="line">2</span><br><span class="line">3</span><br><span class="line">4</span><br><span class="line">5</span><br><span class="line">6</span><br><span class="line">7</span><br><span class="line">8</span><br><span class="line">9</span><br><span class="line">10</span><br><span class="line">11</span><br><span class="line">12</span><br><span class="line">13</span><br><span class="line">14</span><br><span class="line">15</span><br><span class="line">16</span><br></pre></td><td class="code"><pre><span class="line">mysql<span class="operator">&gt;</span> <span class="keyword">SHOW</span> VARIABLES <span class="keyword">LIKE</span> <span class="string">&#x27;%innodb_log_%&#x27;</span>;</span><br><span class="line"><span class="operator">+</span><span class="comment">------------------------------------+----------+</span></span><br><span class="line"><span class="operator">|</span> Variable_name                      <span class="operator">|</span> <span class="keyword">Value</span>    <span class="operator">|</span></span><br><span class="line"><span class="operator">+</span><span class="comment">------------------------------------+----------+</span></span><br><span class="line"><span class="operator">|</span> innodb_log_buffer_size             <span class="operator">|</span> <span class="number">1048576</span>  <span class="operator">|</span></span><br><span class="line"><span class="operator">|</span> innodb_log_checksums               <span class="operator">|</span> <span class="keyword">ON</span>       <span class="operator">|</span></span><br><span class="line"><span class="operator">|</span> innodb_log_compressed_pages        <span class="operator">|</span> <span class="keyword">ON</span>       <span class="operator">|</span></span><br><span class="line"><span class="operator">|</span> innodb_log_file_size               <span class="operator">|</span> <span class="number">50331648</span> <span class="operator">|</span></span><br><span class="line"><span class="operator">|</span> innodb_log_files_in_group          <span class="operator">|</span> <span class="number">2</span>        <span class="operator">|</span></span><br><span class="line"><span class="operator">|</span> innodb_log_group_home_dir          <span class="operator">|</span> .\       <span class="operator">|</span></span><br><span class="line"><span class="operator">|</span> innodb_log_spin_cpu_abs_lwm        <span class="operator">|</span> <span class="number">80</span>       <span class="operator">|</span></span><br><span class="line"><span class="operator">|</span> innodb_log_spin_cpu_pct_hwm        <span class="operator">|</span> <span class="number">50</span>       <span class="operator">|</span></span><br><span class="line"><span class="operator">|</span> innodb_log_wait_for_flush_spin_hwm <span class="operator">|</span> <span class="number">400</span>      <span class="operator">|</span></span><br><span class="line"><span class="operator">|</span> innodb_log_write_ahead_size        <span class="operator">|</span> <span class="number">8192</span>     <span class="operator">|</span></span><br><span class="line"><span class="operator">|</span> innodb_log_writer_threads          <span class="operator">|</span> <span class="keyword">ON</span>       <span class="operator">|</span></span><br><span class="line"><span class="operator">+</span><span class="comment">------------------------------------+----------+</span></span><br></pre></td></tr></table></figure>
+<p>通过以上 SQL 语句可以查询到 redo log 相关的关键参数，重点关注的参数如下：</p>
+<ul>
+<li><code>innodb_log_buffer_size</code>：设置 redo log buffer 大小参数，默认 16M，最大值是 4096M，最小值为 1M。</li>
+<li><code>innodb_log_group_home_dir</code>：设置 redo log 文件存储位置参数，默认值为”<code>./</code>“，即 innodb 数据文件存储位置，其中 redo log 文件如：ib_logfile0、ib_logfile1。（<em>注：mysql 8.0 版本后名称好像不一样了</em>）</li>
+<li><code>innodb_log_files_in_group</code>：设置 redo log 文件的个数，命名方式如: <code>ib_logfile0, iblogfile1,...iblogfileN</code>。默认2个，最大100个。</li>
+<li><code>innodb_log_file_size</code>：设置单个 redo log 文件大小，默认值为 48M，最大值为 512G。注意最大值指的是整个 redo log 系列文件之和，即(<code>innodb_log_files_in_group × innodb_log_file_size</code>)不能大于最大值 512G。</li>
+</ul>
+<blockquote>
+<p>Notes: 后面会结合具体场景分析说明配置的作用。</p>
+</blockquote>
+<h3 id="7-3-redo-日志格式"><a href="#7-3-redo-日志格式" class="headerlink" title="7.3. redo 日志格式"></a>7.3. redo 日志格式</h3><p>redo 日志本质上只是记录了一下事务对数据库的修改内容。 InnoDB 们针对事务对数据库的不同修改场景定义了多种类型的 redo 日志，但是绝大部分类型的 redo 日志都有下边这种通用的结构：</p>
+<p><img src="https://gitee.com/Bluetom/img2/raw/master/img20240905/202410251024585.png" alt=""></p>
+<p>各个部分的详细释义如下：</p>
+<ul>
+<li><code>type</code>：该条 redo 日志的类型，redo 日志设计大约有 53 种不同的类型日志。</li>
+<li><code>space ID</code>：表空间 ID。</li>
+<li><code>page number</code>：页号。</li>
+<li><code>data</code>：该条 redo 日志的具体内容。</li>
+</ul>
+<h4 id="7-3-1-简单-redo-日志类型"><a href="#7-3-1-简单-redo-日志类型" class="headerlink" title="7.3.1. 简单 redo 日志类型"></a>7.3.1. 简单 redo 日志类型</h4><p>InnoDB 的记录行格式，如果没有为某个表显式的定义主键，并且表中也没有定义<code>unique</code>键，那么 InnoDB 会自动的为表添加一个称之为 row_id 的隐藏列作为主键。为这个 row_id 隐藏列赋值的方式如下：</p>
+<p>服务器会在内存中维护一个全局变量，每当向某个包含隐藏的 row_id 列的表中插入一条记录时，就会把该变量的值当作新记录的 row_id 列的值，并且把该变量自增 1。每当这个变量的值为 256 的倍数时，就会将该变量的值刷新到系统表空间的页号为 7 的页面中一个称之为 Max Row ID 的属性处。</p>
+<p>当系统启动时，会将上边提到的 Max Row ID 属性加载到内存中，将该值加上 256 之后赋值给前面提到的全局变量。</p>
+<p>Max Row ID 属性占用的存储空间是 8 个字节，当某个事务向某个包含 row_id 隐藏列的表插入一条记录，并且为该记录分配的 row_id 值为 256 的倍数时，就会向系统表空间页号为 7 的页面的相应偏移量处写入 8 个字节的值。</p>
+<p>实际上写入操作是在 Buffer Pool 中完成的，需要为这个页面的修改记录一条 redo 日志，以便在系统崩溃后能将已经提交的该事务对该页面所做的修改恢复出来。这种情况下对页面的修改是极其简单的，redo 日志中只需要记录一下在某个页面的某个偏移量处修改了几个字节的值，具体被修改的内容是啥就好了，InnoDB 把这种极其简单的 redo 日志称之为物理日志，并且根据在页面中写入数据的多少划分了几种不同的 redo 日志类型：</p>
+<ul>
+<li>MLOG_1BYTE（type 字段对应的十进制数字为 1）：表示在页面的某个偏移量处写入 1 个字节的 redo 日志类型。</li>
+<li>MLOG_2BYTE（type 字段对应的十进制数字为 2）：表示在页面的某个偏移量处写入 2 个字节的 redo 日志类型。</li>
+<li>MLOG_4BYTE（type 字段对应的十进制数字为 4）：表示在页面的某个偏移量处写入 4 个字节的 redo 日志类型。</li>
+<li>MLOG_8BYTE（type 字段对应的十进制数字为 8）：表示在页面的某个偏移量处写入 8 个字节的 redo 日志类型。</li>
+<li>MLOG_WRITE_STRING（type 字段对应的十进制数字为 30）：表示在页面的某个偏移量处写入一串数据。</li>
+</ul>
+<p>Max Row ID 属性实际占用 8 个字节的存储空间，所以在修改页面中的该属性时，会记录一条类型为 MLOG_8BYTE 的 redo 日志，MLOG_8BYTE 的 redo 日志结构如下所示：</p>
+<p><img src="https://gitee.com/Bluetom/img2/raw/master/img20240905/202410251024586.png" alt=""></p>
+<blockquote>
+<p>offset 代表在页面中的偏移量。</p>
+<p>其余 MLOG_1BYTE、MLOG_2BYTE、MLOG_4BYTE 类型的 redo 日志结构和MLOG_8BYTE 的类似，只不过具体数据中包含对应个字节的数据而已。MLOG_WRITE_STRING 类型的 redo 日志表示写入一串数据，但是因为不能确定写入的具体数据占用多少字节，所以需要在日志结构中还会多一个 len 字段。</p>
+</blockquote>
+<h4 id="7-3-2-复杂-redo-日志类型"><a href="#7-3-2-复杂-redo-日志类型" class="headerlink" title="7.3.2. 复杂 redo 日志类型"></a>7.3.2. 复杂 redo 日志类型</h4><p>有些情况，执行一条语句会修改非常多的页面，包括系统数据页面和用户数据页面（用户数据指的就是聚簇索引和二级索引对应的B+树）。如：以 INSERT 语句为例，它除了要向 B+树的页面中插入数据，也可能更新系统数据 Max Row ID 的值。表中包含多少个索引，一条 INSERT 语句就可能更新多少棵 B+树。</p>
+<p>针对某一棵 B+树来说，既可能更新叶子节点页面，也可能更新非叶子节点页面，也可能创建新的页面（在该记录插入的叶子节点的剩余空间比较少，不足以存放该记录时，会进行页面的分裂，在非叶子节点页面中添加目录项记录）。</p>
+<p>在语句执行过程中，除了 INSERT 语句对所有页面的修改都保存到 redo 日志中去。一个数据页中除了存储实际的记录之后，还有什么 File Header、Page Header、Page Directory 等等部分，所以每往叶子节点代表的数据页里插入一条记录时，还有其他很多地方会跟着更新。</p>
+<blockquote>
+<p>比如：可能更新 Page Directory 中的槽信息、Page Header 中的各种页面统计信息，比如槽数量可能会更改，还未使用的空间最小地址可能会更改，本页面中的记录数量可能会更改，各种信息都可能会被修改，同时数据页里的记录是按照索引列从小到大的顺序组成一个单向链表的，每插入一条记录，还需要更新上一条记录的记录头信息中的 next_record 属性来维护这个单向链表。</p>
+</blockquote>
+<p>记录复杂的写入数据，有两种解决方案：</p>
+<ol>
+<li>方案一：在每个修改的地方都记录一条 redo 日志</li>
+<li>方案二：将整个页面的第一个被修改的字节到最后一个修改的字节之间所有的数据当成是一条物理 redo 日志中的具体数据。</li>
+</ol>
+<p>这些类型的 redo 日志既包含物理层面的意思，也包含逻辑层面的意思，具体指：</p>
+<ul>
+<li>物理层面看，这些日志都指明了对哪个表空间的哪个页进行了修改。</li>
+<li>逻辑层面看，在系统崩溃重启时，并不能直接根据这些日志里的记载，将页面内的某个偏移量处恢复成某个数据，而是需要调用一些事先准备好的函数，执行完这些函数后才可以将页面恢复成系统崩溃前的样子。</li>
+</ul>
+<p>一个 redo 日志类型而只是把在本页面中变动（比如插入、修改）一条记录所有必备的要素记了下来，之后系统崩溃重启时，服务器会调用相关向某个页面变动（比如插入、修改）一条记录的那个函数，而 redo 日志中的那些数据就可以被当成是调用这个函数所需的参数，在调用完该函数后，页面中的相关值也就都被恢复到系统崩溃前的值。</p>
+<font color=red>**总结：redo 日志会把事务在执行过程中对数据库所做的所有修改都记录下来，在之后系统崩溃重启后可以把事务所做的任何修改都恢复出来。**</font>
+
+<h3 id="7-4-Mini-Transaction"><a href="#7-4-Mini-Transaction" class="headerlink" title="7.4. Mini-Transaction"></a>7.4. Mini-Transaction</h3><h4 id="7-4-1-Mini-Transaction-的概念"><a href="#7-4-1-Mini-Transaction-的概念" class="headerlink" title="7.4.1. Mini-Transaction 的概念"></a>7.4.1. Mini-Transaction 的概念</h4><p>MySQL 把对底层页面中的一次原子访问的过程称之为一个 Mini-Transaction。<em>比如：修改一次 Max Row ID 的值算是一个 Mini-Transaction，向某个索引对应的 B+树中插入一条记录的过程也算是一个Mini-Transaction。</em></p>
+<p>一个 Mini-Transaction 可以包含一组 redo 日志，在进行崩溃恢复时这一组 redo 日志作为一个不可分割的整体。</p>
+<p>一个事务可以包含若干条语句，每一条语句其实是由若干个 Mini-Transaction 组成，每一个 Mini-Transaction 又可以包含若干条 redo 日志，最终形成了一个树形结构。</p>
+<h4 id="7-4-2-以组的形式写入-redo-日志"><a href="#7-4-2-以组的形式写入-redo-日志" class="headerlink" title="7.4.2. 以组的形式写入 redo 日志"></a>7.4.2. 以组的形式写入 redo 日志</h4><p>一条 INSERT 语句可能会修改很多的页面，对这些页面的更改都发生在 Buffer Pool 中，所以在修改完页面之后，需要记录一下相应的 redo 日志。而执行语句的过程中产生的 redo 日志被 InnoDB 人为的划分成了若干个不可分割的组。</p>
+<p>以向某个索引对应的 B+树插入一条记录为例，在向 B+树中插入这条记录之前，需要先定位到这条记录应该被插入到哪个叶子节点代表的数据页中，定位到具体的数据页之后，有两种可能的情况：</p>
+<ul>
+<li>情况一：该数据页的剩余的空闲空间充足，足够容纳这一条待插入记录，这种情况处理就很简单，直接把记录插入到这个数据页中，记录一条 redo 日志即可，把这种情况称之为<strong>乐观插入</strong>。</li>
+<li>情况二：该数据页剩余的空闲空间不足。此时处理相对比较复杂，在这个处理过程要对多个页面进行修改，也就意味着会产生很多条 redo 日志，把这种情况称之为<strong>悲观插入</strong>。这种情况需要进行页的分裂操作：<ol>
+<li>新建一个叶子节点；</li>
+<li>然后把原先数据页中的一部分记录复制到这个新的数据页中</li>
+<li>然后再把记录插入进去，把这个叶子节点插入到叶子节点链表中</li>
+<li>非叶子节点中添加一条目录项记录指向这个新创建的页面</li>
+<li>非叶子节点空间不足，继续分裂</li>
+</ol>
+</li>
+</ul>
+<p>注意：在页的分裂过程中，由于需要新申请数据页，还需要改动一些系统页面，比方说要修改各种段、区的统计信息信息，各种链表的统计信息，也会产生redo日志。当然在乐观插入时也可能产生多条 redo 日志。</p>
+<p>InnoDB 认为向某个索引对应的 B+树中插入一条记录的这个过程必须是原子的，不能说插了一半之后就停止了。redo 日志是为了在系统崩溃重启时恢复崩溃前的状态，如果在悲观插入的过程中只记录了一部分 redo 日志，那么在系统崩溃重启时会将索引对应的 B+树恢复成一种不正确的状态。</p>
+<p>所以规定在执行这些需要保证原子性的操作时必须以组的形式来记录的 redo 日志，在进行系统崩溃重启恢复时，针对某个组中的 redo 日志，要么把全部的日志都恢复掉，要么一条也不恢复。在实现上，根据多个 redo 日志的不同，使用了特殊的 redo 日志类型作为组的结尾，来表示一组完整的 redo 日志。</p>
+<h3 id="7-5-redo-日志的写入过程"><a href="#7-5-redo-日志的写入过程" class="headerlink" title="7.5. redo 日志的写入过程"></a>7.5. redo 日志的写入过程</h3><h4 id="7-5-1-redo-log-block-和日志缓冲区"><a href="#7-5-1-redo-log-block-和日志缓冲区" class="headerlink" title="7.5.1. redo log block 和日志缓冲区"></a>7.5.1. redo log block 和日志缓冲区</h4><p>InnoDB 为了更好的进行系统崩溃恢复，把通过 Mini-Transaction 生成的 redo 日志都放在了大小为 512 字节的块（block）中</p>
+<p>MySQL 为了解决磁盘速度过慢的问题而引入了 Buffer Pool。同理，写入 redo 日志时也不能直接直接写到磁盘上，实际上在服务器启动时就向操作系统申请了一大片称之为 redo log buffer 的连续内存空间，翻译成中文就是 redo 日志缓冲区，也可以简称为 log buffer。这片内存空间被划分成若干个连续的 redo log block，可以通过启动参数 <code>innodb_log_buffer_size</code> 来指定 log buffer 的大小，该启动参数的默认值为 16MB。</p>
+<p>向 log buffer 中写入 redo 日志的过程是顺序的，也就是先往前边的 block 中写，当该 block 的空闲空间用完之后再往下一个 block 中写。</p>
+<p>Mini-Transaction 执行过程中可能产生若干条 redo 日志，这些 redo 日志是一个不可分割的组，所以其实并不是每生成一条 redo 日志，就将其插入到 log buffer 中，而是每个 Mini-Transaction 运行过程中产生的日志先暂时存到一个地方，当该 Mini-Transaction 结束的时候，将过程中产生的一组 redo 日志再全部复制到 log buffer 中。</p>
+<h4 id="7-5-2-redo-日志刷盘时机"><a href="#7-5-2-redo-日志刷盘时机" class="headerlink" title="7.5.2. redo 日志刷盘时机"></a>7.5.2. redo 日志刷盘时机</h4><p>Mini-Transaction 运行过程中产生的一组 redo 日志是在 Mini-Transaction 结束时会被复制到 log buffer 中，但在一些情况下它们会被刷新到磁盘里，比如：</p>
+<ul>
+<li>log buffer 空间不足时。log buffer 的大小是有限的（通过系统变量 innodb_log_buffer_size 指定），如果不停的往这个有限大小的 log buffer 里塞入日志，很快它就会被填满。InnoDB 认为如果当前写入 log buffer 的 redo 日志量已经占满了 log buffer 总容量的大约一半左右，就需要把这些日志刷新到磁盘上。</li>
+<li>事务提交时。使用 redo 日志记录事务的操作主要是因为它占用的空间少，并且是顺序写，在事务提交时可以不把修改过的 Buffer Pool 页面刷新到磁盘，但是为了保证持久性，必须要把修改这些页面对应的 redo 日志刷新到磁盘</li>
+<li>MySQL 后台有一个线程，大约每秒都会刷新一次 log buffer 中的 redo 日志到磁盘</li>
+<li>正常关闭服务器时</li>
+</ul>
+<h4 id="7-5-3-redo-日志文件组"><a href="#7-5-3-redo-日志文件组" class="headerlink" title="7.5.3. redo 日志文件组"></a>7.5.3. redo 日志文件组</h4><p>使用以下命令可以查看 MySQL 的数据目录，其中默认有两个名为 <code>ib_logfile0</code> 和 <code>ib_logfile1</code> 的文件，log buffer 中的日志默认情况下就是刷新到这两个磁盘文件中。</p>
+<figure class="highlight sql"><table><tr><td class="gutter"><pre><span class="line">1</span><br><span class="line">2</span><br></pre></td><td class="code"><pre><span class="line"><span class="comment">-- 查询数据库的数据目录</span></span><br><span class="line"><span class="keyword">SHOW</span> VARIABLES <span class="keyword">LIKE</span> <span class="string">&#x27;datadir&#x27;</span>;</span><br></pre></td></tr></table></figure>
+<p>修改以下启动参数来设置 redo 日志文件</p>
+<ul>
+<li><code>innodb_log_group_home_dir</code>，该参数指定了 redo 日志文件所在的目录，默认值就是当前的数据目录</li>
+<li><code>innodb_log_file_size</code>，该参数指定了每个 redo 日志文件的大小，默认值为 48MB</li>
+<li><code>innodb_log_files_in_group</code>，该参数指定 redo 日志文件的个数，默认值为 2，最大值为 100</li>
+</ul>
+<p>磁盘上的 redo 日志文件可以不只一个，而是以一个日志文件组的形式出现的。这些文件以 <code>ib_logfile[数字]</code>（数字可以是 0、1、2…）的形式进行命名。在将 redo 日志写入日志文件组时，是从 <code>ib_logfile0</code> 开始写，如果 <code>ib_logfile0</code> 写满了，就接着 <code>ib_logfile1</code> 写，同理，<code>ib_logfile1</code> 写满了就去写 <code>ib_logfile2</code>，依此类推。如果写满最后一个文件，就会重新转到 <code>ib_logfile0</code> 继续写。</p>
+<h4 id="7-5-4-redo-日志文件格式"><a href="#7-5-4-redo-日志文件格式" class="headerlink" title="7.5.4. redo 日志文件格式"></a>7.5.4. redo 日志文件格式</h4><p>log buffer 本质上是一片连续的内存空间，被划分成了若干个 512 字节大小的 block。将 log buffer 中的 redo 日志刷新到磁盘的本质就是把 block 的镜像写入日志文件中，所以 redo 日志文件其实也是由若干个 512 字节大小的 block 组成。</p>
+<p>redo 日志文件组中的每个文件大小都一样，格式也一样，都是由两部分组成：前 2048 个字节，也就是前 4 个 block 是用来存储一些管理信息的。从第 2048 字节往后是用来存储 log buffer 中的 block 镜像的。</p>
+<h3 id="7-6-Log-Sequence-Number"><a href="#7-6-Log-Sequence-Number" class="headerlink" title="7.6. Log Sequence Number"></a>7.6. Log Sequence Number</h3><p>自MySQL系统开始运行，就不断的在修改页面，Redo 日志的量在不断的递增，InnoDB 为记录已经写入的 redo 日志量，设计了一个称之为 Log Sequence Number (日志序列号，简称 LSN)的全局变量。规定初始 LSN 的值为 8704（也就是一条 redo 日志也没写入时，LSN 的值为 8704）。</p>
+<p>在向 log buffer 中写入 redo 日志时不是一条一条写入的，而是以一个 Mini-Transaction 生成的一组 redo 日志为单位进行写入的。从上边的描述中可以看出来，每一组由 Mini-Transaction 生成的 redo 日志都有一个唯一的 LSN 值与其对应，LSN 值越小，说明 redo 日志产生的越早。</p>
+<h4 id="7-6-1-flushed-to-disk-lsn"><a href="#7-6-1-flushed-to-disk-lsn" class="headerlink" title="7.6.1. flushed_to_disk_lsn"></a>7.6.1. flushed_to_disk_lsn</h4><p>InnoDB 中有一个 <code>buf_next_to_write</code> 的全局变量，标记当前 log buffer 中已经有哪些日志被刷新到磁盘中了。</p>
+<p>LSN 是表示当前系统中写入的 redo 日志量，这包括了写到 log buffer 而没有刷新到磁盘的日志，相应的，InnoDB 也有一个表示刷新到磁盘中的 redo 日志量的全局变量 <code>flushed_to_disk_lsn</code>。</p>
+<p>系统第一次启动时，<code>flushed_to_disk_lsn</code>变量的值和初始的 lsn 值是相同的，都是 8704。随着系统的运行，redo 日志被不断写入 log buffer，但是并不会立即刷新到磁盘，lsn 的值就和 <code>flushed_to_disk_lsn</code> 的值也不断变化</p>
+<p>当有新的 redo 日志写入到 log buffer 时，首先 LSN 的值会增长，但<code>flushed_to_disk_lsn</code>不变，随后随着不断有log buffer中的日志被刷新到磁盘上，<code>flushed_to_disk_lsn</code>的值也跟着增长。如果两者的值相同时，说明 log buffer 中的所有 redo 日志都已经刷新到磁盘中了。</p>
+<blockquote>
+<p>Tips: 应用程序向磁盘写入文件时其实是先写到操作系统的缓冲区中去，如果某个写入操作要等到操作系统确认已经写到磁盘时才返回，那需要调用一下操作系统提供的 <code>fsync</code> 函数。其实只有当系统执行了 <code>fsync</code> 函数后，<code>flushed_to_disk_lsn</code> 的值才会跟着增长，当仅仅把 log buffer 中的日志写入到操作系统缓冲区却没有显式的刷新到磁盘时，另外的一个名为 <code>write_lsn</code> 的值跟着增长。当然系统的 LSN 值远不止前面描述的 lsn，还有很多。</p>
+</blockquote>
+<h4 id="7-6-2-查看系统中的各种-LSN-值"><a href="#7-6-2-查看系统中的各种-LSN-值" class="headerlink" title="7.6.2. 查看系统中的各种 LSN 值"></a>7.6.2. 查看系统中的各种 LSN 值</h4><p>查看当前 InnoDB 存储引擎中的各种 LSN 值的情况</p>
+<figure class="highlight sql"><table><tr><td class="gutter"><pre><span class="line">1</span><br></pre></td><td class="code"><pre><span class="line"><span class="keyword">SHOW</span> ENGINE INNODB STATUS;</span><br></pre></td></tr></table></figure>
+<p><img src="https://gitee.com/Bluetom/img2/raw/master/img20240905/202410251024587.png" alt=""></p>
+<ul>
+<li><code>Log sequence number</code>：代表系统中的 lsn 值，也就是当前系统已经写入的 redo日志量，包括写入 log buffer 中的日志。</li>
+<li><code>Log flushed up to</code>：代表 flushed_to_disk_lsn 的值，也就是当前系统已经写入磁盘的 redo 日志量。</li>
+<li><code>Pages flushed up to</code>：代表 flush 链表中被最早修改的那个页面对应的 oldest_modification 属性值。</li>
+<li><code>Last checkpoint at</code>：当前系统的 checkpoint_lsn 值。</li>
+</ul>
+<h3 id="7-7-redo-log-的写入策略参数-innodb-flush-log-at-trx-commit"><a href="#7-7-redo-log-的写入策略参数-innodb-flush-log-at-trx-commit" class="headerlink" title="7.7. redo log 的写入策略参数 innodb_flush_log_at_trx_commit"></a>7.7. redo log 的写入策略参数 innodb_flush_log_at_trx_commit</h3><p>为了保证事务的持久性，用户线程在事务提交时需要将该事务执行过程中产生的所有 redo 日志都刷新到磁盘上，但这样会很明显的降低数据库性能。</p>
+<p>MySQL 提供了控制 redo log 的写入策略的系统变量参数 <code>innodb_flush_log_at_trx_commit</code>，该变量有 3 个可选的值：</p>
+<ul>
+<li>当该系统变量值为<code>0</code>时，表示在事务提交时不立即将 redo log buffer 中向磁盘中同步 redo 日志，这个任务是交给后台线程做的。数据库宕机可能会丢失数据。</li>
+<li>当该系统变量值为<code>1</code>时（默认值），表示在事务提交时需要将 redo 日志同步持久化到磁盘。此方式可以保证事务的持久性，数据最安全，不会因为数据库宕机丢失数据，但是效率稍微差一点，线上系统推荐这个设置。</li>
+<li>当该系统变量值为<code>2</code>时，表示在事务提交时需要将 redo 日志写到操作系统的缓冲区（page cache）中，但并不需要马上将日志真正的刷新到磁盘。<em>这种情况如果数据库宕机，事务的持久性还是可以保证的，不会丢失数据的；但如果操作系统宕机了，page cache 里的数据还没来得及写入磁盘文件的话，那就不能保证持久性了，会丢失数据</em>。</li>
+</ul>
+<h4 id="7-7-1-redo-log-写入策略流程图"><a href="#7-7-1-redo-log-写入策略流程图" class="headerlink" title="7.7.1. redo log 写入策略流程图"></a>7.7.1. redo log 写入策略流程图</h4><p>InnoDB 有一个后台线程，每隔 1 秒，就会把 redo log buffer 中的日志，调用操作系统函数 write 写到文件系统的 page cache，然后调用操作系统函数 fsync 持久化到磁盘文件。</p>
+<p><img src="https://gitee.com/Bluetom/img2/raw/master/img20240905/202410251024588.jpg" alt=""></p>
+<h4 id="7-7-2-查询与设置参数"><a href="#7-7-2-查询与设置参数" class="headerlink" title="7.7.2. 查询与设置参数"></a>7.7.2. 查询与设置参数</h4><p>查询看当前事务 redo 日志刷盘参数</p>
+<figure class="highlight sql"><table><tr><td class="gutter"><pre><span class="line">1</span><br><span class="line">2</span><br><span class="line">3</span><br><span class="line">4</span><br><span class="line">5</span><br><span class="line">6</span><br><span class="line">7</span><br></pre></td><td class="code"><pre><span class="line">mysql<span class="operator">&gt;</span> <span class="keyword">show</span> variables <span class="keyword">like</span> <span class="string">&#x27;innodb_flush_log_at_trx_commit&#x27;</span>;</span><br><span class="line"><span class="operator">+</span><span class="comment">--------------------------------+-------+</span></span><br><span class="line"><span class="operator">|</span> Variable_name                  <span class="operator">|</span> <span class="keyword">Value</span> <span class="operator">|</span></span><br><span class="line"><span class="operator">+</span><span class="comment">--------------------------------+-------+</span></span><br><span class="line"><span class="operator">|</span> innodb_flush_log_at_trx_commit <span class="operator">|</span> <span class="number">1</span>     <span class="operator">|</span></span><br><span class="line"><span class="operator">+</span><span class="comment">--------------------------------+-------+</span></span><br><span class="line"><span class="number">1</span> <span class="type">row</span> <span class="keyword">in</span> <span class="keyword">set</span> (<span class="number">0.02</span> sec)</span><br></pre></td></tr></table></figure>
+<p>设置 <code>innodb_flush_log_at_trx_commit</code> 参数值(也可以在 my.ini 或 my.cnf 文件里配置)：</p>
+<figure class="highlight sql"><table><tr><td class="gutter"><pre><span class="line">1</span><br></pre></td><td class="code"><pre><span class="line"><span class="keyword">set</span> <span class="keyword">global</span> innodb_flush_log_at_trx_commit<span class="operator">=</span><span class="number">1</span>;  </span><br></pre></td></tr></table></figure>
+<h3 id="7-8-redo-log-的执行流程"><a href="#7-8-redo-log-的执行流程" class="headerlink" title="7.8. redo log 的执行流程"></a>7.8. redo log 的执行流程</h3><p>假设执行的 SQL 如下：</p>
+<figure class="highlight sql"><table><tr><td class="gutter"><pre><span class="line">1</span><br></pre></td><td class="code"><pre><span class="line"><span class="keyword">update</span> T <span class="keyword">set</span> a <span class="operator">=</span><span class="number">1</span> <span class="keyword">where</span> id <span class="operator">=</span><span class="number">666</span></span><br></pre></td></tr></table></figure>
+<p><img src="https://gitee.com/Bluetom/img2/raw/master/img20240905/202410251024589.png" alt=""></p>
+<ol>
+<li>MySQL 客户端将请求语句 <code>update T set a =1 where id = 666</code>，发往 MySQL Server 层。</li>
+<li>MySQL Server 层接收到 SQL 请求后，对其进行分析、优化、执行等处理工作，将生成的 SQL 执行计划发到 InnoDB 存储引擎层执行。</li>
+<li>InnoDB 存储引擎层<strong>将 a 修改为 1</strong> 的这个操作记录到内存中。</li>
+<li>记录到内存以后会修改 redo log 的记录，会在添加一行记录，其内容是需要在哪个数据页上做什么修改。</li>
+<li>此后，将事务的状态设置为 prepare ，说明已经准备好提交事务了。</li>
+<li>等到 MySQL Server 层处理完事务以后，会将事务的状态设置为 commit，也就是提交该事务。</li>
+<li>在收到事务提交的请求以后，redo log 会把刚才写入内存中的操作记录写入到磁盘中，从而完成整个日志的记录过程。</li>
+</ol>
+<h3 id="7-9-崩溃后的恢复"><a href="#7-9-崩溃后的恢复" class="headerlink" title="7.9. 崩溃后的恢复"></a>7.9. 崩溃后的恢复</h3><h4 id="7-9-1-恢复机制"><a href="#7-9-1-恢复机制" class="headerlink" title="7.9.1. 恢复机制"></a>7.9.1. 恢复机制</h4><p>MySQL 可以根据 redo 日志中的各种 LSN 值，来确定恢复的起点和终点。然后将 redo 日志中的数据，以哈希表的形式，将一个页面下的放到哈希表的一个槽中。之后就可以遍历哈希表，因为对同一个页面进行修改的 redo 日志都放在了一个槽里，所以可以一次性将一个页面修复好（避免了很多读取页面的随机 IO）。并且通过各种机制，避免无谓的页面修复，比如已经刷新的页面，进而提升崩溃恢复的速度</p>
+<h4 id="7-9-2-崩溃后的恢复为什么不用-binlog？"><a href="#7-9-2-崩溃后的恢复为什么不用-binlog？" class="headerlink" title="7.9.2. 崩溃后的恢复为什么不用 binlog？"></a>7.9.2. 崩溃后的恢复为什么不用 binlog？</h4><ol>
+<li>redo log 与 binlog 两者使用方式不一样。binlog 会记录表所有更改操作，包括更新删除数据，更改表结构等等，主要用于人工恢复数据；而 redo log 对于用户是不可见的，它是 InnoDB 用于保证 crash-safe 能力的，也就是在事务提交后 MySQL 崩溃的话，可以保证事务的持久性，即事务提交后其更改是永久性的。</li>
+<li>redo log 是 InnoDB 引擎特有的；binlog 是 MySQL 的 Server 层实现的，所有引擎都可以使用。</li>
+<li>redo log 是物理日志，记录的是“在某个数据页上做了什么修改”，恢复的速度更快；binlog 是逻辑日志，记录的是这个语句的原始逻辑，比如“给ID=2为的记录的c字段加1”</li>
+<li>redo log 是“循环写”的日志文件，redo log 只会记录未刷盘的日志，已经刷入磁盘的数据都会从 redo log 这个有限大小的日志文件里删除。binlog 是追加日志，保存的是全量的日志。</li>
+<li><strong>重点</strong>：当数据库 crash（崩溃）后，想要恢复未刷盘但已经写入 redo log 和 binlog 的数据到内存时，binlog 是无法恢复的。虽然 binlog 拥有全量的日志，但没有一个标志让 innoDB 判断哪些数据已经入表(写入磁盘)，哪些数据还没有。</li>
+</ol>
+<blockquote>
+<p>比如，binlog 记录了两条日志：</p>
+<ul>
+<li>给 ID=2 这一行的 c 字段加 1</li>
+<li>给 ID=2 这一行的 c 字段加 1</li>
+</ul>
+<p>在记录 1 入表后，记录 2 未入表时，数据库 crash。重启后，只通过 binlog 数据库无法判断这两条记录哪条已经写入磁盘，哪条没有写入磁盘，不管是两条都恢复至内存，还是都不恢复，对 ID=2 这行数据来说，都不对。</p>
+<p>但 redo log 不一样，只要刷入磁盘的数据，都会从 redo log 中抹掉，数据库重启后，直接把 redo log 中的数据都恢复至内存就可以了。</p>
+</blockquote>
+<h2 id="8-undo-log（撤销日志）"><a href="#8-undo-log（撤销日志）" class="headerlink" title="8. undo log（撤销日志）"></a>8. undo log（撤销日志）</h2><p>InnoDB 对 undo log 文件的管理采用段的方式，也就是回滚段（rollback segment）。每个回滚段记录了 1024 个 undo log segment ，每个事务只会使用一个 undo log segment。</p>
+<p>MySQL 5.5 版本，只有一个回滚段，最大同时支持的事务数量为1024个。从 MySQL 5.6 版本开始，InnoDB 支持最大 128 个回滚段，故其支持同时在线的事务限制提高到了 <code>128*1024</code>。</p>
+<h3 id="8-1-查询-undo-log-参数"><a href="#8-1-查询-undo-log-参数" class="headerlink" title="8.1. 查询 undo log 参数"></a>8.1. 查询 undo log 参数</h3><figure class="highlight sql"><table><tr><td class="gutter"><pre><span class="line">1</span><br><span class="line">2</span><br><span class="line">3</span><br><span class="line">4</span><br><span class="line">5</span><br><span class="line">6</span><br><span class="line">7</span><br><span class="line">8</span><br><span class="line">9</span><br></pre></td><td class="code"><pre><span class="line">mysql<span class="operator">&gt;</span> <span class="keyword">SHOW</span> VARIABLES <span class="keyword">LIKE</span> <span class="string">&#x27;%innodb_undo_%&#x27;</span>;</span><br><span class="line"><span class="operator">+</span><span class="comment">--------------------------+-------+</span></span><br><span class="line"><span class="operator">|</span> Variable_name            <span class="operator">|</span> <span class="keyword">Value</span> <span class="operator">|</span></span><br><span class="line"><span class="operator">+</span><span class="comment">--------------------------+-------+</span></span><br><span class="line"><span class="operator">|</span> innodb_undo_directory    <span class="operator">|</span> .\    <span class="operator">|</span></span><br><span class="line"><span class="operator">|</span> innodb_undo_log_encrypt  <span class="operator">|</span> OFF   <span class="operator">|</span></span><br><span class="line"><span class="operator">|</span> innodb_undo_log_truncate <span class="operator">|</span> <span class="keyword">ON</span>    <span class="operator">|</span></span><br><span class="line"><span class="operator">|</span> innodb_undo_tablespaces  <span class="operator">|</span> <span class="number">2</span>     <span class="operator">|</span></span><br><span class="line"><span class="operator">+</span><span class="comment">--------------------------+-------+</span></span><br></pre></td></tr></table></figure>
+<p>参数说明：</p>
+<ul>
+<li><code>innodb_undo_directory</code>：设置 undo log 文件所在的路径。该参数的默认值为”<code>./</code>“，即 innodb 数据文件存储位置，目录下 ibdata1 文件就是 undo log 存储的位置。</li>
+<li><code>innodb_undo_logs</code>：设置 undo log 文件内部回滚段的个数，默认值为 128。</li>
+<li><code>innodb_undo_tablespaces</code>：设置 undo log 文件的数量，这样回滚段可以较为平均地分布在多个文件中。设置该参数后，会在路径 <code>innodb_undo_directory</code> 看到 undo 为前缀的文件。</li>
+</ul>
+<h3 id="8-2-事务回滚"><a href="#8-2-事务回滚" class="headerlink" title="8.2. 事务回滚"></a>8.2. 事务回滚</h3><p>事务需要保证原子性，要么全部成功，要么全部失败。比如：</p>
+<ol>
+<li>事务执行过程中可能遇到各种错误，比如服务器本身的错误，操作系统错误，甚至是突然断电导致的错误。</li>
+<li>在事务执行过程中手动输入 <code>ROLLBACK</code> 语句结束当前的事务的执行。</li>
+</ol>
+<p>以上情况都会导致事务执行到一半就结束。为了保证事务的原子性，需要把东西改回原先的样子，这个过程就称之为回滚（英文名：rollback）。</p>
+<p>每当要对一条记录做改动时（改动是指 <code>INSERT</code>、<code>DELETE</code>、<code>UPDATE</code>等），都需要把回滚时所需的内容都给记录下来。例如：</p>
+<ul>
+<li>插入一条记录时，至少要把这条记录的主键值记下来，之后回滚的时候只需要把这个主键值对应的记录删掉。</li>
+<li>删除了一条记录，至少要把这条记录中的内容都记下来，这样之后回滚时再把由这些内容组成的记录插入到表中。</li>
+<li>修改了一条记录，至少要把修改这条记录前的旧值都记录下来，这样之后回滚时再把这条记录更新为旧值。</li>
+</ul>
+<p><strong>为了回滚而记录的这些东西称之为撤销日志，英文名为 undo log（undo日志）。这里需要注意的一点是，由于查询操作（<code>SELECT</code>）并不会修改任何用户记录，所以在查询操作执行时，并不需要记录相应的 undo 日志</strong>。在InnoDB中，不同类型的操作产生的 undo 日志的格式也是不同的</p>
+<h3 id="8-3-事务ID"><a href="#8-3-事务ID" class="headerlink" title="8.3. 事务ID"></a>8.3. 事务ID</h3><h4 id="8-3-1-给事务分配-id-的时机"><a href="#8-3-1-给事务分配-id-的时机" class="headerlink" title="8.3.1. 给事务分配 id 的时机"></a>8.3.1. 给事务分配 id 的时机</h4><p>一个事务可以是一个只读事务，或者是一个读写事务。</p>
+<ul>
+<li>开启一个只读事务</li>
+</ul>
+<figure class="highlight sql"><table><tr><td class="gutter"><pre><span class="line">1</span><br></pre></td><td class="code"><pre><span class="line"><span class="keyword">START</span> TRANSACTION READ <span class="keyword">ONLY</span>;</span><br></pre></td></tr></table></figure>
+<ul>
+<li>开启一个读写事务</li>
+</ul>
+<figure class="highlight sql"><table><tr><td class="gutter"><pre><span class="line">1</span><br><span class="line">2</span><br><span class="line">3</span><br><span class="line">4</span><br><span class="line">5</span><br></pre></td><td class="code"><pre><span class="line"><span class="keyword">START</span> TRANSACTION READ WRITE;</span><br><span class="line"></span><br><span class="line"><span class="comment">-- 以下方式开启的事务默认也算是读写事务。</span></span><br><span class="line"><span class="keyword">BEGIN</span>;</span><br><span class="line"><span class="keyword">START</span> TRANSACTION;</span><br></pre></td></tr></table></figure>
+<p>如果某个事务执行过程中对某个表执行了增、删、改操作，那么 InnoDB 存储引擎就会给它分配一个独一无二的事务 id，分配方式如下：</p>
+<ul>
+<li>对于只读事务来说，只有在它第一次对某个用户创建的临时表执行增、删、改操作时才会为这个事务分配一个事务 id，否则的话是不分配事务 id 的。</li>
+<li>对于读写事务来说，只有在它第一次对某个表（包括用户创建的临时表）执行增、删、改操作时才会为这个事务分配一个事务 id，否则的话也是不分配事务 id 的。</li>
+</ul>
+<blockquote>
+<p><em>注：上面描述的事务id分配策略是针对 MySQL 5.7 而言，以前版本的分配方式可能不同。</em></p>
+</blockquote>
+<h4 id="8-3-2-事务-id-生成机制"><a href="#8-3-2-事务-id-生成机制" class="headerlink" title="8.3.2. 事务 id 生成机制"></a>8.3.2. 事务 id 生成机制</h4><p>事务 id 本质上就是一个数字。分配策略和隐藏列 row_id（当用户没有为表创建主键和 UNIQUE 键时 InnoDB 自动创建的列）的分配策略大致相同。具体策略如下：</p>
+<p>服务器会在内存中维护一个全局变量，每当需要为某个事务分配一个事务id时，就会把该变量的值当作事务id分配给该事务，并且把该变量自增1。</p>
+<p>每当这个变量的值为 256 的倍数时，就会将该变量的值刷新到系统表空间的页号为 5 的页面中一个称之为 Max Trx ID 的属性处，这个属性占用 8 个字节的存储空间。</p>
+<p>当系统下一次重新启动时，会将上边提到的 Max Trx ID 属性加载到内存中，将该值加上 256 之后赋值给我们前边提到的全局变量（因为在上次关机时该全局变量的值可能大于 Max Trx ID 属性值）。</p>
+<p>这样就可以保证整个系统中分配的事务 id 值是一个递增的数字。先被分配id 的事务得到的是较小的事务 id，后被分配 id 的事务得到的是较大的事务 id。</p>
+<h3 id="8-4-隐藏列"><a href="#8-4-隐藏列" class="headerlink" title="8.4. 隐藏列"></a>8.4. 隐藏列</h3><p>聚簇索引的记录除了会保存完整的用户数据以外，而且还会自动添加名为 trx_id、roll_pointer 的隐藏列，如果用户没有在表中定义主键以及 UNIQUE 键，还会自动添加一个名为 row_id 的隐藏列。</p>
+<p><img src="https://gitee.com/Bluetom/img2/raw/master/img20240905/202410251024591.png" alt=""></p>
+<blockquote>
+<p>其中的 trx_id 列就是某个对这个聚簇索引记录做改动的语句（INSERT、DELETE、UPDATE 操作）所在的事务对应的事务 id</p>
+</blockquote>
+<p>隐藏字段及其含义分别是：</p>
+<div class="table-container">
+<table>
+<thead>
+<tr>
+<th>隐藏字段</th>
+<th>含义</th>
+</tr>
+</thead>
+<tbody>
+<tr>
+<td>DB_TRX_ID</td>
+<td>最近修改事务ID，记录插入这条记录或最后一次修改该记录的事务ID</td>
+</tr>
+<tr>
+<td>DB_ROLL_PTR</td>
+<td>回滚指针，指向这条记录的上一个版本，用于配合undo log，指向上一个版本</td>
+</tr>
+<tr>
+<td>DB_ROW_ID</td>
+<td>隐藏主键，如果表结构没有指定主键，将会生成该隐藏字段</td>
+</tr>
+</tbody>
+</table>
+</div>
+<h3 id="8-5-undo-日志的格式"><a href="#8-5-undo-日志的格式" class="headerlink" title="8.5. undo 日志的格式"></a>8.5. undo 日志的格式</h3><p>InnoDB 存储引擎在实际进行增、删、改记录时，都需要记录对应的 undo 日志。一般每1条记录的改动都对应1条undo日志，但在某些更新记录操作中，可能会对应2条undo日志</p>
+<p>一个事务在执行过程中涉及新增、删除、更新若干条记录，也就是说需要记录很多条对应的 undo 日志，这些 undo 日志会被从0开始编号，也就是说根据生成的顺序分别被称为第0号undo日志、第1号undo日志、…、第n号undo日志等，这个编号也被称之为undo no。</p>
+<p>undo 日志是被记录到类型为<code>FIL_PAGE_UNDO_LOG</code>的页面中。这些页面可以从系统表空间中分配，也可以从一种专门存放 undo 日志的表空间，也就是所谓的 undo tablespace 中分配。</p>
+<h4 id="8-5-1-INSERT-操作对应的-undo-日志"><a href="#8-5-1-INSERT-操作对应的-undo-日志" class="headerlink" title="8.5.1. INSERT 操作对应的 undo 日志"></a>8.5.1. INSERT 操作对应的 undo 日志</h4><h5 id="8-5-1-1-基础处理流程"><a href="#8-5-1-1-基础处理流程" class="headerlink" title="8.5.1.1. 基础处理流程"></a>8.5.1.1. 基础处理流程</h5><p>InnoDB 的设计了一个类型为<code>TRX_UNDO_INSERT_REC</code>的undo日志。当插入记录后回滚时，只需要将该记录删除即可，所以undo日志主要是记录该记录的主键信息。</p>
+<ul>
+<li>当主键只包含一个列，类型为<code>TRX_UNDO_INSERT_REC</code>的undo日志中只需要记录该列占用的存储空间大小和真实值</li>
+<li>当主键包含多个列，则需要记录每个列占用的存储空间大小和对应的真实值</li>
+</ul>
+<p>当向某个表中插入一条记录时，实际上需要向聚簇索引和所有的二级索引都插入一条记录。不过记录 undo 日志时，只需要考虑向聚簇索引插入记录时的情况，因为聚簇索引记录和二级索引记录是一一对应的，在回滚插入操作时，只需要知道这条记录的主键信息，然后根据主键信息做对应的删除操作，做删除操作时就会顺带着把所有二级索引中相应的记录也删除掉。<em>DELETE 操作和 UPDATE 操作对应的 undo 日志也都是针对聚簇索引记录而言的</em>。</p>
+<h5 id="8-5-1-2-roll-pointer-的作用"><a href="#8-5-1-2-roll-pointer-的作用" class="headerlink" title="8.5.1.2. roll_pointer 的作用"></a>8.5.1.2. roll_pointer 的作用</h5><p>roll_pointer 本质上就是一个指向记录对应的 undo 日志的一个指针。比如向表里插入了 2 条记录，每条记录都有与其对应的一条 undo 日志。记录被存储到了类型为<code>FIL_PAGE_INDEX</code>的页面中（数据页），undo 日志被存放到了类型为<code>FIL_PAGE_UNDO_LOG</code>的页面中。</p>
+<h4 id="8-5-2-DELETE-操作对应的-undo-日志"><a href="#8-5-2-DELETE-操作对应的-undo-日志" class="headerlink" title="8.5.2. DELETE 操作对应的 undo 日志"></a>8.5.2. DELETE 操作对应的 undo 日志</h4><h5 id="8-5-2-1-基础处理流程"><a href="#8-5-2-1-基础处理流程" class="headerlink" title="8.5.2.1. 基础处理流程"></a>8.5.2.1. 基础处理流程</h5><p>插入到页面中的记录会根据记录头信息中的 next_record 属性组成一个单向链表，该链表称之为<strong>正常记录链表</strong>。删除的记录也会根据记录头信息中的 next_record 属性组成一个链表，只是这个链表中的记录占用的存储空间可以被重新利用，所以这个链表也称为<strong>垃圾链表</strong>。</p>
+<p>Page Header 部分有一个称之为<code>PAGE_FREE</code>的属性，它指向由被删除记录组成的垃圾链表中的头节点。</p>
+<p><img src="https://gitee.com/Bluetom/img2/raw/master/img20240905/202410251024592.png" alt=""></p>
+<blockquote>
+<p>注：上图示例只把记录的 delete_mask 标志位展示了出来</p>
+</blockquote>
+<p>上面示例，正常记录链表中包含了 3 条正常记录，垃圾链表里包含了 2 条已删除记录。页面的 Page Header 部分的 PAGE_FREE 属性的值代表指向垃圾链表头节点的指针。假设使用 DELETE 语句删除正常记录链表中的最后一条记录，该删除的过程需要经历两个阶段：</p>
+<ul>
+<li>阶段一：将记录的<code>delete_mask</code>标识位设置为1，这个阶段称之为<code>delete mark</code>。正常记录链表中的最后一条记录的<code>delete_mask</code>值被设置为 1，但是并没有被加入到垃圾链表。也就是此时记录处于一个中间状态。在删除语句所在的事务提交之前，被删除的记录一直都处于这种所谓的中间状态。</li>
+</ul>
+<p><img src="https://gitee.com/Bluetom/img2/raw/master/img20240905/202410251024593.png" alt=""></p>
+<ul>
+<li>阶段二：当该删除语句所在的事务提交之后，会有专门的线程来真正删除记录。所谓真正的删除就是把该记录从正常记录链表中移除，并且加入到垃圾链表中，然后还要调整一些页面的其他信息，比如页面中的用户记录数量 PAGE_N_RECS、上次插入记录的位置 PAGE_LAST_INSERT、垃圾链表头节点的指针 PAGE_FREE、页面中可重用的字节数量 PAGE_GARBAGE、还有页目录的一些信息等等。这个阶段称之为 purge。</li>
+</ul>
+<p><img src="https://gitee.com/Bluetom/img2/raw/master/img20240905/202410251024594.png" alt=""></p>
+<p>在阶段二执行完后，这条记录就算是真正的被删除。这条已删除记录占用的存储空间也可以被重新利用。</p>
+<p>在删除语句所在的事务提交之前，只会经历阶段一，也就是 delete mark 阶段（提交之后就不用回滚了，所以只需考虑对删除操作的阶段一做的影响进行回滚）。InnoDB 中就会产生一种称之为<code>TRX_UNDO_DEL_MARK_REC</code>类型的 undo 日志。</p>
+<h5 id="8-5-2-2-版本链"><a href="#8-5-2-2-版本链" class="headerlink" title="8.5.2.2. 版本链"></a>8.5.2.2. 版本链</h5><p>在对一条记录进行 delete mark 操作前，需要把该记录的旧的 trx_id 和 roll_pointer 隐藏列的值都给记到对应的 undo 日志中来，就是图中显示的 old trx_id 和 old roll_pointer 属性。这样有一个好处，那就是可以通过 undo 日志的 old roll_pointer 找到记录在修改之前对应的 undo 日志。比方说在一个事务中，先插入了一条记录，然后又执行对该记录的删除操作，这个过程的示意图如下：</p>
+<p><img src="https://gitee.com/Bluetom/img2/raw/master/img20240905/202410251024595.png" alt=""></p>
+<p>执行完 delete mark操作后，它对应的 undo日志和 INSERT 操作对应的 undo 日志就串成了一个链表。这个链表就称之为版本链。</p>
+<h4 id="8-5-3-UPDATE-操作对应的-undo-日志"><a href="#8-5-3-UPDATE-操作对应的-undo-日志" class="headerlink" title="8.5.3. UPDATE 操作对应的 undo 日志"></a>8.5.3. UPDATE 操作对应的 undo 日志</h4><p>在执行 UPDATE 语句时，InnoDB 对更新主键和不更新主键这两种情况有不同的处理方案</p>
+<h5 id="8-5-3-1-不更新主键的情况"><a href="#8-5-3-1-不更新主键的情况" class="headerlink" title="8.5.3.1. 不更新主键的情况"></a>8.5.3.1. 不更新主键的情况</h5><p>在不更新主键的情况下，又可以细分为被更新的列占用的存储空间不发生变化和发生变化的情况。</p>
+<font color=blue>**就地更新（in-place update）**</font>
+
+<p>更新记录时，<font color=red><strong>对于被更新的每个列来说，如果更新后的列和更新前的列占用的存储空间都一样大</strong></font>，那么就可以进行就地更新，也就是直接在原记录的基础上修改对应列的值。需要注意的一点是，如果有任何一个被更新的列更新前比更新后占用的存储空间大，或者更新前比更新后占用的存储空间小都不能进行就地更新。</p>
+<font color=blue>**先删除掉旧记录，再插入新记录**</font>
+
+<p>在不更新主键的情况下，如果有任何一个被更新的列更新前和更新后占用的存储空间大小不一致，那么就需要先把这条旧的记录从聚簇索引页面中删除掉，然后再根据更新后列的值创建一条新的记录插入到页面中。</p>
+<p>值得注意的是，此删除并不是 delete mark 操作，而是真正的删除掉，也就是把这条记录从正常记录链表中移除并加入到垃圾链表中，并且修改页面中相应的统计信息（比如 PAGE_FREE、PAGE_GARBAGE 等这些信息）。由用户线程同步执行真正的删除操作，真正删除之后紧接着就要根据各个列更新后的值创建的新记录插入。</p>
+<p>如果新创建的记录占用的存储空间大小不超过旧记录占用的空间，那么可以直接重用被加入到垃圾链表中的旧记录所占用的存储空间，否则的话需要在页面中新申请一段空间以供新记录使用，如果本页面内已经没有可用的空间的话，那就需要进行页面分裂操作，然后再插入新记录。</p>
+<p>针对 UPDATE 不更新主键的情况（包括上边所说的就地更新和先删除旧记录再插入新记录），InnoDB 设计了一种类型为<code>TRX_UNDO_UPD_EXIST_REC</code>的 undo 日志。</p>
+<h5 id="8-5-3-2-更新主键的情况"><a href="#8-5-3-2-更新主键的情况" class="headerlink" title="8.5.3.2. 更新主键的情况"></a>8.5.3.2. 更新主键的情况</h5><p>在聚簇索引中，记录是按照主键值的大小连成了一个单向链表的，如果更新了某条记录的主键值，意味着这条记录在聚簇索引中的位置将会发生改变。并且更新的记录可能相隔很大，中间隔好多个页，针对 UPDATE 语句中更新了记录主键值的这种情况，InnoDB 在聚簇索引中分了两步处理：</p>
+<font color=blue>**将旧记录进行 delete mark 操作**</font>
+
+<p>在 UPDATE 语句所在的事务提交前，对旧记录只做一个 delete mark 操作，在事务提交后才由专门的线程做 purge 操作，把它加入到垃圾链表中。<em>注意区别：不更新记录主键值的情况，会先真正删除旧记录，再插入新记录</em></p>
+<p>之所以只对旧记录做 delete mark 操作，是因为别的事务同时也可能访问这条记录，如果把它真正的删除加入到垃圾链表后，别的事务就不能访问了。此功能就是MVCC</p>
+<font color=blue>**创建一条新记录**</font>
+
+<p>根据更新后各列的值创建一条新记录，并将其插入到聚簇索引中（需重新定位插入的位置）。由于更新后的记录主键值发生了改变，所以需要重新从聚簇索引中定位这条记录所在的位置，然后把它插进去。</p>
+<p>针对 UPDATE 语句更新记录主键值的这种情况，在对该记录进行 delete mark 操作前，会记录一条类型为<code>TRX_UNDO_DEL_MARK_REC</code>的 undo 日志；之后插入新记录时，会记录一条类型为<code>TRX_UNDO_INSERT_REC</code>的 undo 日志，也就是说每对一条记录的主键值做改动时，会记录 2 条 undo 日志</p>
+<h3 id="8-6-FIL-PAGE-UNDO-LOG-页面"><a href="#8-6-FIL-PAGE-UNDO-LOG-页面" class="headerlink" title="8.6. FIL_PAGE_UNDO_LOG 页面"></a>8.6. FIL_PAGE_UNDO_LOG 页面</h3><p>表空间其实是由许许多多的页面构成的，页面默认大小为16KB。这些页面有不同的类型，比如类型为<code>FIL_PAGE_INDEX</code>的页面用于存储聚簇索引以及二级索引，类型为<code>FIL_PAGE_TYPE_FSP_HDR</code>的页面用于存储表空间头部信息的，还有其他各种类型的页面，其中<code>FIL_PAGE_UNDO_LOG</code>类型的页面是专门用来存储 undo 日志的。</p>
+<h3 id="8-7-undo-log-日志删除时机"><a href="#8-7-undo-log-日志删除时机" class="headerlink" title="8.7. undo log 日志删除时机"></a>8.7. undo log 日志删除时机</h3><ul>
+<li>新增操作，在事务提交之后就可以清除掉了。</li>
+<li>修改操作，事务提交之后不能立即清除掉，这些日志会用于 mvcc。只有当 MySQL 检测到没有事务用到该版本信息时才可以清除。</li>
+</ul>
+<h2 id="9-MVCC（多版本并发控制）"><a href="#9-MVCC（多版本并发控制）" class="headerlink" title="9. MVCC（多版本并发控制）"></a>9. MVCC（多版本并发控制）</h2><h3 id="9-1-事务并发执行遇到的问题"><a href="#9-1-事务并发执行遇到的问题" class="headerlink" title="9.1. 事务并发执行遇到的问题"></a>9.1. 事务并发执行遇到的问题</h3><blockquote>
+<p><em>详见前面章节《事务并发引发的3个问题》</em></p>
+</blockquote>
+<p>不同的数据库厂商对 SQL 标准中规定的四种隔离级别支持不一样，MySQL 在 REPEATABLE READ 隔离级别下，是可以很大程度避免幻读问题的发生的</p>
+<h3 id="9-2-MVCC-的概述"><a href="#9-2-MVCC-的概述" class="headerlink" title="9.2. MVCC 的概述"></a>9.2. MVCC 的概述</h3><p>MVCC (Multi-Version Concurrency Control)，即多版本并发控制，主要是为了提高数据库的并发性能。</p>
+<p>串行化隔离级别为了保证较高的隔离性是通过将所有操作加锁互斥来实现的。而在读已提交和可重复读的隔离级别下，是通过 MVCC 机制来保证的，对同一行数据的读和写两个操作默认是不会通过加锁互斥来保证隔离性，避免了频繁加锁互斥。<em>这里的『读』是指的快照读，而不是当前读，当前读加锁操作是一种悲观锁</em>。</p>
+<p>MVCC 机制是通过 <strong>read-view 机制与 undo 版本链比对机制</strong>来实现，使得不同的事务会根据版本链对比规则读取同一条数据在版本链上的不同版本数据。</p>
+<h3 id="9-3-MVCC-的核心组成部分"><a href="#9-3-MVCC-的核心组成部分" class="headerlink" title="9.3. MVCC 的核心组成部分"></a>9.3. MVCC 的核心组成部分</h3><h4 id="9-3-1-undo-日志版本链"><a href="#9-3-1-undo-日志版本链" class="headerlink" title="9.3.1. undo 日志版本链"></a>9.3.1. undo 日志版本链</h4><p>对于使用 InnoDB 存储引擎的表来说，它的聚簇索引记录中都包含两个必要的隐藏列（row_id 并不是必要的，创建的表中有主键或者非 NULL 的 UNIQUE 键时都不会包含 row_id 列）</p>
+<ul>
+<li><code>trx_id</code>：每次一个事务对某条聚簇索引记录进行改动时，都会把该事务的事务 id 赋值给 trx_id 隐藏列。</li>
+<li><code>roll_pointer</code>：每次对某条聚簇索引记录进行改动时，都会把旧的版本写入到 undo 日志中，然后这个隐藏列就相当于一个指针，可以通过它来找到该记录修改前的信息。</li>
+</ul>
+<p><img src="https://gitee.com/Bluetom/img2/raw/master/img20240905/202410251024596.jpg" alt=""></p>
+<p>对该记录每次更新后，都会将旧值放到一条 undo 日志中，就算是该记录的一个旧版本，随着更新次数的增多，所有的版本都会被 roll_pointer 属性连接成一个链表，这个链表称为<strong>版本链</strong>，版本链的头节点就是当前记录最新的值。另外，每个版本中还包含生成该版本时对应的事务 id。于是可以利用这个记录的版本链来控制并发事务访问相同记录的行为，那么这种机制就被称之为<strong>多版本并发控制(Mulit-Version Concurrency Control MVCC)</strong>。</p>
+<h4 id="9-3-2-ReadView"><a href="#9-3-2-ReadView" class="headerlink" title="9.3.2. ReadView"></a>9.3.2. ReadView</h4><p>为了实现不同事务的控制，InnoDB 提出了一个 ReadView 的概念。ReadView（读视图）是<strong>快照读</strong> SQL 执行时 MVCC 提取数据的依据，在 ReadView 内部记录并维护一个系统当前活跃事务链表（未提交的），表示生成 ReadView 的时候还在活跃的事务。<strong>该链表包含在创建 ReadView 之前还未提交的事务，不包含创建 ReadView 之后提交的事务</strong>。</p>
+<p>值得注意的是，<font color=red><strong>begin/start transaction 命令并不是一个事务的起点，而是在它们之后执行的第一个修改操作或加排它锁操作(比如<code>select...for update</code>)的语句，事务才真正启动，此时才会向 mysql 申请真正的事务 id，mysql 内部是严格按照事务的启动顺序来分配事务 id</strong></font>。</p>
+<p><strong>ReadView 中主要包含4个比较重要的内容</strong>：</p>
+<ul>
+<li><code>m_ids</code>：表示在生成 ReadView 时当前系统中活跃的读写事务的事务 id 列表。</li>
+<li><code>min_trx_id</code>：表示在生成 ReadView 时当前系统中活跃的读写事务中最小的事务 id，也就是 m_ids 中的最小值。</li>
+<li><code>max_trx_id</code>：表示生成 ReadView 时系统中应该分配给下一个事务的 id 值。注意 <code>max_trx_id</code> 并不是 <code>m_ids</code> 中的最大值，事务 id 是递增分配的。比方说现在有 id 为 1，2，3 这三个事务，之后 id 为 3 的事务提交了。那么一个新的读事务在生成 ReadView 时，<code>m_ids</code> 就包括 1 和 2，<code>min_trx_id</code> 的值就是 1，<code>max_trx_id</code>的值就是 4。</li>
+<li><code>creator_trx_id</code>：表示生成该 ReadView 的事务 id。</li>
+</ul>
+<p>有了这个 ReadView，在访问某条记录时，只需要按照相关的规则，判断记录的某个版本是否可见。</p>
+<h3 id="9-4-undo-日志版本链与-ReadView-机制详解"><a href="#9-4-undo-日志版本链与-ReadView-机制详解" class="headerlink" title="9.4. undo 日志版本链与 ReadView 机制详解"></a>9.4. undo 日志版本链与 ReadView 机制详解</h3><h4 id="9-4-1-ReadView-访问版本链数据的规则"><a href="#9-4-1-ReadView-访问版本链数据的规则" class="headerlink" title="9.4.1. ReadView 访问版本链数据的规则"></a>9.4.1. ReadView 访问版本链数据的规则</h4><p>假设 <code>trx_id</code> 是当前访问的版本链数据的事务ID。其版本链数据访问规则如下：</p>
+<ul>
+<li><code>trx_id == creator_trx_id</code>：说明数据是当前这个事务更改的，可以访问该版本。</li>
+<li><code>trx_id &lt; min_trx_id</code>：说明数据已经提交了，可以访问该版本。</li>
+<li><code>trx_id &gt; max_trx_id</code>：说明该事务是在 ReadView 生成后才开启。</li>
+<li><code>min_trx_id &lt;= trx_id &lt;= max_trx_id</code>，分如下两种情况：<ul>
+<li>如果 trx_id 不在 m_ids 中，说明数据已经提交。可以访问该版本</li>
+<li>如果 trx_id 在 m_ids 中，说明创建 ReadView 时生成该版本的事务还是活跃的，该版本不可以被访问</li>
+</ul>
+</li>
+</ul>
+<h4 id="9-4-2-不同隔离级别事务读取记录的区别"><a href="#9-4-2-不同隔离级别事务读取记录的区别" class="headerlink" title="9.4.2. 不同隔离级别事务读取记录的区别"></a>9.4.2. 不同隔离级别事务读取记录的区别</h4><ul>
+<li>对于使用 READ UNCOMMITTED 隔离级别的事务来说，由于可以读到未提交事务修改过的记录，所以直接读取记录的最新版本即可。</li>
+<li>对于使用 SERIALIZABLE 隔离级别的事务来说，InnoDB 使用加锁的方式来访问记录。</li>
+<li>对于使用 READ COMMITTED 和 REPEATABLE READ 隔离级别的事务来说，都必须保证读到已经提交了的事务修改过的记录，也就是说假如另一个事务已经修改了记录但是尚未提交，是不能直接读取最新版本的记录的</li>
+</ul>
+<p><strong>因此，READ COMMITTED 和 REPEATABLE READ 这两种隔离级别关键是需要判断一下版本链中的哪个版本是当前事务可见的</strong>。</p>
+<h4 id="9-4-3-不同隔离级别创建-ReadView-的时机"><a href="#9-4-3-不同隔离级别创建-ReadView-的时机" class="headerlink" title="9.4.3. 不同隔离级别创建 ReadView 的时机"></a>9.4.3. 不同隔离级别创建 ReadView 的时机</h4><p>在 MySQL 中，READ COMMITTED 和 REPEATABLE READ 隔离级别的的一个非常大的区别就是它们<font color=red><strong>生成 ReadView 的时机不同</strong></font>。</p>
+<ul>
+<li>实现 READ COMMITTED 隔离级别，事务里每次执行查询操作时都会按照数据库当前状态重新生成 readview，也就是每次查询都是跟数据库里当前所有事务提交状态来比对数据是否可见，因此可以实现每次都能查到已提交的最新数据的效果。</li>
+</ul>
+<p><img src="https://gitee.com/Bluetom/img2/raw/master/img20240905/202410251024597.jpg" alt=""></p>
+<ul>
+<li>实现 REPEATABLE READ 隔离级别，事务里每次执行查询操作时都是使用第一次查询时生成的 readview，也就是都是以第一次查询时当时数据库里所有事务提交状态来比对数据是否可见，因此可以实现每次查询的可重复读的效果。</li>
+</ul>
+<p><img src="https://gitee.com/Bluetom/img2/raw/master/img20240905/202410251024598.jpg" alt=""></p>
+<h4 id="9-4-4-修改操作的事务实现流程原理解析"><a href="#9-4-4-修改操作的事务实现流程原理解析" class="headerlink" title="9.4.4. 修改操作的事务实现流程原理解析"></a>9.4.4. 修改操作的事务实现流程原理解析</h4><p><em>以下是 REPEATABLE READ 隔离级别下的事务实现说明</em>。假设插入一条记录的事务 id 为 80 并且已经提交事务，后面有3个事务 id 分别为 300、100、200 的事务对这条记录进行 UPDATE 操作，操作流程如下：</p>
+<p><img src="https://gitee.com/Bluetom/img2/raw/master/img20240905/202410251024599.jpg" alt="流程图-MVCC多版本并发控制.drawio"></p>
+<p><img src="https://gitee.com/Bluetom/img2/raw/master/img20240905/202410251024600.jpg" alt="流程图-MVCC多版本并发控制.drawio"></p>
+<p>版本链比对规则如下：</p>
+<ol>
+<li>如果被访问版本的 trx_id 属性值与 ReadView 中的 creator_trx_id 值相同，意味着当前事务在访问它自己修改过的记录，所以该版本可以被当前事务访问。</li>
+<li>如果被访问版本的 trx_id 属性值小于 ReadView 中的 min_trx_id 值，表明生成该版本的事务在当前事务生成 ReadView 前已经提交，所以该版本可以被当前事务访问。<em>即 row 的 trx_id 在上图的绿色部分( <code>trx_id &lt; min_trx_id</code> )，数据是可见的。</em></li>
+<li>如果被访问版本的 trx_id 属性值大于或等于 ReadView 中的 max_trx_id 值，表明生成该版本的事务在当前事务生成 ReadView 后才开启，所以该版本不可以被当前事务访问。<em>即 row 的 trx_id 在上图的红色部分，数据是不可见。(若 row 的 trx_id 就是当前自己的事务是可见的）</em></li>
+<li>如果被访问版本的 trx_id 属性值在 ReadView 的 min_trx_id 和 max_trx_id 之间(<code>min_trx_id &lt; trx_id &lt; max_trx_id</code>)，<em>即 row 的 trx_id 在上图的黄色部分</em>。那就需要判断一下 trx_id 属性值是不是在 m_ids 列表中，包括以下两种情况：<ul>
+<li>如果 row 的 trx_id 在视图数组中，说明创建 ReadView 时生成该版本的事务还是活跃的，该版本不可以被访问(若 row 的 trx_id 就是当前自己的事务是可见的)；</li>
+<li>如果 row 的 trx_id 不在视图数组中，说明创建 ReadView 时生成该版本的事务已经被提交，该版本可以被访问。</li>
+</ul>
+</li>
+<li>如果某个版本的数据对当前事务不可见的话，那就顺着版本链找到下一个版本的数据，继续按照上边的步骤判断可见性，依此类推，直到版本链中的最后一个版本。如果最后一个版本也不可见的话，那么就意味着该条记录对该事务完全不可见，查询结果就不包含该记录</li>
+</ol>
+<h4 id="9-4-5-删除操作的事务实现原理"><a href="#9-4-5-删除操作的事务实现原理" class="headerlink" title="9.4.5. 删除操作的事务实现原理"></a>9.4.5. 删除操作的事务实现原理</h4><p>对于删除的情况可以认为是 update 操作的特殊情况，会将版本链上最新的数据复制一份，然后将 trx_id 修改成删除操作的 trx_id，同时将该条记录的头信息（record header）里的（deleted_flag）标记位设置为 true，用于表示当前记录已经被删除，在查询时按照上面的规则查到对应的记录如果 delete_flag 标记位为 true，意味着记录已被删除，则不返回数据。</p>
+<h3 id="9-5-！待整理-MVCC-下的幻读解决和幻读现象"><a href="#9-5-！待整理-MVCC-下的幻读解决和幻读现象" class="headerlink" title="9.5. (！待整理)MVCC 下的幻读解决和幻读现象"></a>9.5. (！待整理)MVCC 下的幻读解决和幻读现象</h3><blockquote>
+<p>TODO: 待整理</p>
+</blockquote>
+<h3 id="9-6-MVCC-小结"><a href="#9-6-MVCC-小结" class="headerlink" title="9.6. MVCC 小结"></a>9.6. MVCC 小结</h3><p>MVCC（Multi-Version Concurrency Control ，多版本并发控制）指的就是在使用 READ COMMITTD、REPEATABLE READ 这两种隔离级别的事务在执行普通的 SELECT 操作时访问记录的版本链的过程，这样子可以使不同事务的读-写、写-读操作并发执行，从而提升系统性能。</p>
+<p>MVCC 的实现原理就是通过 InnoDB 表的隐藏字段、UndoLog 版本链、ReadView 来实现的。版本链保存有历史版本记录，通过 ReadView 判断当前版本的数据是否可见，如果不可见，再从版本链中找到上一个版本，继续进行判断，直到找到一个可见的版本。</p>
+<p>而 MVCC+锁，则实现了事务的隔离性。而一致性则是由 redolog 与 undolog 保证。</p>
+<p><img src="https://gitee.com/Bluetom/img2/raw/master/img20240905/202410251024601.png" alt=""></p>
+<p>READ COMMITTD、REPEATABLE READ 这两个隔离级别的一个很大不同就是：生成 ReadView 的时机不同</p>
+<ul>
+<li>READ COMMITTD 在每一次进行普通 SELECT 操作前都会生成一个 ReadView</li>
+<li>REPEATABLE READ 只在第一次进行普通 SELECT 操作前生成一个 ReadView，之后的查询操作都重复使用该 ReadView，从而基本上可以避免幻读现象</li>
+</ul>
+<p>执行 DELETE 语句或者更新主键的 UPDATE 语句并不会立即把对应的记录完全从页面中删除，而是执行一个所谓的 delete mark 操作，相当于只是对记录打上了一个删除标志位，这主要就是为MVCC服务。MVCC 只是在进行<strong>普通的 SEELCT 查询</strong>时才生效</p>
+<h2 id="10-MySQL-的-XA-协议"><a href="#10-MySQL-的-XA-协议" class="headerlink" title="10. MySQL 的 XA 协议"></a>10. MySQL 的 XA 协议</h2><blockquote>
+<p>官方文档：<a target="_blank" rel="noopener" href="https://dev.mysql.com/doc/refman/8.0/en/xa.html">https://dev.mysql.com/doc/refman/8.0/en/xa.html</a></p>
+</blockquote>
+<h3 id="10-1-XA-协议"><a href="#10-1-XA-协议" class="headerlink" title="10.1. XA 协议"></a>10.1. XA 协议</h3><p>XA 协议是由 X/Open 组织提出的分布式事务处理规范，主要定义了事务管理器 TM 和局部资源管理器 RM 之间的接口。目前主流的数据库，比如 Oracle、DB2 都是支持 XA 协议的。MySQL 从 5.0 版本开始，innoDB 存储引擎已经支持 XA 协议。</p>
+<p>XA 定义了全局的事务管理器（Transaction Manager，用于协调全局事务）和局部的资源管理器（Resource Manager，用于驱动本地事务）之间的通讯接口。XA 接口是双向的，是一个事务管理器和多个资源管理器之间通信的桥梁，通过协调多个数据源的动作保持一致，来实现全局事务的统一提交或者统一回滚。</p>
+<p>MySQL XA 实现了分布式事务，是一种二阶段提交协议。Java 基于 XA 协议提出了 JTA（Java Transaction API）接口规范：</p>
+<ul>
+<li>事务管理器的接口：<code>javax.transaction.TransactionManager</code></li>
+<li>资源定义接口：<code>javax.transaction.xa.XAResource</code></li>
+</ul>
+<p>具体实现由 Java EE 容器提供</p>
+<h3 id="10-2-MySQL-的-XA-协议处理流程"><a href="#10-2-MySQL-的-XA-协议处理流程" class="headerlink" title="10.2. MySQL 的 XA 协议处理流程"></a>10.2. MySQL 的 XA 协议处理流程</h3><h4 id="10-2-1-涉及的角色"><a href="#10-2-1-涉及的角色" class="headerlink" title="10.2.1. 涉及的角色"></a>10.2.1. 涉及的角色</h4><ul>
+<li>AP（Application Program）：应用程序，定义事务边界（定义事务开始和结束）并访问事务边界内的资源。</li>
+<li>RM（Resource Manger）资源管理器: 管理共享资源并提供外部访问接口。供外部程序来访问数据库等共享资源。此外，RM还具有事务的回滚能力。</li>
+<li>TM（Transaction Manager）事务管理器：TM是分布式事务的协调者，TM与每个RM进行通信，负责管理全局事务，分配事务唯一标识，监控事务的执行进度，并负责事务的提交、回滚、失败恢复等。</li>
+</ul>
+<h4 id="10-2-2-具体处理流程"><a href="#10-2-2-具体处理流程" class="headerlink" title="10.2.2. 具体处理流程"></a>10.2.2. 具体处理流程</h4><p><img src="https://gitee.com/Bluetom/img2/raw/master/img20240905/202410251024602.png" alt=""></p>
+<ul>
+<li>应用程序AP向事务管理器TM发起事务请求</li>
+<li>TM调用xa_open()建立同资源管理器的会话</li>
+<li>TM调用xa_start()标记一个事务分支的开头</li>
+<li>AP访问资源管理器RM并定义操作，比如插入记录操作</li>
+<li>TM调用xa_end()标记事务分支的结束</li>
+<li>TM调用xa_prepare()通知RM做好事务分支的提交准备工作。其实就是二阶段提交的提交请求阶段。</li>
+<li>TM调用xa_commit()通知RM提交事务分支，也就是二阶段提交的提交执行阶段。</li>
+<li>TM调用xa_close管理与RM的会话。</li>
+</ul>
+<blockquote>
+<p>Notes: 这些接口一定要按顺序执行，比如 xa_start 接口一定要在 xa_end 之前。此外，这里千万要注意的是事务管理器只是标记事务分支并不执行事务，事务操作最终是由应用程序通知资源管理器完成的。</p>
+</blockquote>
+<h4 id="10-2-3-XA-接口方法说明"><a href="#10-2-3-XA-接口方法说明" class="headerlink" title="10.2.3. XA 接口方法说明"></a>10.2.3. XA 接口方法说明</h4><ul>
+<li>xa_start：负责开启或者恢复一个事务分支，并且管理 XID 到调用线程</li>
+<li>xa_end：负责取消当前线程与事务分支的关系</li>
+<li>xa_prepare：负责询问 RM 是否准备好了提交事务分支</li>
+<li>xa_commit：通知 RM 提交事务分支</li>
+<li>xa_rollback：通知 RM 回滚事务分支</li>
+</ul>
+<h3 id="10-3-MySQL-XA-事务"><a href="#10-3-MySQL-XA-事务" class="headerlink" title="10.3. MySQL XA 事务"></a>10.3. MySQL XA 事务</h3><p>MySQL 的 XA 事务分为两部分：</p>
+<ol>
+<li>InnoDB 内部本地普通事务操作协调数据写入与 log 写入两阶段提交</li>
+<li>外部分布式事务</li>
+</ol>
+<p>5.7 版本查询 XA 事务支持情况：</p>
+<figure class="highlight sql"><table><tr><td class="gutter"><pre><span class="line">1</span><br></pre></td><td class="code"><pre><span class="line"><span class="keyword">SHOW</span> VARIABLES <span class="keyword">LIKE</span> <span class="string">&#x27;%innodb_support_xa%&#x27;</span>;</span><br></pre></td></tr></table></figure>
+<p>8.0 默认开启并且无法关闭。</p>
+</article><div class="post-copyright"><div class="post-copyright__author"><span class="post-copyright-meta"><i class="fas fa-circle-user fa-fw"></i>文章作者: </span><span class="post-copyright-info"><a href="https://ktzxy.github.io">蓝桉</a></span></div><div class="post-copyright__type"><span class="post-copyright-meta"><i class="fas fa-square-arrow-up-right fa-fw"></i>文章链接: </span><span class="post-copyright-info"><a href="https://ktzxy.github.io/posts/954a7268.html">https://ktzxy.github.io/posts/954a7268.html</a></span></div><div class="post-copyright__notice"><span class="post-copyright-meta"><i class="fas fa-circle-exclamation fa-fw"></i>版权声明: </span><span class="post-copyright-info">本博客所有文章除特别声明外，均采用 <a href="https://creativecommons.org/licenses/by-nc-sa/4.0/" target="_blank">CC BY-NC-SA 4.0</a> 许可协议。转载请注明来源 <a href="https://ktzxy.github.io" target="_blank">蓝桉`Blog</a>！</span></div></div><div class="tag_share"><div class="post-meta__tag-list"><a class="post-meta__tags" href="/tags/%E6%95%B0%E6%8D%AE%E5%BA%93/">数据库</a></div><div class="post-share"><div class="social-share" data-image="/bg/Image00015.webp" data-sites="facebook,twitter,wechat,weibo,qq"></div><link rel="stylesheet" href="https://cdn.jsdelivr.net/npm/butterfly-extsrc/sharejs/dist/css/share.min.css" media="print" onload="this.media='all'"><script src="https://cdn.jsdelivr.net/npm/butterfly-extsrc/sharejs/dist/js/social-share.min.js" defer></script></div></div><link rel="stylesheet" href="/css/coin/coin.css" media="defer" onload="this.media='all'"/><div class="post-reward"><button class="tip-button reward-button"><span class="tip-button__text">不给糖果就捣蛋</span><div class="coin-wrapper"><div class="coin"><div class="coin__middle"></div><div class="coin__back"></div><div class="coin__front"></div></div></div><div class="reward-main"><ul class="reward-all"><li class="reward-item"><a href="/img/wechat.webp" target="_blank"><img class="post-qr-code-img" src="/img/wechat.webp" alt="wechat"/></a><div class="post-qr-code-desc">wechat</div></li><li class="reward-item"><a href="/img/alipay.webp" target="_blank"><img class="post-qr-code-img" src="/img/alipay.webp" alt="alipay"/></a><div class="post-qr-code-desc">alipay</div></li></ul></div></button></div><audio id="coinAudio" src="https://cdn.cbd.int/akilar-candyassets@1.0.36/audio/aowu.m4a"></audio><script defer="defer" src="/js/coin/coin.js"></script><nav class="pagination-post" id="pagination"><a class="pagination-related" href="/posts/8dd416a1.html" title="MySQL-体系架构"><img class="cover" src="/bg/Image00008.webp" onerror="onerror=null;src='/img/404.jpg'" alt="cover of previous post"><div class="info"><div class="info-1"><div class="info-item-1">上一篇</div><div class="info-item-2">MySQL-体系架构</div></div><div class="info-2"><div class="info-item-1">1. MySQL 数据库概述MySQL 官网：https://www.mysql.com/  MySQL 5.7 版本官方文档： https://dev.mysql.com/doc/refman/5.7/en/ MySQL 8.0 版本官方文档： https://dev.mysql.com/doc/refman/8.0/en/  1.1. 相关版本说明MySQL官方提供了两种不同的版本：  社区版本（MySQL Community Server）：免费， MySQL不提供任何技术支持 商业版本（MySQL Enterprise Edition）：收费，可以使用30天，官方提供技术支持  1.2. MySQL 安装MySQL 下载地址：https://downloads.mysql.com/archives/community/ 此部分内容详见《MySQL 安装与部署》文档 1.3. MySQL 数据库特点 MySQL数据库是用C和C++语言编写的，以保证源码的可移植性 支持多个操作系统例如：Windows、Linux、Mac OS等等 支持多线程，可以充分的利用CPU资源 为多种...</div></div></div></a><a class="pagination-related" href="/posts/d3668491.html" title="MySQL-SQL示例"><img class="cover" src="/bg/Image00002.webp" onerror="onerror=null;src='/img/404.jpg'" alt="cover of next post"><div class="info text-right"><div class="info-1"><div class="info-item-1">下一篇</div><div class="info-item-2">MySQL-SQL示例</div></div><div class="info-2"><div class="info-item-1">MySQL 数据库 SQL 示例1. 练习示例涉及的数据库表 DDL 脚本1.1. 普通的示例表 部门表  123456DROP TABLE IF EXISTS `dept`;create table dept(    id   int auto_increment comment &#x27;ID&#x27; primary key,    name varchar(50) not null comment &#x27;部门名称&#x27;)comment &#x27;部门表&#x27;;INSERT INTO dept (id, name) VALUES (1, &#x27;研发部&#x27;), (2, &#x27;市场部&#x27;),(3, &#x27;财务部&#x27;), (4, &#x27;销售部&#x27;), (5, &#x27;总经办&#x27;), (6, &#x27;人事部&#x27;);  员工表  1234567891011121314151617181920212223242526272829DROP TABLE IF EXISTS `emp`;c...</div></div></div></a></nav><div class="relatedPosts"><div class="headline"><i class="fas fa-thumbs-up fa-fw"></i><span>相关推荐</span></div><div class="relatedPosts-list"><a class="pagination-related" href="/posts/a318ca1f.html" title="MySQL数据库150道高频面试题"><img class="cover" src="/bg/Image00018.webp" alt="cover"><div class="info text-center"><div class="info-1"><div class="info-item-1"><i class="far fa-calendar-alt fa-fw"></i> 2025-07-09</div><div class="info-item-2">MySQL数据库150道高频面试题</div></div><div class="info-2"><div class="info-item-1">[toc] 1. Mysql 索引1.1. Mysql如何实现的索引机制？MySQL中索引分三类：B+树索引、Hash索引、全文索引 1.1.1. InnoDB索引与MyISAM索引实现的区别是什么？ MyISAM的索引方式都是非聚簇的，与InnoDB包含1个聚簇索引是不同的。 在InnoDB存储引擎中，我们只需要根据主键值对聚簇索引进行一次查找就能找到对应的记录，而在MyISAM中却需要进行一次回表操作，意味着MyISAM中建立的索引相当于全部都是二级索引。 InnoDB的数据文件本身就是索引文件，而MyISAM索引文件和数据文件是分离的 ，索引文件仅保存数据记录的地址。 MyISAM的表在磁盘上存储在以下文件中：  *.sdi（描述表结构）、*.MYD（数据），*.MYI（索引） InnoDB的表在磁盘上存储在以下文件中： .ibd（表结构、索引和数据都存在一起）   InnoDB的非聚簇索引data域存储相应记录主键的值 ，而MyISAM索引记录的是地址 。换句话说，InnoDB的所有非聚簇索引都引用主键作为data域。 MyISAM的回表操作是十分快速的，因为是拿着地址偏...</div></div></div></a><a class="pagination-related" href="/posts/8f9b37aa.html" title="技术同学必会的MySQL设计规约"><img class="cover" src="/bg/Image00014.webp" alt="cover"><div class="info text-center"><div class="info-1"><div class="info-item-1"><i class="far fa-calendar-alt fa-fw"></i> 2025-07-09</div><div class="info-item-2">技术同学必会的MySQL设计规约</div></div><div class="info-2"><div class="info-item-1">在我们对数据库技术方案设计的时候，我们是否有自己的设计理念或者原则，还是更多的依据自己的直觉去设计，是否曾经懊悔线上发生过的一次低级故障，可能稍微注意点就可以避免，是否想过怎么才能很好的避免，下面规范的价值正是我们工作的检查清单，需要我们不断从错误中积累有效经验来指导未来的工作。以下规范在大型互联网公司经过了充分的验证，尤其适用于并发量大、数据量大的业务场景。先介绍的是安全规范，因为安全无小事，很多公司都曾经因为自己的数据泄露导致用户的惨痛损失，所以将安全规范放到了第一位。﻿ 一、安全规范1.【强制】禁止在数据库中存储明文密码，需把密码加密后存储 说明：对于加密操作建议由公司的中间件团队基于如mybatis的扩展，提供统一的加密算法及密钥管理，避免每个业务线单独开发一套，同时也与具体的业务进行了解耦 2.【强制】禁止在数据库中明文存储用户敏感信息，如手机号等 说明：对于手机号建议公司搭建统一的手机号查询服务，避免在每个业务线单独存储 3.【强制】禁止开发直接给业务同学导出或者查询涉及到用户敏感信息的数据，如需要需上级领导审批 4.【强制】涉及到导出数据功能的操作，如包含敏感字段都...</div></div></div></a><a class="pagination-related" href="/posts/dfdfdf4.html" title="数据库概述"><img class="cover" src="/bg/Image00002.webp" alt="cover"><div class="info text-center"><div class="info-1"><div class="info-item-1"><i class="far fa-calendar-alt fa-fw"></i> 2025-07-09</div><div class="info-item-2">数据库概述</div></div><div class="info-2"><div class="info-item-1">1. 数据库技术1.1. 概述数据库（DB）是一个以某种组织方式存储在磁盘上的数据的集合。简单理解就是用来存储数据的仓库。  数据库 DataBase（DB）：存储数据的仓库，数据是有组织的进行存储。 数据库管理系统 DataBase Management System (DBMS)：操纵和管理数据库的大型软件。  1.2. 数据库的分类  1.3. 不同的数据存储方式数据存储在集合（内存）中  优点：读写速度快 缺点：不能永久存储  数据存储在文件中  优点：可以永久存储 缺点：频繁的IO操作效率低，查询数据很不方便。  数据存储在数据库中  优点：可以永久存储。查询速度快，查询数据很方便 缺点：要使用 SQL 语言执行增删改查操作  2. 关系型数据库 关系型数据库 - 百度百科  2.1. 概念关系型数据库，是指采用了关系模型来组织数据的数据库，其以行和列的形式存储数据，以便于用户理解，关系型数据库这一系列的行和列被称为表，一组表组成了数据库。用户通过查询来检索数据库中的数据，而查询是一个用于限定数据库中某些区域的执行代码。关系模型可以简单理解为二维表格模型，而一个关系型数...</div></div></div></a><a class="pagination-related" href="/posts/75522c08.html" title="第4节-布隆过滤器"><img class="cover" src="/bg/Image00003.webp" alt="cover"><div class="info text-center"><div class="info-1"><div class="info-item-1"><i class="far fa-calendar-alt fa-fw"></i> 2025-07-09</div><div class="info-item-2">第4节-布隆过滤器</div></div><div class="info-2"><div class="info-item-1">第4节-布隆过滤器BloomFilter面试题： 现有50亿个电话号码，选定其中10w个电话号码，如何要快速准确的判断这些号码是否已经存在？ 思路：  1、通过数据库查询———-实现快速有点难。  2、数据预放到内存集合中：50亿*8字节大约40G，内存太大了。 1、布隆过滤器是什么？它实际上==是一个很长的二进制数组+一系列随机hash算法映射函数，主要用于判断一个元素是否在集合中==。 通常我们会遇到很多要判断一个元素是否在某个集合中的业务场景，一般想到的是将集合中所有元素保存起来，然后通过比较确定。 链表、树、散列表（又叫哈希表，Hash table）等等数据结构都是这种思路。 但是随着集合中元素的增加，我们需要的存储空间也会呈现线性增长，最终达到瓶颈。 同时检索速度也越来越慢，上述三种结构的检索时间复杂度分别为O(n),O(logn),O(1)。这个时候，布隆过滤器（Bloom Filter）就应运而生  一句话概述：由一个初值为零的bit数组和多个哈希函数构成，用来快速判断某个数据是否存在。 本质就是判断具体元素存不存在一个大的集合中。 布隆过滤器是一种类似set的数据...</div></div></div></a><a class="pagination-related" href="/posts/e4cd3c5b.html" title="第5节-缓存预热+缓存雪崩+缓存击穿+缓存穿透"><img class="cover" src="/bg/Image00008.webp" alt="cover"><div class="info text-center"><div class="info-1"><div class="info-item-1"><i class="far fa-calendar-alt fa-fw"></i> 2025-07-09</div><div class="info-item-2">第5节-缓存预热+缓存雪崩+缓存击穿+缓存穿透</div></div><div class="info-2"><div class="info-item-1">第5节-缓存预热+缓存雪崩+缓存击穿+缓存穿透1、缓存雪崩发生情况： ​    redis主机挂了，redis全盘崩溃，比如缓存中有大量数据同时过期。 解决方案：  redis缓存集群实现高可用，主从+哨兵|| redis cluster ehcache本地缓存 + hystrix 或者 阿里sentinel限流&amp;降级 开启Redis持久化机制/aof+rdb，尽快恢复缓存集群 2、缓存穿透 什么是缓存穿透  请求去查询一条记录，先redis后mysql发现，都查不到该条记录，但是每次请求都会打到数据库上面去，导致后台数据库压力暴增，这种现象我们称为缓存穿透，redis成为了一个摆设。 简单说就是，本来无一物，即不再redis中，也不在mysql中。  危害  数据库可能会被打崩。导致服务不可用。 第一次来查询后，一般我们会有回写redis机制， 第二次来查询的时候redis就有了，偶尔出现穿透现象一般情况无关紧要。  解决方案   1、返回空对象缓存或者缺省值 一般OK  但是存在黑客和恶意攻击情况 黑客会对你的系统进行攻击，拿到一个不存在的id，去查询数据，会产生大量...</div></div></div></a><a class="pagination-related" href="/posts/41ae0132.html" title="MongoDB-基础"><img class="cover" src="/bg/Image00026.webp" alt="cover"><div class="info text-center"><div class="info-1"><div class="info-item-1"><i class="far fa-calendar-alt fa-fw"></i> 2025-07-09</div><div class="info-item-2">MongoDB-基础</div></div><div class="info-2"><div class="info-item-1">1. MongoDb 概述MongoDB 是一个跨平台的，面向文档的数据库，是当前 NoSQL 数据库产品中最热门的一种。它介于关系数据库和非关系数据库之间，是非关系数据库当中功能最丰富，最像关系数据库的产品。它支持的数据结构非常松散，是类似 JSON 的 BSON 格式，因此可以存储比较复杂的数据类型。 1.1. MongoDB 特点MongoDB 最大的特点是他支持的查询语言非常强大，其语法有点类似于面向对象的查询语言，几乎可以实现类似关系数据库单表查询的绝大部分功能，而且还支持对数据建立索引。它是一个面向集合的，模式自由的文档型数据库，具体特点总结如下：  面向集合存储，易于存储对象类型的数据 模式自由 支持动态查询 支持完全索引，包含内部对象 支持复制和故障恢复 使用高效的二进制数据存储，包括大型对象（如视频等） 自动处理碎片，以支持云计算层次的扩展性 支持 Python，PHP，Ruby，Java，C，C#，Javascript，Perl 及 C++语言的驱动程序，社区中也提供了对 Erlang 及.NET 等平台的驱动程序 文件存储格式为 BSON（一种 JSON 的...</div></div></div></a></div></div></div><div class="aside-content" id="aside-content"><div class="card-widget card-info text-center"><div class="avatar-img"><img src="/img/avatar.webp" onerror="this.onerror=null;this.src='/img/friend_404.gif'" alt="avatar"/></div><div class="author-info-name">蓝桉</div><div class="author-info-description"><div style="line-height:1.38;margin:0.6rem 0;text-align:justify;color:rgba(255, 255, 255, 0.8);">这有关于<b style="color:#fff">生活、学习、技术</b>相关的问题和看法，还有<b style="color:#fff">文章教程</b>和<b style="color:#fff">分享</b>。</div><div style="line-height:1.38;margin:0.6rem 0;text-align:justify;color:rgba(255, 255, 255, 0.8);">相信你可以在这里找到对你有用的<b style="color:#fff">知识</b>和<b style="color:#fff">教程</b>。</div></div><div class="site-data"><a href="/archives/"><div class="headline">文章</div><div class="length-num">264</div></a><a href="/tags/"><div class="headline">标签</div><div class="length-num">38</div></a><a href="/categories/"><div class="headline">分类</div><div class="length-num">37</div></a></div><a id="card-info-btn" target="_blank" rel="noopener" href="https://github.com/ktzxy"><i class="fab fa-github"></i><span>Follow Me</span></a><div class="card-info-social-icons"><a class="social-icon faa-parent animated-hover" href="https://github.com/ktzxy" target="_blank" title="Github"><svg class="social_icon faa-tada" aria-hidden="true"><use xlink:href="#icon-github"></use></svg></a><a class="social-icon faa-parent animated-hover" href="https://mail.qq.com/cgi-bin/qm_share?t=qm_mailme&amp;email=2251511764@qq.com" target="_blank" title="Email"><svg class="social_icon faa-tada" aria-hidden="true"><use xlink:href="#icon-youxiang"></use></svg></a><a class="social-icon faa-parent animated-hover" href="/atom.xml" target="_blank" title="RSS"><svg class="social_icon faa-tada" aria-hidden="true"><use xlink:href="#icon-RSS"></use></svg></a><a class="social-icon faa-parent animated-hover" href="https://space.bilibili.com/496148176" target="_blank" title="BiliBili"><svg class="social_icon faa-tada" aria-hidden="true"><use xlink:href="#icon-QX-BILIBILI"></use></svg></a><a class="social-icon faa-parent animated-hover" href="tencent://Message/?Uin=2251511764&amp;amp;websiteName=local.edu.com:8888=&amp;amp;Menu=yes" target="_blank" title="QQ"><svg class="social_icon faa-tada" aria-hidden="true"><use xlink:href="#icon-QQ"></use></svg></a></div></div><div class="card-widget card-announcement"><div class="item-headline"><i class="fas fa-bullhorn fa-shake"></i><span>公告</span></div><div class="announcement_content">This is my Blog</div></div><div class="sticky_layout"><div class="card-widget" id="card-toc"><div class="item-headline"><i class="fas fa-stream"></i><span>目录</span><span class="toc-percentage"></span></div><div class="toc-content"><ol class="toc"><li class="toc-item toc-level-2"><a class="toc-link" href="#1-%E4%BA%8B%E5%8A%A1-transaction-%E7%9A%84%E6%A6%82%E5%BF%B5"><span class="toc-number">1.</span> <span class="toc-text">1. 事务(transaction)的概念</span></a></li><li class="toc-item toc-level-2"><a class="toc-link" href="#2-%E4%BA%8B%E5%8A%A1%E7%89%B9%E6%80%A7"><span class="toc-number">2.</span> <span class="toc-text">2. 事务特性</span></a><ol class="toc-child"><li class="toc-item toc-level-3"><a class="toc-link" href="#2-1-%E5%8E%9F%E5%AD%90%E6%80%A7%EF%BC%88Atomicity%EF%BC%89"><span class="toc-number">2.1.</span> <span class="toc-text">2.1. 原子性（Atomicity）</span></a></li><li class="toc-item toc-level-3"><a class="toc-link" href="#2-2-%E4%B8%80%E8%87%B4%E6%80%A7%EF%BC%88Consistency%EF%BC%89"><span class="toc-number">2.2.</span> <span class="toc-text">2.2. 一致性（Consistency）</span></a></li><li class="toc-item toc-level-3"><a class="toc-link" href="#2-3-%E9%9A%94%E7%A6%BB%E6%80%A7%EF%BC%88Isolation%EF%BC%89"><span class="toc-number">2.3.</span> <span class="toc-text">2.3. 隔离性（Isolation）</span></a></li><li class="toc-item toc-level-3"><a class="toc-link" href="#2-4-%E6%8C%81%E4%B9%85%E6%80%A7%EF%BC%88Durability%EF%BC%89"><span class="toc-number">2.4.</span> <span class="toc-text">2.4. 持久性（Durability）</span></a></li></ol></li><li class="toc-item toc-level-2"><a class="toc-link" href="#3-%E4%BA%8B%E5%8A%A1%E9%9A%94%E7%A6%BB%E7%BA%A7%E5%88%AB"><span class="toc-number">3.</span> <span class="toc-text">3. 事务隔离级别</span></a><ol class="toc-child"><li class="toc-item toc-level-3"><a class="toc-link" href="#3-1-%E4%BA%8B%E5%8A%A1%E5%B9%B6%E5%8F%91%E5%BC%95%E5%8F%91%E7%9A%84%E9%97%AE%E9%A2%98"><span class="toc-number">3.1.</span> <span class="toc-text">3.1. 事务并发引发的问题</span></a><ol class="toc-child"><li class="toc-item toc-level-4"><a class="toc-link" href="#3-1-1-%E8%84%8F%E8%AF%BB%EF%BC%88Dirty-Read%EF%BC%89"><span class="toc-number">3.1.1.</span> <span class="toc-text">3.1.1. 脏读（Dirty Read）</span></a></li><li class="toc-item toc-level-4"><a class="toc-link" href="#3-1-2-%E4%B8%8D%E5%8F%AF%E9%87%8D%E5%A4%8D%E8%AF%BB%EF%BC%88Non-Repeatable-Read%EF%BC%89"><span class="toc-number">3.1.2.</span> <span class="toc-text">3.1.2. 不可重复读（Non-Repeatable Read）</span></a></li><li class="toc-item toc-level-4"><a class="toc-link" href="#3-1-3-%E5%B9%BB%E8%AF%BB%EF%BC%88Phantom%EF%BC%89"><span class="toc-number">3.1.3.</span> <span class="toc-text">3.1.3. 幻读（Phantom）</span></a></li><li class="toc-item toc-level-4"><a class="toc-link" href="#3-1-4-%E6%9B%B4%E6%96%B0%E4%B8%A2%E5%A4%B1-Lost-Update-%E6%88%96%E8%84%8F%E5%86%99"><span class="toc-number">3.1.4.</span> <span class="toc-text">3.1.4. 更新丢失(Lost Update)或脏写</span></a></li><li class="toc-item toc-level-4"><a class="toc-link" href="#3-1-5-%E4%B8%8D%E5%8F%AF%E9%87%8D%E5%A4%8D%E8%AF%BB%E4%B8%8E%E5%B9%BB%E8%AF%BB%E7%9A%84%E5%8C%BA%E5%88%AB"><span class="toc-number">3.1.5.</span> <span class="toc-text">3.1.5. 不可重复读与幻读的区别</span></a></li></ol></li><li class="toc-item toc-level-3"><a class="toc-link" href="#3-2-%E9%9A%94%E7%A6%BB%E7%BA%A7%E5%88%AB%E7%9A%84%E4%BD%9C%E7%94%A8"><span class="toc-number">3.2.</span> <span class="toc-text">3.2. 隔离级别的作用</span></a><ol class="toc-child"><li class="toc-item toc-level-4"><a class="toc-link" href="#3-2-1-%E5%B8%B8%E7%94%A8%E6%95%B0%E6%8D%AE%E5%BA%93%E6%94%AF%E6%8C%81%E4%B8%8E%E9%BB%98%E8%AE%A4%E7%9A%84%E9%9A%94%E7%A6%BB%E7%BA%A7%E5%88%AB"><span class="toc-number">3.2.1.</span> <span class="toc-text">3.2.1. 常用数据库支持与默认的隔离级别</span></a></li><li class="toc-item toc-level-4"><a class="toc-link" href="#3-2-2-%E8%AE%BE%E7%BD%AE%E4%BA%8B%E5%8A%A1%E7%9A%84%E9%9A%94%E7%A6%BB%E7%BA%A7%E5%88%AB"><span class="toc-number">3.2.2.</span> <span class="toc-text">3.2.2. 设置事务的隔离级别</span></a></li><li class="toc-item toc-level-4"><a class="toc-link" href="#3-2-3-MySQL%E6%95%B0%E6%8D%AE%E5%BA%93%E6%9F%A5%E7%9C%8B%E5%BD%93%E5%89%8D%E4%BA%8B%E5%8A%A1%E7%9A%84%E9%9A%94%E7%A6%BB%E7%BA%A7%E5%88%AB%E7%9A%84%E5%91%BD%E4%BB%A4"><span class="toc-number">3.2.3.</span> <span class="toc-text">3.2.3. MySQL数据库查看当前事务的隔离级别的命令</span></a></li></ol></li></ol></li><li class="toc-item toc-level-2"><a class="toc-link" href="#4-MySQL-%E4%BA%8B%E5%8A%A1%E6%93%8D%E4%BD%9C"><span class="toc-number">4.</span> <span class="toc-text">4. MySQL 事务操作</span></a><ol class="toc-child"><li class="toc-item toc-level-3"><a class="toc-link" href="#4-1-%E4%BA%8B%E5%8A%A1%E5%9F%BA%E7%A1%80%E6%93%8D%E4%BD%9C%E6%B5%81%E7%A8%8B"><span class="toc-number">4.1.</span> <span class="toc-text">4.1. 事务基础操作流程</span></a></li><li class="toc-item toc-level-3"><a class="toc-link" href="#4-2-%E8%87%AA%E5%8A%A8%E4%BA%8B%E5%8A%A1%E6%8F%90%E4%BA%A4%E6%A8%A1%E5%BC%8F%EF%BC%88MySQL-%E9%BB%98%E8%AE%A4%EF%BC%89"><span class="toc-number">4.2.</span> <span class="toc-text">4.2. 自动事务提交模式（MySQL 默认）</span></a></li><li class="toc-item toc-level-3"><a class="toc-link" href="#4-3-%E6%98%BE%E5%BC%8F%E4%BA%8B%E5%8A%A1%E6%8F%90%E4%BA%A4%E6%A8%A1%E5%BC%8F"><span class="toc-number">4.3.</span> <span class="toc-text">4.3. 显式事务提交模式</span></a><ol class="toc-child"><li class="toc-item toc-level-4"><a class="toc-link" href="#4-3-1-%E6%8E%A7%E5%88%B6%E4%BA%8B%E5%8A%A1%E6%96%B9%E5%BC%8F1"><span class="toc-number">4.3.1.</span> <span class="toc-text">4.3.1. 控制事务方式1</span></a></li><li class="toc-item toc-level-4"><a class="toc-link" href="#4-3-2-%E6%8E%A7%E5%88%B6%E4%BA%8B%E5%8A%A1%E6%96%B9%E5%BC%8F2"><span class="toc-number">4.3.2.</span> <span class="toc-text">4.3.2. 控制事务方式2</span></a></li></ol></li><li class="toc-item toc-level-3"><a class="toc-link" href="#4-4-%E9%9A%90%E5%BC%8F%E6%8F%90%E4%BA%A4%E6%A8%A1%E5%BC%8F"><span class="toc-number">4.4.</span> <span class="toc-text">4.4. 隐式提交模式</span></a><ol class="toc-child"><li class="toc-item toc-level-4"><a class="toc-link" href="#4-4-1-%E6%89%A7%E8%A1%8CDDL%E8%AF%AD%E5%8F%A5"><span class="toc-number">4.4.1.</span> <span class="toc-text">4.4.1. 执行DDL语句</span></a></li><li class="toc-item toc-level-4"><a class="toc-link" href="#4-4-2-%E9%9A%90%E5%BC%8F%E4%BD%BF%E7%94%A8%E6%88%96%E4%BF%AE%E6%94%B9-mysql-%E6%95%B0%E6%8D%AE%E5%BA%93%E4%B8%AD%E7%9A%84%E8%A1%A8"><span class="toc-number">4.4.2.</span> <span class="toc-text">4.4.2. 隐式使用或修改 mysql 数据库中的表</span></a></li><li class="toc-item toc-level-4"><a class="toc-link" href="#4-4-3-%E4%BA%8B%E5%8A%A1%E6%8E%A7%E5%88%B6%E6%88%96%E5%85%B3%E4%BA%8E%E9%94%81%E5%AE%9A%E7%9A%84%E8%AF%AD%E5%8F%A5"><span class="toc-number">4.4.3.</span> <span class="toc-text">4.4.3. 事务控制或关于锁定的语句</span></a></li><li class="toc-item toc-level-4"><a class="toc-link" href="#4-4-4-%E5%8A%A0%E8%BD%BD%E6%95%B0%E6%8D%AE%E7%9A%84%E8%AF%AD%E5%8F%A5"><span class="toc-number">4.4.4.</span> <span class="toc-text">4.4.4. 加载数据的语句</span></a></li><li class="toc-item toc-level-4"><a class="toc-link" href="#4-4-5-%E5%85%B3%E4%BA%8E-MySQL-%E5%A4%8D%E5%88%B6%E7%9A%84%E4%B8%80%E4%BA%9B%E8%AF%AD%E5%8F%A5"><span class="toc-number">4.4.5.</span> <span class="toc-text">4.4.5. 关于 MySQL 复制的一些语句</span></a></li><li class="toc-item toc-level-4"><a class="toc-link" href="#4-4-6-%E5%85%B6%E5%AE%83%E7%9A%84%E7%9B%B8%E5%85%B3%E8%AF%AD%E5%8F%A5"><span class="toc-number">4.4.6.</span> <span class="toc-text">4.4.6. 其它的相关语句</span></a></li></ol></li><li class="toc-item toc-level-3"><a class="toc-link" href="#4-5-%E4%BF%9D%E5%AD%98%E7%82%B9"><span class="toc-number">4.5.</span> <span class="toc-text">4.5. 保存点</span></a><ol class="toc-child"><li class="toc-item toc-level-4"><a class="toc-link" href="#4-5-1-%E5%9F%BA%E7%A1%80%E8%AF%AD%E6%B3%95"><span class="toc-number">4.5.1.</span> <span class="toc-text">4.5.1. 基础语法</span></a></li><li class="toc-item toc-level-4"><a class="toc-link" href="#4-5-2-%E4%BF%9D%E5%AD%98%E7%82%B9%E7%A4%BA%E4%BE%8B"><span class="toc-number">4.5.2.</span> <span class="toc-text">4.5.2. 保存点示例</span></a></li></ol></li><li class="toc-item toc-level-3"><a class="toc-link" href="#4-6-%E4%BA%8B%E5%8A%A1%E6%B3%A8%E6%84%8F%E4%BA%8B%E9%A1%B9"><span class="toc-number">4.6.</span> <span class="toc-text">4.6. 事务注意事项</span></a></li></ol></li><li class="toc-item toc-level-2"><a class="toc-link" href="#5-%E4%BA%8B%E5%8A%A1%E4%BD%BF%E7%94%A8%E7%9A%84%E6%80%BB%E7%BB%93"><span class="toc-number">5.</span> <span class="toc-text">5. 事务使用的总结</span></a><ol class="toc-child"><li class="toc-item toc-level-3"><a class="toc-link" href="#5-1-%E5%A4%A7%E4%BA%8B%E5%8A%A1%E7%9A%84%E5%BD%B1%E5%93%8D"><span class="toc-number">5.1.</span> <span class="toc-text">5.1. 大事务的影响</span></a></li><li class="toc-item toc-level-3"><a class="toc-link" href="#5-2-%E4%BA%8B%E5%8A%A1%E4%BC%98%E5%8C%96"><span class="toc-number">5.2.</span> <span class="toc-text">5.2. 事务优化</span></a></li><li class="toc-item toc-level-3"><a class="toc-link" href="#5-3-%E4%BA%8B%E5%8A%A1%E9%97%AE%E9%A2%98%E5%AE%9A%E4%BD%8D"><span class="toc-number">5.3.</span> <span class="toc-text">5.3. 事务问题定位</span></a></li></ol></li><li class="toc-item toc-level-2"><a class="toc-link" href="#6-%E4%BA%8B%E5%8A%A1%E7%9A%84%E5%BA%95%E5%B1%82%E5%8E%9F%E7%90%86"><span class="toc-number">6.</span> <span class="toc-text">6. 事务的底层原理</span></a></li><li class="toc-item toc-level-2"><a class="toc-link" href="#7-redo-log%EF%BC%88%E9%87%8D%E5%81%9A%E6%97%A5%E5%BF%97%EF%BC%89"><span class="toc-number">7.</span> <span class="toc-text">7. redo log（重做日志）</span></a><ol class="toc-child"><li class="toc-item toc-level-3"><a class="toc-link" href="#7-1-redo-%E6%97%A5%E5%BF%97%E7%9A%84%E4%BD%9C%E7%94%A8"><span class="toc-number">7.1.</span> <span class="toc-text">7.1. redo 日志的作用</span></a></li><li class="toc-item toc-level-3"><a class="toc-link" href="#7-2-redo-log-%E5%85%B3%E9%94%AE%E5%8F%82%E6%95%B0"><span class="toc-number">7.2.</span> <span class="toc-text">7.2. redo log 关键参数</span></a></li><li class="toc-item toc-level-3"><a class="toc-link" href="#7-3-redo-%E6%97%A5%E5%BF%97%E6%A0%BC%E5%BC%8F"><span class="toc-number">7.3.</span> <span class="toc-text">7.3. redo 日志格式</span></a><ol class="toc-child"><li class="toc-item toc-level-4"><a class="toc-link" href="#7-3-1-%E7%AE%80%E5%8D%95-redo-%E6%97%A5%E5%BF%97%E7%B1%BB%E5%9E%8B"><span class="toc-number">7.3.1.</span> <span class="toc-text">7.3.1. 简单 redo 日志类型</span></a></li><li class="toc-item toc-level-4"><a class="toc-link" href="#7-3-2-%E5%A4%8D%E6%9D%82-redo-%E6%97%A5%E5%BF%97%E7%B1%BB%E5%9E%8B"><span class="toc-number">7.3.2.</span> <span class="toc-text">7.3.2. 复杂 redo 日志类型</span></a></li></ol></li><li class="toc-item toc-level-3"><a class="toc-link" href="#7-4-Mini-Transaction"><span class="toc-number">7.4.</span> <span class="toc-text">7.4. Mini-Transaction</span></a><ol class="toc-child"><li class="toc-item toc-level-4"><a class="toc-link" href="#7-4-1-Mini-Transaction-%E7%9A%84%E6%A6%82%E5%BF%B5"><span class="toc-number">7.4.1.</span> <span class="toc-text">7.4.1. Mini-Transaction 的概念</span></a></li><li class="toc-item toc-level-4"><a class="toc-link" href="#7-4-2-%E4%BB%A5%E7%BB%84%E7%9A%84%E5%BD%A2%E5%BC%8F%E5%86%99%E5%85%A5-redo-%E6%97%A5%E5%BF%97"><span class="toc-number">7.4.2.</span> <span class="toc-text">7.4.2. 以组的形式写入 redo 日志</span></a></li></ol></li><li class="toc-item toc-level-3"><a class="toc-link" href="#7-5-redo-%E6%97%A5%E5%BF%97%E7%9A%84%E5%86%99%E5%85%A5%E8%BF%87%E7%A8%8B"><span class="toc-number">7.5.</span> <span class="toc-text">7.5. redo 日志的写入过程</span></a><ol class="toc-child"><li class="toc-item toc-level-4"><a class="toc-link" href="#7-5-1-redo-log-block-%E5%92%8C%E6%97%A5%E5%BF%97%E7%BC%93%E5%86%B2%E5%8C%BA"><span class="toc-number">7.5.1.</span> <span class="toc-text">7.5.1. redo log block 和日志缓冲区</span></a></li><li class="toc-item toc-level-4"><a class="toc-link" href="#7-5-2-redo-%E6%97%A5%E5%BF%97%E5%88%B7%E7%9B%98%E6%97%B6%E6%9C%BA"><span class="toc-number">7.5.2.</span> <span class="toc-text">7.5.2. redo 日志刷盘时机</span></a></li><li class="toc-item toc-level-4"><a class="toc-link" href="#7-5-3-redo-%E6%97%A5%E5%BF%97%E6%96%87%E4%BB%B6%E7%BB%84"><span class="toc-number">7.5.3.</span> <span class="toc-text">7.5.3. redo 日志文件组</span></a></li><li class="toc-item toc-level-4"><a class="toc-link" href="#7-5-4-redo-%E6%97%A5%E5%BF%97%E6%96%87%E4%BB%B6%E6%A0%BC%E5%BC%8F"><span class="toc-number">7.5.4.</span> <span class="toc-text">7.5.4. redo 日志文件格式</span></a></li></ol></li><li class="toc-item toc-level-3"><a class="toc-link" href="#7-6-Log-Sequence-Number"><span class="toc-number">7.6.</span> <span class="toc-text">7.6. Log Sequence Number</span></a><ol class="toc-child"><li class="toc-item toc-level-4"><a class="toc-link" href="#7-6-1-flushed-to-disk-lsn"><span class="toc-number">7.6.1.</span> <span class="toc-text">7.6.1. flushed_to_disk_lsn</span></a></li><li class="toc-item toc-level-4"><a class="toc-link" href="#7-6-2-%E6%9F%A5%E7%9C%8B%E7%B3%BB%E7%BB%9F%E4%B8%AD%E7%9A%84%E5%90%84%E7%A7%8D-LSN-%E5%80%BC"><span class="toc-number">7.6.2.</span> <span class="toc-text">7.6.2. 查看系统中的各种 LSN 值</span></a></li></ol></li><li class="toc-item toc-level-3"><a class="toc-link" href="#7-7-redo-log-%E7%9A%84%E5%86%99%E5%85%A5%E7%AD%96%E7%95%A5%E5%8F%82%E6%95%B0-innodb-flush-log-at-trx-commit"><span class="toc-number">7.7.</span> <span class="toc-text">7.7. redo log 的写入策略参数 innodb_flush_log_at_trx_commit</span></a><ol class="toc-child"><li class="toc-item toc-level-4"><a class="toc-link" href="#7-7-1-redo-log-%E5%86%99%E5%85%A5%E7%AD%96%E7%95%A5%E6%B5%81%E7%A8%8B%E5%9B%BE"><span class="toc-number">7.7.1.</span> <span class="toc-text">7.7.1. redo log 写入策略流程图</span></a></li><li class="toc-item toc-level-4"><a class="toc-link" href="#7-7-2-%E6%9F%A5%E8%AF%A2%E4%B8%8E%E8%AE%BE%E7%BD%AE%E5%8F%82%E6%95%B0"><span class="toc-number">7.7.2.</span> <span class="toc-text">7.7.2. 查询与设置参数</span></a></li></ol></li><li class="toc-item toc-level-3"><a class="toc-link" href="#7-8-redo-log-%E7%9A%84%E6%89%A7%E8%A1%8C%E6%B5%81%E7%A8%8B"><span class="toc-number">7.8.</span> <span class="toc-text">7.8. redo log 的执行流程</span></a></li><li class="toc-item toc-level-3"><a class="toc-link" href="#7-9-%E5%B4%A9%E6%BA%83%E5%90%8E%E7%9A%84%E6%81%A2%E5%A4%8D"><span class="toc-number">7.9.</span> <span class="toc-text">7.9. 崩溃后的恢复</span></a><ol class="toc-child"><li class="toc-item toc-level-4"><a class="toc-link" href="#7-9-1-%E6%81%A2%E5%A4%8D%E6%9C%BA%E5%88%B6"><span class="toc-number">7.9.1.</span> <span class="toc-text">7.9.1. 恢复机制</span></a></li><li class="toc-item toc-level-4"><a class="toc-link" href="#7-9-2-%E5%B4%A9%E6%BA%83%E5%90%8E%E7%9A%84%E6%81%A2%E5%A4%8D%E4%B8%BA%E4%BB%80%E4%B9%88%E4%B8%8D%E7%94%A8-binlog%EF%BC%9F"><span class="toc-number">7.9.2.</span> <span class="toc-text">7.9.2. 崩溃后的恢复为什么不用 binlog？</span></a></li></ol></li></ol></li><li class="toc-item toc-level-2"><a class="toc-link" href="#8-undo-log%EF%BC%88%E6%92%A4%E9%94%80%E6%97%A5%E5%BF%97%EF%BC%89"><span class="toc-number">8.</span> <span class="toc-text">8. undo log（撤销日志）</span></a><ol class="toc-child"><li class="toc-item toc-level-3"><a class="toc-link" href="#8-1-%E6%9F%A5%E8%AF%A2-undo-log-%E5%8F%82%E6%95%B0"><span class="toc-number">8.1.</span> <span class="toc-text">8.1. 查询 undo log 参数</span></a></li><li class="toc-item toc-level-3"><a class="toc-link" href="#8-2-%E4%BA%8B%E5%8A%A1%E5%9B%9E%E6%BB%9A"><span class="toc-number">8.2.</span> <span class="toc-text">8.2. 事务回滚</span></a></li><li class="toc-item toc-level-3"><a class="toc-link" href="#8-3-%E4%BA%8B%E5%8A%A1ID"><span class="toc-number">8.3.</span> <span class="toc-text">8.3. 事务ID</span></a><ol class="toc-child"><li class="toc-item toc-level-4"><a class="toc-link" href="#8-3-1-%E7%BB%99%E4%BA%8B%E5%8A%A1%E5%88%86%E9%85%8D-id-%E7%9A%84%E6%97%B6%E6%9C%BA"><span class="toc-number">8.3.1.</span> <span class="toc-text">8.3.1. 给事务分配 id 的时机</span></a></li><li class="toc-item toc-level-4"><a class="toc-link" href="#8-3-2-%E4%BA%8B%E5%8A%A1-id-%E7%94%9F%E6%88%90%E6%9C%BA%E5%88%B6"><span class="toc-number">8.3.2.</span> <span class="toc-text">8.3.2. 事务 id 生成机制</span></a></li></ol></li><li class="toc-item toc-level-3"><a class="toc-link" href="#8-4-%E9%9A%90%E8%97%8F%E5%88%97"><span class="toc-number">8.4.</span> <span class="toc-text">8.4. 隐藏列</span></a></li><li class="toc-item toc-level-3"><a class="toc-link" href="#8-5-undo-%E6%97%A5%E5%BF%97%E7%9A%84%E6%A0%BC%E5%BC%8F"><span class="toc-number">8.5.</span> <span class="toc-text">8.5. undo 日志的格式</span></a><ol class="toc-child"><li class="toc-item toc-level-4"><a class="toc-link" href="#8-5-1-INSERT-%E6%93%8D%E4%BD%9C%E5%AF%B9%E5%BA%94%E7%9A%84-undo-%E6%97%A5%E5%BF%97"><span class="toc-number">8.5.1.</span> <span class="toc-text">8.5.1. INSERT 操作对应的 undo 日志</span></a><ol class="toc-child"><li class="toc-item toc-level-5"><a class="toc-link" href="#8-5-1-1-%E5%9F%BA%E7%A1%80%E5%A4%84%E7%90%86%E6%B5%81%E7%A8%8B"><span class="toc-number">8.5.1.1.</span> <span class="toc-text">8.5.1.1. 基础处理流程</span></a></li><li class="toc-item toc-level-5"><a class="toc-link" href="#8-5-1-2-roll-pointer-%E7%9A%84%E4%BD%9C%E7%94%A8"><span class="toc-number">8.5.1.2.</span> <span class="toc-text">8.5.1.2. roll_pointer 的作用</span></a></li></ol></li><li class="toc-item toc-level-4"><a class="toc-link" href="#8-5-2-DELETE-%E6%93%8D%E4%BD%9C%E5%AF%B9%E5%BA%94%E7%9A%84-undo-%E6%97%A5%E5%BF%97"><span class="toc-number">8.5.2.</span> <span class="toc-text">8.5.2. DELETE 操作对应的 undo 日志</span></a><ol class="toc-child"><li class="toc-item toc-level-5"><a class="toc-link" href="#8-5-2-1-%E5%9F%BA%E7%A1%80%E5%A4%84%E7%90%86%E6%B5%81%E7%A8%8B"><span class="toc-number">8.5.2.1.</span> <span class="toc-text">8.5.2.1. 基础处理流程</span></a></li><li class="toc-item toc-level-5"><a class="toc-link" href="#8-5-2-2-%E7%89%88%E6%9C%AC%E9%93%BE"><span class="toc-number">8.5.2.2.</span> <span class="toc-text">8.5.2.2. 版本链</span></a></li></ol></li><li class="toc-item toc-level-4"><a class="toc-link" href="#8-5-3-UPDATE-%E6%93%8D%E4%BD%9C%E5%AF%B9%E5%BA%94%E7%9A%84-undo-%E6%97%A5%E5%BF%97"><span class="toc-number">8.5.3.</span> <span class="toc-text">8.5.3. UPDATE 操作对应的 undo 日志</span></a><ol class="toc-child"><li class="toc-item toc-level-5"><a class="toc-link" href="#8-5-3-1-%E4%B8%8D%E6%9B%B4%E6%96%B0%E4%B8%BB%E9%94%AE%E7%9A%84%E6%83%85%E5%86%B5"><span class="toc-number">8.5.3.1.</span> <span class="toc-text">8.5.3.1. 不更新主键的情况</span></a></li><li class="toc-item toc-level-5"><a class="toc-link" href="#8-5-3-2-%E6%9B%B4%E6%96%B0%E4%B8%BB%E9%94%AE%E7%9A%84%E6%83%85%E5%86%B5"><span class="toc-number">8.5.3.2.</span> <span class="toc-text">8.5.3.2. 更新主键的情况</span></a></li></ol></li></ol></li><li class="toc-item toc-level-3"><a class="toc-link" href="#8-6-FIL-PAGE-UNDO-LOG-%E9%A1%B5%E9%9D%A2"><span class="toc-number">8.6.</span> <span class="toc-text">8.6. FIL_PAGE_UNDO_LOG 页面</span></a></li><li class="toc-item toc-level-3"><a class="toc-link" href="#8-7-undo-log-%E6%97%A5%E5%BF%97%E5%88%A0%E9%99%A4%E6%97%B6%E6%9C%BA"><span class="toc-number">8.7.</span> <span class="toc-text">8.7. undo log 日志删除时机</span></a></li></ol></li><li class="toc-item toc-level-2"><a class="toc-link" href="#9-MVCC%EF%BC%88%E5%A4%9A%E7%89%88%E6%9C%AC%E5%B9%B6%E5%8F%91%E6%8E%A7%E5%88%B6%EF%BC%89"><span class="toc-number">9.</span> <span class="toc-text">9. MVCC（多版本并发控制）</span></a><ol class="toc-child"><li class="toc-item toc-level-3"><a class="toc-link" href="#9-1-%E4%BA%8B%E5%8A%A1%E5%B9%B6%E5%8F%91%E6%89%A7%E8%A1%8C%E9%81%87%E5%88%B0%E7%9A%84%E9%97%AE%E9%A2%98"><span class="toc-number">9.1.</span> <span class="toc-text">9.1. 事务并发执行遇到的问题</span></a></li><li class="toc-item toc-level-3"><a class="toc-link" href="#9-2-MVCC-%E7%9A%84%E6%A6%82%E8%BF%B0"><span class="toc-number">9.2.</span> <span class="toc-text">9.2. MVCC 的概述</span></a></li><li class="toc-item toc-level-3"><a class="toc-link" href="#9-3-MVCC-%E7%9A%84%E6%A0%B8%E5%BF%83%E7%BB%84%E6%88%90%E9%83%A8%E5%88%86"><span class="toc-number">9.3.</span> <span class="toc-text">9.3. MVCC 的核心组成部分</span></a><ol class="toc-child"><li class="toc-item toc-level-4"><a class="toc-link" href="#9-3-1-undo-%E6%97%A5%E5%BF%97%E7%89%88%E6%9C%AC%E9%93%BE"><span class="toc-number">9.3.1.</span> <span class="toc-text">9.3.1. undo 日志版本链</span></a></li><li class="toc-item toc-level-4"><a class="toc-link" href="#9-3-2-ReadView"><span class="toc-number">9.3.2.</span> <span class="toc-text">9.3.2. ReadView</span></a></li></ol></li><li class="toc-item toc-level-3"><a class="toc-link" href="#9-4-undo-%E6%97%A5%E5%BF%97%E7%89%88%E6%9C%AC%E9%93%BE%E4%B8%8E-ReadView-%E6%9C%BA%E5%88%B6%E8%AF%A6%E8%A7%A3"><span class="toc-number">9.4.</span> <span class="toc-text">9.4. undo 日志版本链与 ReadView 机制详解</span></a><ol class="toc-child"><li class="toc-item toc-level-4"><a class="toc-link" href="#9-4-1-ReadView-%E8%AE%BF%E9%97%AE%E7%89%88%E6%9C%AC%E9%93%BE%E6%95%B0%E6%8D%AE%E7%9A%84%E8%A7%84%E5%88%99"><span class="toc-number">9.4.1.</span> <span class="toc-text">9.4.1. ReadView 访问版本链数据的规则</span></a></li><li class="toc-item toc-level-4"><a class="toc-link" href="#9-4-2-%E4%B8%8D%E5%90%8C%E9%9A%94%E7%A6%BB%E7%BA%A7%E5%88%AB%E4%BA%8B%E5%8A%A1%E8%AF%BB%E5%8F%96%E8%AE%B0%E5%BD%95%E7%9A%84%E5%8C%BA%E5%88%AB"><span class="toc-number">9.4.2.</span> <span class="toc-text">9.4.2. 不同隔离级别事务读取记录的区别</span></a></li><li class="toc-item toc-level-4"><a class="toc-link" href="#9-4-3-%E4%B8%8D%E5%90%8C%E9%9A%94%E7%A6%BB%E7%BA%A7%E5%88%AB%E5%88%9B%E5%BB%BA-ReadView-%E7%9A%84%E6%97%B6%E6%9C%BA"><span class="toc-number">9.4.3.</span> <span class="toc-text">9.4.3. 不同隔离级别创建 ReadView 的时机</span></a></li><li class="toc-item toc-level-4"><a class="toc-link" href="#9-4-4-%E4%BF%AE%E6%94%B9%E6%93%8D%E4%BD%9C%E7%9A%84%E4%BA%8B%E5%8A%A1%E5%AE%9E%E7%8E%B0%E6%B5%81%E7%A8%8B%E5%8E%9F%E7%90%86%E8%A7%A3%E6%9E%90"><span class="toc-number">9.4.4.</span> <span class="toc-text">9.4.4. 修改操作的事务实现流程原理解析</span></a></li><li class="toc-item toc-level-4"><a class="toc-link" href="#9-4-5-%E5%88%A0%E9%99%A4%E6%93%8D%E4%BD%9C%E7%9A%84%E4%BA%8B%E5%8A%A1%E5%AE%9E%E7%8E%B0%E5%8E%9F%E7%90%86"><span class="toc-number">9.4.5.</span> <span class="toc-text">9.4.5. 删除操作的事务实现原理</span></a></li></ol></li><li class="toc-item toc-level-3"><a class="toc-link" href="#9-5-%EF%BC%81%E5%BE%85%E6%95%B4%E7%90%86-MVCC-%E4%B8%8B%E7%9A%84%E5%B9%BB%E8%AF%BB%E8%A7%A3%E5%86%B3%E5%92%8C%E5%B9%BB%E8%AF%BB%E7%8E%B0%E8%B1%A1"><span class="toc-number">9.5.</span> <span class="toc-text">9.5. (！待整理)MVCC 下的幻读解决和幻读现象</span></a></li><li class="toc-item toc-level-3"><a class="toc-link" href="#9-6-MVCC-%E5%B0%8F%E7%BB%93"><span class="toc-number">9.6.</span> <span class="toc-text">9.6. MVCC 小结</span></a></li></ol></li><li class="toc-item toc-level-2"><a class="toc-link" href="#10-MySQL-%E7%9A%84-XA-%E5%8D%8F%E8%AE%AE"><span class="toc-number">10.</span> <span class="toc-text">10. MySQL 的 XA 协议</span></a><ol class="toc-child"><li class="toc-item toc-level-3"><a class="toc-link" href="#10-1-XA-%E5%8D%8F%E8%AE%AE"><span class="toc-number">10.1.</span> <span class="toc-text">10.1. XA 协议</span></a></li><li class="toc-item toc-level-3"><a class="toc-link" href="#10-2-MySQL-%E7%9A%84-XA-%E5%8D%8F%E8%AE%AE%E5%A4%84%E7%90%86%E6%B5%81%E7%A8%8B"><span class="toc-number">10.2.</span> <span class="toc-text">10.2. MySQL 的 XA 协议处理流程</span></a><ol class="toc-child"><li class="toc-item toc-level-4"><a class="toc-link" href="#10-2-1-%E6%B6%89%E5%8F%8A%E7%9A%84%E8%A7%92%E8%89%B2"><span class="toc-number">10.2.1.</span> <span class="toc-text">10.2.1. 涉及的角色</span></a></li><li class="toc-item toc-level-4"><a class="toc-link" href="#10-2-2-%E5%85%B7%E4%BD%93%E5%A4%84%E7%90%86%E6%B5%81%E7%A8%8B"><span class="toc-number">10.2.2.</span> <span class="toc-text">10.2.2. 具体处理流程</span></a></li><li class="toc-item toc-level-4"><a class="toc-link" href="#10-2-3-XA-%E6%8E%A5%E5%8F%A3%E6%96%B9%E6%B3%95%E8%AF%B4%E6%98%8E"><span class="toc-number">10.2.3.</span> <span class="toc-text">10.2.3. XA 接口方法说明</span></a></li></ol></li><li class="toc-item toc-level-3"><a class="toc-link" href="#10-3-MySQL-XA-%E4%BA%8B%E5%8A%A1"><span class="toc-number">10.3.</span> <span class="toc-text">10.3. MySQL XA 事务</span></a></li></ol></li></ol></div></div><div class="card-widget card-recent-post"><div class="item-headline"><i class="fas fa-history"></i><span>最新文章</span></div><div class="aside-list"><div class="aside-list-item"><a class="thumbnail" href="/posts/a318ca1f.html" title="MySQL数据库150道高频面试题"><img src="/bg/Image00018.webp" onerror="this.onerror=null;this.src='/img/404.jpg'" alt="MySQL数据库150道高频面试题"/></a><div class="content"><a class="title" href="/posts/a318ca1f.html" title="MySQL数据库150道高频面试题">MySQL数据库150道高频面试题</a><time datetime="2025-07-09T17:28:46.000Z" title="发表于 2025-07-09 17:28:46">2025-07-09</time></div></div><div class="aside-list-item"><a class="thumbnail" href="/posts/8f9b37aa.html" title="技术同学必会的MySQL设计规约"><img src="/bg/Image00014.webp" onerror="this.onerror=null;this.src='/img/404.jpg'" alt="技术同学必会的MySQL设计规约"/></a><div class="content"><a class="title" href="/posts/8f9b37aa.html" title="技术同学必会的MySQL设计规约">技术同学必会的MySQL设计规约</a><time datetime="2025-07-09T17:28:46.000Z" title="发表于 2025-07-09 17:28:46">2025-07-09</time></div></div><div class="aside-list-item"><a class="thumbnail" href="/posts/dfdfdf4.html" title="数据库概述"><img src="/bg/Image00002.webp" onerror="this.onerror=null;this.src='/img/404.jpg'" alt="数据库概述"/></a><div class="content"><a class="title" href="/posts/dfdfdf4.html" title="数据库概述">数据库概述</a><time datetime="2025-07-09T17:28:46.000Z" title="发表于 2025-07-09 17:28:46">2025-07-09</time></div></div><div class="aside-list-item"><a class="thumbnail" href="/posts/490575ab.html" title="24工厂模式俗话解释"><img src="/bg/Image00024.webp" onerror="this.onerror=null;this.src='/img/404.jpg'" alt="24工厂模式俗话解释"/></a><div class="content"><a class="title" href="/posts/490575ab.html" title="24工厂模式俗话解释">24工厂模式俗话解释</a><time datetime="2025-07-09T17:28:46.000Z" title="发表于 2025-07-09 17:28:46">2025-07-09</time></div></div><div class="aside-list-item"><a class="thumbnail" href="/posts/364ea8cc.html" title="设计模式"><img src="/bg/Image00014.webp" onerror="this.onerror=null;this.src='/img/404.jpg'" alt="设计模式"/></a><div class="content"><a class="title" href="/posts/364ea8cc.html" title="设计模式">设计模式</a><time datetime="2025-07-09T17:28:46.000Z" title="发表于 2025-07-09 17:28:46">2025-07-09</time></div></div></div></div></div></div></main><footer id="footer"><div class="footer-other"><div class="footer-copyright"><span class="copyright">&copy;2020 - 2025 By 蓝桉</span><span class="framework-info"><span>框架 </span><a target="_blank" rel="noopener" href="https://hexo.io">Hexo 7.3.0</a><span class="footer-separator">|</span><span>主题 </span><a target="_blank" rel="noopener" href="https://github.com/jerryc127/hexo-theme-butterfly">Butterfly 5.4.2</a></span></div></div></footer></div><div id="rightside"><div id="rightside-config-hide"><button id="readmode" type="button" title="阅读模式"><i class="fas fa-book-open"></i></button><button id="darkmode" type="button" title="日间和夜间模式切换"><i class="fas fa-adjust"></i></button><button id="hide-aside-btn" type="button" title="单栏和双栏切换"><i class="fas fa-arrows-alt-h"></i></button></div><div id="rightside-config-show"><button id="rightside-config" type="button" title="设置"><i class="fas fa-cog fa-spin"></i></button><button class="close" id="mobile-toc-button" type="button" title="目录"><i class="fas fa-list-ul"></i></button><button id="go-up" type="button" title="回到顶部"><span class="scroll-percent"></span><i class="fas fa-arrow-up"></i></button></div></div><div><script src="/js/utils.js"></script><script src="/js/main.js"></script><div class="js-pjax"></div><div class="aplayer no-destroy" data-id="8152976493" data-server="netease" data-type="playlist"   data-order="list" data-fixed="true" data-preload="auto" data-autoplay="false" data-mutex="true" ></div><script async src="//at.alicdn.com/t/c/font_4379924_273fk05h86zi.js"></script><link rel="stylesheet" href="https://cdn.jsdelivr.net/gh/l-lin/font-awesome-animation/dist/font-awesome-animation.min.css"  media="defer" onload="this.media='all'"><script async src="//npm.elemecdn.com/pace-js@1.2.4/pace.min.js"></script><script defer src="https://npm.elemecdn.com/jquery@latest/dist/jquery.min.js"></script><script defer data-pjax src="/js/cat/cat.js"></script><script async data-pjax src="/js/meting/music_lanan.min.js"></script><script defer type="text/javascript" src="https://cdn1.tianli0.top/npm/sweetalert2@8.19.0/dist/sweetalert2.all.js"></script><script defer src="/js/day/lunar.js"></script><script defer src="/js/day/day.js"></script><script async data-pjax src="//busuanzi.ibruce.info/busuanzi/2.3/busuanzi.pure.mini.js"></script></div><!-- hexo injector body_end start --><script data-pjax>
+  function butterfly_clock_anzhiyu_injector_config(){
+    var parent_div_git = document.getElementsByClassName('sticky_layout')[0];
+    var item_html = '<div class="card-widget card-clock"><div class="card-glass"><div class="card-background"><div class="card-content"><div id="hexo_electric_clock"><img class="entered loading" id="card-clock-loading" src="https://cdn.cbd.int/hexo-butterfly-clock-anzhiyu/lib/loading.gif" style="height: 120px; width: 100%;" data-ll-status="loading"/></div></div></div></div></div>';
+    console.log('已挂载butterfly_clock_anzhiyu')
+    if(parent_div_git) {
+      parent_div_git.insertAdjacentHTML("afterbegin",item_html)
+    }
+  }
+  var elist = 'null'.split(',');
+  var cpage = location.pathname;
+  var epage = '/';
+  var qweather_key = '10a7db1c41b6489db9c830c668a18304';
+  var gaud_map_key = '82a64bc994fb6494830f157f319f9f69';
+  var baidu_ak_key = 'undefined';
+  var flag = 0;
+  var clock_rectangle = '113.34532,23.15624';
+  var clock_default_rectangle_enable = 'false';
+
+  for (var i=0;i<elist.length;i++){
+    if (cpage.includes(elist[i])){
+      flag++;
+    }
+  }
+
+  if ((epage ==='all')&&(flag == 0)){
+    butterfly_clock_anzhiyu_injector_config();
+  }
+  else if (epage === cpage){
+    butterfly_clock_anzhiyu_injector_config();
+  }
+  </script><script src="https://widget.qweather.net/simple/static/js/he-simple-common.js?v=2.0"></script><script data-pjax src="https://cdn.cbd.int/hexo-butterfly-clock-anzhiyu/lib/clock.min.js"></script><script data-pjax>
+  function butterfly_footer_beautify_injector_config(){
+    var parent_div_git = document.getElementById('footer-wrap');
+    var item_html = '<div id="workboard"></div><p id="ghbdages"><a class="github-badge" target="_blank" href="https://hexo.io/" style="margin-inline:5px" data-title="博客框架为Hexo_v5.4.0" title=""><img src="https://img.shields.io/badge/Frame-Hexo-blue?style=flat&amp;logo=hexo" alt=""/></a><a class="github-badge" target="_blank" href="https://butterfly.js.org/" style="margin-inline:5px" data-title="主题版本Butterfly_v4.2.2" title=""><img src="https://img.shields.io/badge/Theme-Butterfly-6513df?style=flat&amp;logo=bitdefender" alt=""/></a><a class="github-badge" target="_blank" href="https://www.jsdelivr.com/" style="margin-inline:5px" data-title="本站使用JsDelivr为静态资源提供CDN加速" title=""><img src="https://img.shields.io/badge/CDN-jsDelivr-orange?style=flat&amp;logo=jsDelivr" alt=""/></a><a class="github-badge" target="_blank" href="https://github.com/" style="margin-inline:5px" data-title="本站项目由Github托管" title=""><img src="https://img.shields.io/badge/Source-Github-d021d6?style=flat&amp;logo=GitHub" alt=""/></a><a class="github-badge" target="_blank" href="http://creativecommons.org/licenses/by-nc-sa/4.0/" style="margin-inline:5px" data-title="本站采用知识共享署名-非商业性使用-相同方式共享4.0国际许可协议进行许可" title=""><img src="https://img.shields.io/badge/Copyright-BY--NC--SA%204.0-d42328?style=flat&amp;logo=Claris" alt=""/></a></p>';
+    console.log('已挂载butterfly_footer_beautify')
+    parent_div_git.insertAdjacentHTML("beforeend",item_html)
+    }
+  var elist = 'null'.split(',');
+  var cpage = location.pathname;
+  var epage = 'all';
+  var flag = 0;
+
+  for (var i=0;i<elist.length;i++){
+    if (cpage.includes(elist[i])){
+      flag++;
+    }
+  }
+
+  if ((epage ==='all')&&(flag == 0)){
+    butterfly_footer_beautify_injector_config();
+  }
+  else if (epage === cpage){
+    butterfly_footer_beautify_injector_config();
+  }
+  </script><script async src="/js/runtime/runtime.min.js"></script><script async src="/js/font/ali_font_all.js"></script><div class="js-pjax"><script async="async">var arr = document.getElementsByClassName('recent-post-item');
+for(var i = 0;i<arr.length;i++){
+    arr[i].classList.add('wow');
+    arr[i].classList.add('animate__zoomIn');
+    arr[i].setAttribute('data-wow-duration', '1.5s');
+    arr[i].setAttribute('data-wow-delay', '200ms');
+    arr[i].setAttribute('data-wow-offset', '30');
+    arr[i].setAttribute('data-wow-iteration', '1');
+  }</script><script async="async">var arr = document.getElementsByClassName('card-widget');
+for(var i = 0;i<arr.length;i++){
+    arr[i].classList.add('wow');
+    arr[i].classList.add('animate__zoomIn');
+    arr[i].setAttribute('data-wow-duration', '');
+    arr[i].setAttribute('data-wow-delay', '200ms');
+    arr[i].setAttribute('data-wow-offset', '');
+    arr[i].setAttribute('data-wow-iteration', '');
+  }</script><script async="async">var arr = document.getElementsByClassName('flink-list-card');
+for(var i = 0;i<arr.length;i++){
+    arr[i].classList.add('wow');
+    arr[i].classList.add('animate__flipInY');
+    arr[i].setAttribute('data-wow-duration', '3s');
+    arr[i].setAttribute('data-wow-delay', '');
+    arr[i].setAttribute('data-wow-offset', '');
+    arr[i].setAttribute('data-wow-iteration', '');
+  }</script><script async="async">var arr = document.getElementsByClassName('flink-list-card');
+for(var i = 0;i<arr.length;i++){
+    arr[i].classList.add('wow');
+    arr[i].classList.add('animate__animated');
+    arr[i].setAttribute('data-wow-duration', '3s');
+    arr[i].setAttribute('data-wow-delay', '');
+    arr[i].setAttribute('data-wow-offset', '');
+    arr[i].setAttribute('data-wow-iteration', '');
+  }</script><script async="async">var arr = document.getElementsByClassName('article-sort-item');
+for(var i = 0;i<arr.length;i++){
+    arr[i].classList.add('wow');
+    arr[i].classList.add('animate__slideInRight');
+    arr[i].setAttribute('data-wow-duration', '1.5s');
+    arr[i].setAttribute('data-wow-delay', '');
+    arr[i].setAttribute('data-wow-offset', '');
+    arr[i].setAttribute('data-wow-iteration', '');
+  }</script><script async="async">var arr = document.getElementsByClassName('site-card');
+for(var i = 0;i<arr.length;i++){
+    arr[i].classList.add('wow');
+    arr[i].classList.add('animate__flipInY');
+    arr[i].setAttribute('data-wow-duration', '3s');
+    arr[i].setAttribute('data-wow-delay', '');
+    arr[i].setAttribute('data-wow-offset', '');
+    arr[i].setAttribute('data-wow-iteration', '');
+  }</script><script async="async">var arr = document.getElementsByClassName('site-card');
+for(var i = 0;i<arr.length;i++){
+    arr[i].classList.add('wow');
+    arr[i].classList.add('animate__animated');
+    arr[i].setAttribute('data-wow-duration', '3s');
+    arr[i].setAttribute('data-wow-delay', '');
+    arr[i].setAttribute('data-wow-offset', '');
+    arr[i].setAttribute('data-wow-iteration', '');
+  }</script></div><script defer src="https://cdn.cbd.int/hexo-butterfly-wowjs/lib/wow.min.js"></script><script defer src="https://cdn.cbd.int/hexo-butterfly-wowjs/lib/wow_init.js"></script><!-- hexo injector body_end end --><script src="/live2dw/lib/L2Dwidget.min.js?094cbace49a39548bed64abff5988b05"></script><script>L2Dwidget.init({"pluginRootPath":"live2dw/","pluginJsPath":"lib/","pluginModelPath":"assets/","tagMode":false,"debug":false,"model":{"jsonPath":"/live2dw/assets/shizuku.model.json"},"display":{"position":"right","width":150,"height":300},"mobile":{"show":false},"log":false});</script></body></html>

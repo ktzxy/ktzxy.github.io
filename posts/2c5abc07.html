@@ -1,0 +1,1590 @@
+<!DOCTYPE html><html lang="zh-CN" data-theme="light"><head><meta charset="UTF-8"><meta http-equiv="X-UA-Compatible" content="IE=edge"><meta name="viewport" content="width=device-width, initial-scale=1.0,viewport-fit=cover"><title>Windows | 蓝桉`Blog</title><meta name="author" content="蓝桉,kt_zxh@163.com"><meta name="copyright" content="蓝桉"><meta name="format-detection" content="telephone=no"><meta name="theme-color" content="#ffffff"><meta name="description" content="1. 常用DOS命令 d: 回车    盘符切换 dir(directory):列出当前目录下的文件以及文件夹 cd (change directory)改变指定目录(进入指定目录) 进入    cd 目录；cd 多级目录\多级目录2 ​    回退    cd.. ；cd\   cls : (clear screen)清屏 exit : 退出dos命令行 ipconfig ：查询IP的命令 ip">
+<meta property="og:type" content="article">
+<meta property="og:title" content="Windows">
+<meta property="og:url" content="https://ktzxy.github.io/posts/2c5abc07.html">
+<meta property="og:site_name" content="蓝桉&#96;Blog">
+<meta property="og:description" content="1. 常用DOS命令 d: 回车    盘符切换 dir(directory):列出当前目录下的文件以及文件夹 cd (change directory)改变指定目录(进入指定目录) 进入    cd 目录；cd 多级目录\多级目录2 ​    回退    cd.. ；cd\   cls : (clear screen)清屏 exit : 退出dos命令行 ipconfig ：查询IP的命令 ip">
+<meta property="og:locale" content="zh_CN">
+<meta property="og:image" content="https://ktzxy.github.io/bg/Image00029.webp">
+<meta property="article:published_time" content="2025-07-09T17:28:46.000Z">
+<meta property="article:modified_time" content="2025-07-13T15:45:18.469Z">
+<meta property="article:author" content="蓝桉">
+<meta property="article:tag" content="操作系统">
+<meta name="twitter:card" content="summary">
+<meta name="twitter:image" content="https://ktzxy.github.io/bg/Image00029.webp"><script type="application/ld+json">{
+  "@context": "https://schema.org",
+  "@type": "BlogPosting",
+  "headline": "Windows",
+  "url": "https://ktzxy.github.io/posts/2c5abc07.html",
+  "image": "https://ktzxy.github.io/bg/Image00029.webp",
+  "datePublished": "2025-07-09T17:28:46.000Z",
+  "dateModified": "2025-07-13T15:45:18.469Z",
+  "author": [
+    {
+      "@type": "Person",
+      "name": "蓝桉",
+      "url": "https://ktzxy.github.io"
+    }
+  ]
+}</script><link rel="shortcut icon" href="/img/favicon.png"><link rel="canonical" href="https://ktzxy.github.io/posts/2c5abc07.html"><link rel="preconnect" href="//cdn.jsdelivr.net"/><link rel="preconnect" href="//busuanzi.ibruce.info"/><link rel="stylesheet" href="/css/index.css"><link rel="stylesheet" href="https://cdn.jsdelivr.net/npm/@fortawesome/fontawesome-free/css/all.min.css"><script>
+    (() => {
+      
+    const saveToLocal = {
+      set: (key, value, ttl) => {
+        if (!ttl) return
+        const expiry = Date.now() + ttl * 86400000
+        localStorage.setItem(key, JSON.stringify({ value, expiry }))
+      },
+      get: key => {
+        const itemStr = localStorage.getItem(key)
+        if (!itemStr) return undefined
+        const { value, expiry } = JSON.parse(itemStr)
+        if (Date.now() > expiry) {
+          localStorage.removeItem(key)
+          return undefined
+        }
+        return value
+      }
+    }
+
+    window.btf = {
+      saveToLocal,
+      getScript: (url, attr = {}) => new Promise((resolve, reject) => {
+        const script = document.createElement('script')
+        script.src = url
+        script.async = true
+        Object.entries(attr).forEach(([key, val]) => script.setAttribute(key, val))
+        script.onload = script.onreadystatechange = () => {
+          if (!script.readyState || /loaded|complete/.test(script.readyState)) resolve()
+        }
+        script.onerror = reject
+        document.head.appendChild(script)
+      }),
+      getCSS: (url, id) => new Promise((resolve, reject) => {
+        const link = document.createElement('link')
+        link.rel = 'stylesheet'
+        link.href = url
+        if (id) link.id = id
+        link.onload = link.onreadystatechange = () => {
+          if (!link.readyState || /loaded|complete/.test(link.readyState)) resolve()
+        }
+        link.onerror = reject
+        document.head.appendChild(link)
+      }),
+      addGlobalFn: (key, fn, name = false, parent = window) => {
+        if (!false && key.startsWith('pjax')) return
+        const globalFn = parent.globalFn || {}
+        globalFn[key] = globalFn[key] || {}
+        globalFn[key][name || Object.keys(globalFn[key]).length] = fn
+        parent.globalFn = globalFn
+      }
+    }
+  
+      
+      const activateDarkMode = () => {
+        document.documentElement.setAttribute('data-theme', 'dark')
+        if (document.querySelector('meta[name="theme-color"]') !== null) {
+          document.querySelector('meta[name="theme-color"]').setAttribute('content', '#0d0d0d')
+        }
+      }
+      const activateLightMode = () => {
+        document.documentElement.setAttribute('data-theme', 'light')
+        if (document.querySelector('meta[name="theme-color"]') !== null) {
+          document.querySelector('meta[name="theme-color"]').setAttribute('content', '#ffffff')
+        }
+      }
+
+      btf.activateDarkMode = activateDarkMode
+      btf.activateLightMode = activateLightMode
+
+      const theme = saveToLocal.get('theme')
+    
+          theme === 'dark' ? activateDarkMode() : theme === 'light' ? activateLightMode() : null
+        
+      
+      const asideStatus = saveToLocal.get('aside-status')
+      if (asideStatus !== undefined) {
+        document.documentElement.classList.toggle('hide-aside', asideStatus === 'hide')
+      }
+    
+      
+    const detectApple = () => {
+      if (/iPad|iPhone|iPod|Macintosh/.test(navigator.userAgent)) {
+        document.documentElement.classList.add('apple')
+      }
+    }
+    detectApple()
+  
+    })()
+  </script><script>const GLOBAL_CONFIG = {
+  root: '/',
+  algolia: undefined,
+  localSearch: undefined,
+  translate: undefined,
+  highlight: {"plugin":"highlight.js","highlightCopy":true,"highlightLang":true,"highlightHeightLimit":false,"highlightFullpage":false,"highlightMacStyle":false},
+  copy: {
+    success: '复制成功',
+    error: '复制失败',
+    noSupport: '浏览器不支持'
+  },
+  relativeDate: {
+    homepage: false,
+    post: false
+  },
+  runtime: '',
+  dateSuffix: {
+    just: '刚刚',
+    min: '分钟前',
+    hour: '小时前',
+    day: '天前',
+    month: '个月前'
+  },
+  copyright: undefined,
+  lightbox: 'null',
+  Snackbar: undefined,
+  infinitegrid: {
+    js: 'https://cdn.jsdelivr.net/npm/@egjs/infinitegrid/dist/infinitegrid.min.js',
+    buttonText: '加载更多'
+  },
+  isPhotoFigcaption: false,
+  islazyloadPlugin: false,
+  isAnchor: false,
+  percent: {
+    toc: true,
+    rightside: false,
+  },
+  autoDarkmode: false
+}</script><script id="config-diff">var GLOBAL_CONFIG_SITE = {
+  title: 'Windows',
+  isHighlightShrink: false,
+  isToc: true,
+  pageType: 'post'
+}</script><link rel="stylesheet" href="/css/custom.css" media="defer" onload="this.media='all'"><link rel="stylesheet" href="//at.alicdn.com/t/c/font_4379924_273fk05h86zi.css" media="defer" onload="this.media='all'"><link rel="stylesheet" href="/css/progress_bar/progress_bar.css" media="defer" onload="this.media='all'"><link rel="stylesheet" href="/css/windmill/windmill.css"><link rel="stylesheet" href="/css/cat.css"><link rel="stylesheet" href="/css/meting/music_lanan.css"><div id="myscoll"></div><!-- hexo injector head_end start --><link rel="stylesheet" href="https://cdn.jsdelivr.net/gh/Zfour/Butterfly-double-row-display@1.00/cardlistpost.min.css"/>
+<style>#recent-posts > .recent-post-item >.recent-post-info > .article-meta-wrap > .tags:before {content:"\A";
+  white-space: pre;}#recent-posts > .recent-post-item >.recent-post-info > .article-meta-wrap > .tags > .article-meta__separator{display:none}</style>
+<link rel="stylesheet" href="https://cdn.cbd.int/hexo-butterfly-clock-anzhiyu/lib/clock.min.css" /><link rel="stylesheet" href="/css/runtime/runtime.min.css" media="print" onload="this.media='all'"><link rel="stylesheet" href="https://cdn.cbd.int/hexo-butterfly-tag-plugins-plus@latest/lib/assets/font-awesome-animation.min.css" media="defer" onload="this.media='all'"><link rel="stylesheet" href="https://npm.elemecdn.com/hexo-butterfly-tag-plugins-plus@latest/lib/tag_plugins.css" media="defer" onload="this.media='all'"><script src="https://npm.elemecdn.com/hexo-butterfly-tag-plugins-plus@latest/lib/assets/carousel-touch.js"></script><link rel="stylesheet" href="https://cdn.cbd.int/hexo-butterfly-wowjs/lib/animate.min.css" media="print" onload="this.media='screen'"><!-- hexo injector head_end end --><meta name="generator" content="Hexo 7.3.0"><link rel="alternate" href="/atom.xml" title="蓝桉`Blog" type="application/atom+xml">
+</head><body><div id="loading-box"><div class="loading-left-bg"></div><div class="loading-right-bg"></div><div class="spinner-box"><div class="configure-border-1"><div class="configure-core"></div></div><div class="configure-border-2"><div class="configure-core"></div></div><div class="loading-word">加载中...</div></div></div><script>(()=>{
+  const $loadingBox = document.getElementById('loading-box')
+  const $body = document.body
+  const preloader = {
+    endLoading: () => {
+      $body.style.overflow = ''
+      $loadingBox.classList.add('loaded')
+    },
+    initLoading: () => {
+      $body.style.overflow = 'hidden'
+      $loadingBox.classList.remove('loaded')
+    }
+  }
+
+  preloader.initLoading()
+  window.addEventListener('load', preloader.endLoading)
+
+  if (false) {
+    btf.addGlobalFn('pjaxSend', preloader.initLoading, 'preloader_init')
+    btf.addGlobalFn('pjaxComplete', preloader.endLoading, 'preloader_end')
+  }
+})()</script><div id="web_bg" style="background-image: url(/img/bg.webp);"></div><div id="an_music_bg"></div><div id="sidebar"><div id="menu-mask"></div><div id="sidebar-menus"><div class="avatar-img text-center"><img src="/img/avatar.webp" onerror="this.onerror=null;this.src='/img/friend_404.gif'" alt="avatar"/></div><div class="site-data text-center"><a href="/archives/"><div class="headline">文章</div><div class="length-num">264</div></a><a href="/tags/"><div class="headline">标签</div><div class="length-num">38</div></a><a href="/categories/"><div class="headline">分类</div><div class="length-num">37</div></a></div><div class="menus_items"><div class="menus_item"><a class="site-page faa-parent animated-hover" href="/"><i class="fa-fw icon-zhuye-"></i><svg class="icon faa-tada" aria-hidden="true"><use xlink:href="#icon-zhuye-"></use></svg><span> 首页</span></a></div><div class="menus_item"><a class="site-page faa-parent animated-hover" href="/archives/"><i class="fa-fw icon-shijianzhou"></i><svg class="icon faa-tada" aria-hidden="true"><use xlink:href="#icon-shijianzhou"></use></svg><span> 时间轴</span></a></div><div class="menus_item"><a class="site-page faa-parent animated-hover" href="/essay/"><i class="fa-fw icon-xiaoxi"></i><svg class="icon faa-tada" aria-hidden="true"><use xlink:href="#icon-xiaoxi"></use></svg><span> 闲言碎语</span></a></div><div class="menus_item"><a class="site-page faa-parent animated-hover" href="/music/"><i class="fa-fw icon-music"></i><svg class="icon faa-tada" aria-hidden="true"><use xlink:href="#icon-music"></use></svg><span> 音乐馆</span></a></div><div class="menus_item"><a class="site-page faa-parent animated-hover" href="/categories/"><i class="fa-fw icon-fenlei"></i><svg class="icon faa-tada" aria-hidden="true"><use xlink:href="#icon-fenlei"></use></svg><span> 分类</span></a></div><div class="menus_item"><a class="site-page faa-parent animated-hover" href="/fcircle/"><i class="fa-fw icon-pengyouquan"></i><svg class="icon faa-tada" aria-hidden="true"><use xlink:href="#icon-pengyouquan"></use></svg><span> 朋友圈</span></a></div><div class="menus_item"><a class="site-page faa-parent animated-hover" href="/comments/"><i class="fa-fw icon-xinfeng"></i><svg class="icon faa-tada" aria-hidden="true"><use xlink:href="#icon-xinfeng"></use></svg><span> 留言板</span></a></div><div class="menus_item"><a class="site-page faa-parent animated-hover" href="/link/"><i class="fa-fw icon-lianjie"></i><svg class="icon faa-tada" aria-hidden="true"><use xlink:href="#icon-lianjie"></use></svg><span> 友人帐</span></a></div><div class="menus_item"><a class="site-page faa-parent animated-hover" href="javascript:randomPost();"><i class="fa-fw icon-wodezhuifan"></i><svg class="icon faa-tada" aria-hidden="true"><use xlink:href="#icon-wodezhuifan"></use></svg><span> 随机访问</span></a></div><div class="menus_item"><a class="site-page faa-parent animated-hover" href="/about/"><i class="fa-fw icon-guanyuwomen2"></i><svg class="icon faa-tada" aria-hidden="true"><use xlink:href="#icon-guanyuwomen2"></use></svg><span> 关于</span></a></div></div></div></div><div class="post" id="body-wrap"><header class="post-bg" id="page-header" style="background-image: url(/bg/Image00029.webp);"><nav id="nav"><span id="blog-info"><a class="nav-site-title" href="/"><span class="site-name">蓝桉`Blog</span></a><a class="nav-page-title" href="/"><span class="site-name">Windows</span><span class="site-name"><i class="fa-solid fa-circle-arrow-left"></i><span>  返回首页</span></span></a></span><div id="menus"><div class="menus_items"><div class="menus_item"><a class="site-page faa-parent animated-hover" href="/"><i class="fa-fw icon-zhuye-"></i><svg class="icon faa-tada" aria-hidden="true"><use xlink:href="#icon-zhuye-"></use></svg><span> 首页</span></a></div><div class="menus_item"><a class="site-page faa-parent animated-hover" href="/archives/"><i class="fa-fw icon-shijianzhou"></i><svg class="icon faa-tada" aria-hidden="true"><use xlink:href="#icon-shijianzhou"></use></svg><span> 时间轴</span></a></div><div class="menus_item"><a class="site-page faa-parent animated-hover" href="/essay/"><i class="fa-fw icon-xiaoxi"></i><svg class="icon faa-tada" aria-hidden="true"><use xlink:href="#icon-xiaoxi"></use></svg><span> 闲言碎语</span></a></div><div class="menus_item"><a class="site-page faa-parent animated-hover" href="/music/"><i class="fa-fw icon-music"></i><svg class="icon faa-tada" aria-hidden="true"><use xlink:href="#icon-music"></use></svg><span> 音乐馆</span></a></div><div class="menus_item"><a class="site-page faa-parent animated-hover" href="/categories/"><i class="fa-fw icon-fenlei"></i><svg class="icon faa-tada" aria-hidden="true"><use xlink:href="#icon-fenlei"></use></svg><span> 分类</span></a></div><div class="menus_item"><a class="site-page faa-parent animated-hover" href="/fcircle/"><i class="fa-fw icon-pengyouquan"></i><svg class="icon faa-tada" aria-hidden="true"><use xlink:href="#icon-pengyouquan"></use></svg><span> 朋友圈</span></a></div><div class="menus_item"><a class="site-page faa-parent animated-hover" href="/comments/"><i class="fa-fw icon-xinfeng"></i><svg class="icon faa-tada" aria-hidden="true"><use xlink:href="#icon-xinfeng"></use></svg><span> 留言板</span></a></div><div class="menus_item"><a class="site-page faa-parent animated-hover" href="/link/"><i class="fa-fw icon-lianjie"></i><svg class="icon faa-tada" aria-hidden="true"><use xlink:href="#icon-lianjie"></use></svg><span> 友人帐</span></a></div><div class="menus_item"><a class="site-page faa-parent animated-hover" href="javascript:randomPost();"><i class="fa-fw icon-wodezhuifan"></i><svg class="icon faa-tada" aria-hidden="true"><use xlink:href="#icon-wodezhuifan"></use></svg><span> 随机访问</span></a></div><div class="menus_item"><a class="site-page faa-parent animated-hover" href="/about/"><i class="fa-fw icon-guanyuwomen2"></i><svg class="icon faa-tada" aria-hidden="true"><use xlink:href="#icon-guanyuwomen2"></use></svg><span> 关于</span></a></div></div><div id="toggle-menu"><span class="site-page"><i class="fas fa-bars fa-fw"></i></span></div></div></nav><div id="post-info"><h1 class="post-title">Windows</h1><div id="post-meta"><div class="meta-firstline"><span class="post-meta-date"><i class="far fa-calendar-alt fa-fw post-meta-icon"></i><span class="post-meta-label">发表于</span><time class="post-meta-date-created" datetime="2025-07-09T17:28:46.000Z" title="发表于 2025-07-09 17:28:46">2025-07-09</time><span class="post-meta-separator">|</span><i class="fas fa-history fa-fw post-meta-icon"></i><span class="post-meta-label">更新于</span><time class="post-meta-date-updated" datetime="2025-07-13T15:45:18.469Z" title="更新于 2025-07-13 15:45:18">2025-07-13</time></span><span class="post-meta-categories"><span class="post-meta-separator">|</span><i class="fas fa-inbox fa-fw post-meta-icon"></i><a class="post-meta-categories" href="/categories/%E6%93%8D%E4%BD%9C%E7%B3%BB%E7%BB%9F/">操作系统</a></span></div><div class="meta-secondline"><span class="post-meta-separator">|</span><span class="post-meta-pv-cv" id="" data-flag-title=""><i class="far fa-eye fa-fw post-meta-icon"></i><span class="post-meta-label">浏览量:</span><span id="busuanzi_value_page_pv"><i class="fa-solid fa-spinner fa-spin"></i></span></span></div></div></div></header><main class="layout" id="content-inner"><div id="post"><article class="container post-content" id="article-container"><h2 id="1-常用DOS命令"><a href="#1-常用DOS命令" class="headerlink" title="1. 常用DOS命令"></a>1. 常用DOS命令</h2><ul>
+<li>d: 回车    盘符切换</li>
+<li>dir(directory):列出当前目录下的文件以及文件夹</li>
+<li>cd (change directory)改变指定目录(进入指定目录)<ul>
+<li>进入    cd 目录；cd 多级目录\多级目录2</li>
+<li>​    回退    cd.. ；cd\</li>
+</ul>
+</li>
+<li><code>cls</code> : (clear screen)清屏</li>
+<li><code>exit</code> : 退出dos命令行</li>
+<li><code>ipconfig</code> ：查询IP的命令<ul>
+<li><code>ipconfig /release</code> ：释放本机现有IP</li>
+<li><code>ipconfig /renew</code> ：向DHCP服务器（可以简单理解成你家的路由器）重新申领一个IP</li>
+<li><code>ipconfig /all</code> ：显示完整版IP信息</li>
+</ul>
+</li>
+<li><code>telnet</code> ：测试映射端口或远程访问主机<ul>
+<li><code>telnet towel.blinkenlights.nl</code>：播放ASCII版《星球大战》</li>
+<li><blockquote>
+<p><em>注：这项功能需要telnet支持，telnet不是Windows的默认内置组件，因此当你看到错误提示时，需要首先进入“设置” —&gt; “应用” —&gt; “程序和功能” —&gt; “启用或关闭Windows功能”手工安装它（Telnet Client）</em></p>
+</blockquote>
+</li>
+</ul>
+</li>
+<li><code>msg</code> ：向对方电脑发送一条文本提示<ul>
+<li><code>msg /server:对方电脑IP * 对方电脑屏幕要弹出的文本</code></li>
+</ul>
+</li>
+<li><code>net user</code> ：查看本机账户情况<ul>
+<li>衍生的命令后缀，比方说“<code>net user xxx 123456 /add</code>”，输入后就会在系统中创建一个名为“xxx”的新用户，而新用户密码则是“123456”。类似的还有“<code>net user xxx /del</code>”（删除xxx用户）、“<code>net user xxx /active:no</code>”（禁用xxx用户）、“<code>net user xxx</code>”（查看xxx用户的详细情况）等</li>
+</ul>
+</li>
+<li><code>net share</code> ：查看共享资源<ul>
+<li><code>net share 要共享的文件夹</code> ：指定共享文件</li>
+<li><code>net share 要删除的共享文件夹 /delete</code> ：删除共享文件</li>
+</ul>
+</li>
+<li><code>nslookupn</code> ：检查网站IP地址 <ul>
+<li><code>nslookup 对方网站域名</code></li>
+</ul>
+</li>
+<li><code>netsh wlan show</code> ：探秘Wi-Fi配置文件<ul>
+<li><code>netsh wlan show profile SSID key=clear</code>，输入完成后Windows会自动返回当前已连接WIFI的详细信息，包括SSID和连接密码。当前这里有一个前提，那就是你现在已经成功连接了。</li>
+</ul>
+</li>
+<li><code>color</code> ：更改CMD文字颜色</li>
+<li><code>|</code> ：将命令结果输出到剪贴板<ul>
+<li>具体命令是，在需要导出结果的命令后方添加“<code>|</code>”，再加入导出位置就可以了。比方说“<code>| clip</code>”是导出到剪贴板，“<code>| xxx.txt</code>”是导出到xxx.txt。</li>
+</ul>
+</li>
+<li><code>&amp;&amp;</code> ：将多个命令“连接”起来，一步运行多组命令</li>
+</ul>
+<h3 id="1-1-windows-常用命令"><a href="#1-1-windows-常用命令" class="headerlink" title="1.1. windows 常用命令"></a>1.1. windows 常用命令</h3><figure class="highlight bash"><table><tr><td class="gutter"><pre><span class="line">1</span><br><span class="line">2</span><br><span class="line">3</span><br><span class="line">4</span><br><span class="line">5</span><br><span class="line">6</span><br><span class="line">7</span><br><span class="line">8</span><br><span class="line">9</span><br><span class="line">10</span><br></pre></td><td class="code"><pre><span class="line"><span class="comment"># 查询端口</span></span><br><span class="line">netstat -ano</span><br><span class="line"><span class="comment"># 查询指定端口</span></span><br><span class="line">netstat -ano |findstr <span class="string">&quot;端口号&quot;</span></span><br><span class="line"><span class="comment"># 根据进程PID查询进程名称</span></span><br><span class="line">tasklist |findstr <span class="string">&quot;进程PID号&quot;</span></span><br><span class="line"><span class="comment"># 根据PID杀死任务</span></span><br><span class="line">taskkill /F /PID <span class="string">&quot;进程PID号&quot;</span></span><br><span class="line"><span class="comment"># 根据进程名称杀死任务</span></span><br><span class="line">taskkill -f -t -im <span class="string">&quot;进程名称&quot;</span></span><br></pre></td></tr></table></figure>
+<h3 id="1-2-自用的系统脚本"><a href="#1-2-自用的系统脚本" class="headerlink" title="1.2. 自用的系统脚本"></a>1.2. 自用的系统脚本</h3><h4 id="1-2-1-内外网IP切换（适用win10系统）-20171122"><a href="#1-2-1-内外网IP切换（适用win10系统）-20171122" class="headerlink" title="1.2.1. 内外网IP切换（适用win10系统）.20171122"></a>1.2.1. 内外网IP切换（适用win10系统）.20171122</h4><figure class="highlight bash"><table><tr><td class="gutter"><pre><span class="line">1</span><br><span class="line">2</span><br><span class="line">3</span><br><span class="line">4</span><br><span class="line">5</span><br><span class="line">6</span><br><span class="line">7</span><br><span class="line">8</span><br><span class="line">9</span><br><span class="line">10</span><br><span class="line">11</span><br><span class="line">12</span><br><span class="line">13</span><br><span class="line">14</span><br><span class="line">15</span><br><span class="line">16</span><br><span class="line">17</span><br><span class="line">18</span><br><span class="line">19</span><br><span class="line">20</span><br><span class="line">21</span><br><span class="line">22</span><br><span class="line">23</span><br><span class="line">24</span><br><span class="line">25</span><br><span class="line">26</span><br><span class="line">27</span><br><span class="line">28</span><br><span class="line">29</span><br><span class="line">30</span><br><span class="line">31</span><br><span class="line">32</span><br><span class="line">33</span><br><span class="line">34</span><br><span class="line">35</span><br><span class="line">36</span><br><span class="line">37</span><br><span class="line">38</span><br><span class="line">39</span><br><span class="line">40</span><br><span class="line">41</span><br><span class="line">42</span><br><span class="line">43</span><br><span class="line">44</span><br><span class="line">45</span><br><span class="line">46</span><br><span class="line">47</span><br><span class="line">48</span><br><span class="line">49</span><br><span class="line">50</span><br><span class="line">51</span><br><span class="line">52</span><br></pre></td><td class="code"><pre><span class="line">@<span class="built_in">echo</span> off</span><br><span class="line">rem //设置变量 </span><br><span class="line"><span class="built_in">set</span> NAME=<span class="string">&quot;以太网&quot;</span></span><br><span class="line">rem //以下属性值可以根据需要更改</span><br><span class="line"><span class="built_in">set</span> ADDR=192.168.14.73</span><br><span class="line"><span class="built_in">set</span> MASK=255.255.254.0</span><br><span class="line"><span class="built_in">set</span> GATEWAY=192.168.14.1</span><br><span class="line"><span class="built_in">set</span> DNS1=10.17.65.13</span><br><span class="line"><span class="built_in">set</span> DNS2=10.202.253.28</span><br><span class="line">rem //以上属性依次为IP地址、子网掩码、网关、首选DNS、备用DNS</span><br><span class="line"></span><br><span class="line"></span><br><span class="line"><span class="built_in">echo</span> 当前可用操作有：</span><br><span class="line"><span class="built_in">echo</span> 1 设置为静态IP</span><br><span class="line"><span class="built_in">echo</span> 2 设置为动态IP</span><br><span class="line"><span class="built_in">echo</span> 3 退出</span><br><span class="line"><span class="built_in">echo</span> 请选择后回车：</span><br><span class="line"><span class="built_in">set</span> /p operate=</span><br><span class="line"><span class="keyword">if</span> %operate%==1 goto 1</span><br><span class="line"><span class="keyword">if</span> %operate%==2 goto 2</span><br><span class="line"><span class="keyword">if</span> %operate%==3 goto 3</span><br><span class="line"></span><br><span class="line"></span><br><span class="line">:1</span><br><span class="line"><span class="built_in">echo</span> 正在设置静态IP，请稍等...</span><br><span class="line">rem //可以根据你的需要更改 </span><br><span class="line"><span class="built_in">echo</span> IP地址 = %ADDR%</span><br><span class="line"><span class="built_in">echo</span> 掩码 = %MASK%</span><br><span class="line"><span class="built_in">echo</span> 网关 = %GATEWAY%</span><br><span class="line">netsh interface ipv4 <span class="built_in">set</span> address %NAME% static %ADDR% %MASK% %GATEWAY% </span><br><span class="line"><span class="built_in">echo</span> 首选DNS = %DNS1% </span><br><span class="line">netsh interface ipv4 <span class="built_in">set</span> dns %NAME% static %DNS1%</span><br><span class="line"><span class="built_in">echo</span> 备用DNS = %DNS2% </span><br><span class="line"><span class="keyword">if</span> <span class="string">&quot;%DNS2%&quot;</span>==<span class="string">&quot;&quot;</span> (<span class="built_in">echo</span> DNS2为空) <span class="keyword">else</span> (netsh interface ipv4 add dns %NAME% %DNS2%) </span><br><span class="line"><span class="built_in">echo</span> 静态IP已设置！</span><br><span class="line">pause</span><br><span class="line">goto 3</span><br><span class="line"></span><br><span class="line"></span><br><span class="line">:2</span><br><span class="line"><span class="built_in">echo</span> 正在设置动态IP，请稍等...</span><br><span class="line"><span class="built_in">echo</span> 正在从DHCP自动获取IP地址...</span><br><span class="line">netsh interface ip <span class="built_in">set</span> address %NAME% dhcp</span><br><span class="line"><span class="built_in">echo</span> 正在从DHCP自动获取DNS地址...</span><br><span class="line">netsh interface ip <span class="built_in">set</span> dns %NAME% dhcp </span><br><span class="line"><span class="built_in">echo</span> 动态IP已设置！</span><br><span class="line">pause</span><br><span class="line">goto 3</span><br><span class="line"></span><br><span class="line"></span><br><span class="line">:3</span><br><span class="line"><span class="built_in">exit</span></span><br></pre></td></tr></table></figure>
+<h4 id="1-2-2-内外网IP切换（适用win7系统）"><a href="#1-2-2-内外网IP切换（适用win7系统）" class="headerlink" title="1.2.2. 内外网IP切换（适用win7系统）"></a>1.2.2. 内外网IP切换（适用win7系统）</h4><figure class="highlight bash"><table><tr><td class="gutter"><pre><span class="line">1</span><br><span class="line">2</span><br><span class="line">3</span><br><span class="line">4</span><br><span class="line">5</span><br><span class="line">6</span><br><span class="line">7</span><br><span class="line">8</span><br><span class="line">9</span><br><span class="line">10</span><br><span class="line">11</span><br><span class="line">12</span><br><span class="line">13</span><br><span class="line">14</span><br><span class="line">15</span><br><span class="line">16</span><br><span class="line">17</span><br><span class="line">18</span><br><span class="line">19</span><br><span class="line">20</span><br><span class="line">21</span><br><span class="line">22</span><br><span class="line">23</span><br><span class="line">24</span><br><span class="line">25</span><br><span class="line">26</span><br><span class="line">27</span><br><span class="line">28</span><br><span class="line">29</span><br><span class="line">30</span><br><span class="line">31</span><br><span class="line">32</span><br><span class="line">33</span><br><span class="line">34</span><br><span class="line">35</span><br><span class="line">36</span><br><span class="line">37</span><br><span class="line">38</span><br><span class="line">39</span><br><span class="line">40</span><br><span class="line">41</span><br><span class="line">42</span><br><span class="line">43</span><br><span class="line">44</span><br><span class="line">45</span><br><span class="line">46</span><br><span class="line">47</span><br><span class="line">48</span><br><span class="line">49</span><br><span class="line">50</span><br><span class="line">51</span><br></pre></td><td class="code"><pre><span class="line">@<span class="built_in">echo</span> off</span><br><span class="line"></span><br><span class="line">rem //设置变量</span><br><span class="line"><span class="built_in">set</span> NAME=<span class="string">&quot;本地连接&quot;</span></span><br><span class="line"></span><br><span class="line">rem //以下属性值可以根据需要更改</span><br><span class="line"><span class="built_in">set</span> ADDR=192.168.14.73</span><br><span class="line"><span class="built_in">set</span> MASK=255.255.254.0</span><br><span class="line"><span class="built_in">set</span> GATEWAY=192.168.14.1</span><br><span class="line"><span class="built_in">set</span> DNS1=10.17.65.13</span><br><span class="line"><span class="built_in">set</span> DNS2=10.202.253.28</span><br><span class="line"></span><br><span class="line">rem //以上属性依次为IP地址、子网掩码、网关、首选DNS、备用DNS</span><br><span class="line"><span class="built_in">echo</span> 当前可用操作有：</span><br><span class="line"><span class="built_in">echo</span> 1 设置为静态IP</span><br><span class="line"><span class="built_in">echo</span> 2 设置为动态IP</span><br><span class="line"><span class="built_in">echo</span> 3 退出</span><br><span class="line"><span class="built_in">echo</span> 请选择后回车：</span><br><span class="line"></span><br><span class="line"><span class="built_in">set</span> /p operate=</span><br><span class="line"><span class="keyword">if</span> %operate%==1 goto 1</span><br><span class="line"><span class="keyword">if</span> %operate%==2 goto 2</span><br><span class="line"><span class="keyword">if</span> %operate%==3 goto 3</span><br><span class="line"></span><br><span class="line">:1</span><br><span class="line"><span class="built_in">echo</span> 正在设置静态IP,请稍等…</span><br><span class="line">rem //可以根据你的需要更改</span><br><span class="line"><span class="built_in">echo</span> IP地址 = %ADDR%</span><br><span class="line"><span class="built_in">echo</span> 掩码 = %MASK%</span><br><span class="line"><span class="built_in">echo</span> 网关 = %GATEWAY%</span><br><span class="line">netsh interface ipv4 <span class="built_in">set</span> address name=%NAME% <span class="built_in">source</span>=static addr=%ADDR% mask=%MASK% gateway=%GATEWAY% gwmetric=0 &gt;nul</span><br><span class="line"><span class="built_in">echo</span> 首选DNS = %DNS1%</span><br><span class="line">netsh interface ipv4 <span class="built_in">set</span> dns name=%NAME% <span class="built_in">source</span>=static addr=%DNS1% register=PRIMARY &gt;nul</span><br><span class="line"><span class="built_in">echo</span> 备用DNS = %DNS2%</span><br><span class="line">netsh interface ipv4 add dns name=%NAME% addr=%DNS2% index=2 &gt;nul</span><br><span class="line"><span class="built_in">echo</span> 静态IP已设置!</span><br><span class="line">pause</span><br><span class="line">goto 3</span><br><span class="line"></span><br><span class="line">:2</span><br><span class="line"><span class="built_in">echo</span> 正在设置动态IP,请稍等…</span><br><span class="line"><span class="built_in">echo</span> 正在从DHCP自动获取IP地址…</span><br><span class="line">netsh interface ip <span class="built_in">set</span> address <span class="string">&quot;本地连接&quot;</span> dhcp</span><br><span class="line"><span class="built_in">echo</span> 正在从DHCP自动获取DNS地址…</span><br><span class="line">netsh interface ip <span class="built_in">set</span> dns <span class="string">&quot;本地连接&quot;</span> dhcp</span><br><span class="line"><span class="built_in">echo</span> 动态IP已设置!</span><br><span class="line">pause</span><br><span class="line">goto 3</span><br><span class="line"></span><br><span class="line">:3</span><br><span class="line"><span class="built_in">exit</span></span><br></pre></td></tr></table></figure>
+<h4 id="1-2-3-一键删除电脑中的空文件夹脚本（未测试！！）"><a href="#1-2-3-一键删除电脑中的空文件夹脚本（未测试！！）" class="headerlink" title="1.2.3. 一键删除电脑中的空文件夹脚本（未测试！！）"></a>1.2.3. 一键删除电脑中的空文件夹脚本（未测试！！）</h4><p>在任意目录中创建“xxx.bat”的批处理文件，复制以下脚本代码再双击运行即可。</p>
+<ul>
+<li>批量（循环）删除指定目录下所有空文件夹代码，例如删除F:\盘下的所有空文件夹：</li>
+</ul>
+<figure class="highlight bash"><table><tr><td class="gutter"><pre><span class="line">1</span><br><span class="line">2</span><br><span class="line">3</span><br><span class="line">4</span><br><span class="line">5</span><br><span class="line">6</span><br><span class="line">7</span><br></pre></td><td class="code"><pre><span class="line">@<span class="built_in">echo</span> off</span><br><span class="line"></span><br><span class="line"><span class="keyword">for</span> /f <span class="string">&quot;delims=&quot;</span> %%a <span class="keyword">in</span> (<span class="string">&#x27;dir /ad /b /s F:\^|sort /r&#x27;</span>) <span class="keyword">do</span> (</span><br><span class="line">rd <span class="string">&quot;%%a&quot;</span>&gt;nul 2&gt;nul &amp;&amp;<span class="built_in">echo</span> 空目录<span class="string">&quot;%%a&quot;</span>成功删除！</span><br><span class="line">)</span><br><span class="line"></span><br><span class="line">pause</span><br></pre></td></tr></table></figure>
+<ul>
+<li>批量删除多个磁盘的空文件夹，例如删除c、d、e、f区中所有的空文件夹：</li>
+</ul>
+<figure class="highlight bash"><table><tr><td class="gutter"><pre><span class="line">1</span><br><span class="line">2</span><br><span class="line">3</span><br><span class="line">4</span><br><span class="line">5</span><br><span class="line">6</span><br><span class="line">7</span><br><span class="line">8</span><br><span class="line">9</span><br><span class="line">10</span><br><span class="line">11</span><br></pre></td><td class="code"><pre><span class="line">@<span class="built_in">echo</span> off</span><br><span class="line"></span><br><span class="line"><span class="keyword">for</span> %%i <span class="keyword">in</span> (c d e f) <span class="keyword">do</span> (</span><br><span class="line"><span class="keyword">if</span> exist %%i:\ (</span><br><span class="line"><span class="keyword">for</span> /f <span class="string">&quot;delims=&quot;</span> %%a <span class="keyword">in</span> (<span class="string">&#x27;dir /ad /b /s &quot;%%i:\&quot;^|sort /r&#x27;</span>) <span class="keyword">do</span> (</span><br><span class="line">rd <span class="string">&quot;%%a&quot;</span></span><br><span class="line">)</span><br><span class="line">)</span><br><span class="line">)</span><br><span class="line"></span><br><span class="line">pause</span><br></pre></td></tr></table></figure>
+<h4 id="1-2-4-启用-禁用网络本地连接"><a href="#1-2-4-启用-禁用网络本地连接" class="headerlink" title="1.2.4. 启用/禁用网络本地连接"></a>1.2.4. 启用/禁用网络本地连接</h4><p>启用/禁用网络连接脚本，<strong>注意：需要使用管理员身份运行脚本</strong>。</p>
+<figure class="highlight shell"><table><tr><td class="gutter"><pre><span class="line">1</span><br><span class="line">2</span><br><span class="line">3</span><br><span class="line">4</span><br><span class="line">5</span><br><span class="line">6</span><br><span class="line">7</span><br><span class="line">8</span><br><span class="line">9</span><br><span class="line">10</span><br><span class="line">11</span><br><span class="line">12</span><br><span class="line">13</span><br><span class="line">14</span><br><span class="line">15</span><br><span class="line">16</span><br><span class="line">17</span><br><span class="line">18</span><br><span class="line">19</span><br><span class="line">20</span><br><span class="line">21</span><br><span class="line">22</span><br><span class="line">23</span><br><span class="line">24</span><br><span class="line">25</span><br><span class="line">26</span><br><span class="line">27</span><br><span class="line">28</span><br><span class="line">29</span><br><span class="line">30</span><br><span class="line">31</span><br><span class="line">32</span><br><span class="line">33</span><br><span class="line">34</span><br><span class="line">35</span><br><span class="line">36</span><br><span class="line">37</span><br><span class="line">38</span><br><span class="line">39</span><br><span class="line">40</span><br><span class="line">41</span><br><span class="line">42</span><br><span class="line">43</span><br><span class="line">44</span><br><span class="line">45</span><br><span class="line">46</span><br><span class="line">47</span><br><span class="line">48</span><br><span class="line">49</span><br><span class="line">50</span><br><span class="line">51</span><br><span class="line">52</span><br><span class="line">53</span><br><span class="line">54</span><br><span class="line">55</span><br><span class="line">56</span><br></pre></td><td class="code"><pre><span class="line">@echo off </span><br><span class="line"> </span><br><span class="line">:: BatchGotAdmin </span><br><span class="line">:------------------------------------- </span><br><span class="line">REM --&gt; Check for permissions </span><br><span class="line"><span class="meta prompt_">&gt;</span><span class="language-bash">nul 2&gt;&amp;1 <span class="string">&quot;%SYSTEMROOT%\system32\cacls.exe&quot;</span> <span class="string">&quot;%SYSTEMROOT%\system32\config\system&quot;</span></span> </span><br><span class="line"> </span><br><span class="line">REM --&gt; If error flag set, we do not have admin. </span><br><span class="line">if &#x27;%errorlevel%&#x27; NEQ &#x27;0&#x27; ( </span><br><span class="line"> echo Requesting administrative privileges... </span><br><span class="line"> goto UACPrompt </span><br><span class="line">) else ( goto gotAdmin ) </span><br><span class="line"> </span><br><span class="line">:UACPrompt </span><br><span class="line"> echo Set UAC = CreateObject^(&quot;Shell.Application&quot;^) &gt; &quot;%temp%\getadmin.vbs&quot; </span><br><span class="line"> echo UAC.ShellExecute &quot;%~s0&quot;, &quot;&quot;, &quot;&quot;, &quot;runas&quot;, 1 &gt;&gt; &quot;%temp%\getadmin.vbs&quot; </span><br><span class="line"> </span><br><span class="line"> &quot;%temp%\getadmin.vbs&quot; </span><br><span class="line"> exit /B </span><br><span class="line"> </span><br><span class="line">:gotAdmin </span><br><span class="line"> if exist &quot;%temp%\getadmin.vbs&quot; ( del &quot;%temp%\getadmin.vbs&quot; ) </span><br><span class="line"> pushd &quot;%CD%&quot; </span><br><span class="line"> CD /D &quot;%~dp0&quot; </span><br><span class="line">:-------------------------------------- </span><br><span class="line"> </span><br><span class="line">cls</span><br><span class="line">@ECHO OFF</span><br><span class="line">title 启用或禁用本地连接</span><br><span class="line">CLS</span><br><span class="line">color 0a</span><br><span class="line">GOTO MENU</span><br><span class="line">:MENU</span><br><span class="line">ECHO.</span><br><span class="line">ECHO. ==============启用禁用本地连接==============</span><br><span class="line">ECHO.</span><br><span class="line">ECHO. 1 启用本地连接</span><br><span class="line">ECHO. 2 禁用本地连接</span><br><span class="line">ECHO. 3 退 出</span><br><span class="line">ECHO. ==========================================</span><br><span class="line">ECHO.</span><br><span class="line">ECHO.</span><br><span class="line">echo. 请输入选择项目的序号：</span><br><span class="line">set /p ID=</span><br><span class="line">if &quot;%id%&quot;==&quot;1&quot; goto open</span><br><span class="line">if &quot;%id%&quot;==&quot;2&quot; goto close</span><br><span class="line">if &quot;%id%&quot;==&quot;3&quot; exit</span><br><span class="line">PAUSE</span><br><span class="line">:open</span><br><span class="line">echo 启用本地连接</span><br><span class="line">netsh interface set interface name=&quot;以太网&quot; admin=ENABLED</span><br><span class="line">GOTO MENU</span><br><span class="line">:close</span><br><span class="line">echo 禁用本地连接</span><br><span class="line">netsh interface set interface name=&quot;以太网&quot; admin=DISABLED</span><br><span class="line">goto MENU</span><br></pre></td></tr></table></figure>
+<h3 id="1-3-批处理-bat-脚本命令汇总（待整理）"><a href="#1-3-批处理-bat-脚本命令汇总（待整理）" class="headerlink" title="1.3. 批处理(bat)脚本命令汇总（待整理）"></a>1.3. 批处理(bat)脚本命令汇总（待整理）</h3><blockquote>
+<p>参考：<a target="_blank" rel="noopener" href="https://blog.csdn.net/ankang654321/article/details/103644637">详细的批处理文件bat脚本命令</a></p>
+</blockquote>
+<h2 id="2-系统运行命令"><a href="#2-系统运行命令" class="headerlink" title="2. 系统运行命令"></a>2. 系统运行命令</h2><blockquote>
+<p>以下均为运行面板(Win+R)中输入的命令</p>
+</blockquote>
+<h3 id="2-1-如何使用-WIN-R-运行自定义命令启动程序"><a href="#2-1-如何使用-WIN-R-运行自定义命令启动程序" class="headerlink" title="2.1. 如何使用 WIN+R 运行自定义命令启动程序"></a>2.1. 如何使用 WIN+R 运行自定义命令启动程序</h3><p>首先在任意盘符下建立一个文件夹，比如在D盘建立名字为shortcut的文件夹</p>
+<p>设置环境变量：选择计算机-&gt;右键选择属性-&gt;选择系统高级设置-&gt;选择“环境变量-&gt;双击path-&gt;添加刚刚建立的文件夹D:\shortcut(如果有多个则在每个文件夹路径后面加英文状态下的分号<code>;</code>)</p>
+<p>将桌面上所有的快捷方式都剪切到shortcut文件夹即可，以后有快捷方式也直接扔进去</p>
+<blockquote>
+<p>注意事项: 如果想更加简单的使用 Win+R 打开程序，可以将shortcut下的文件名称更改为自己熟悉的(支持中文哦)</p>
+</blockquote>
+<h3 id="2-2-window-系统常用原生命令"><a href="#2-2-window-系统常用原生命令" class="headerlink" title="2.2. window 系统常用原生命令"></a>2.2. window 系统常用原生命令</h3><div class="table-container">
+<table>
+<thead>
+<tr>
+<th>快捷键</th>
+<th>程序</th>
+</tr>
+</thead>
+<tbody>
+<tr>
+<td>cmd</td>
+<td>命令行</td>
+</tr>
+<tr>
+<td>regedit</td>
+<td>注册表</td>
+</tr>
+<tr>
+<td>services.msc</td>
+<td>系统服务</td>
+</tr>
+<tr>
+<td>control</td>
+<td>所有控制面版项</td>
+</tr>
+<tr>
+<td>calc</td>
+<td>启动计算器</td>
+</tr>
+<tr>
+<td>mspaint</td>
+<td>画图</td>
+</tr>
+<tr>
+<td>notepad</td>
+<td>打开记事本</td>
+</tr>
+<tr>
+<td>ncpa.cpl</td>
+<td>打开网络连接</td>
+</tr>
+<tr>
+<td><code>Shutdown -s -t 600</code></td>
+<td>表示600秒后自动关机</td>
+</tr>
+<tr>
+<td><code>Shutdown -a</code></td>
+<td>可取消定时关机</td>
+</tr>
+<tr>
+<td><code>Shutdown -r -t 600</code></td>
+<td>表示600秒后自动重启</td>
+</tr>
+<tr>
+<td><code>rundll32 user32.dll,LockWorkStation</code></td>
+<td>表示锁定计算机</td>
+</tr>
+<tr>
+<td>wt</td>
+<td>Microsoft.WindowsTerminal（需要手动安装）</td>
+</tr>
+</tbody>
+</table>
+</div>
+<h2 id="3-windows-系统相关设置"><a href="#3-windows-系统相关设置" class="headerlink" title="3. windows 系统相关设置"></a>3. windows 系统相关设置</h2><h3 id="3-1-环境变量-用户变量与系统变量"><a href="#3-1-环境变量-用户变量与系统变量" class="headerlink" title="3.1. 环境变量 (用户变量与系统变量)"></a>3.1. 环境变量 (用户变量与系统变量)</h3><blockquote>
+<p>参考资源：<a target="_blank" rel="noopener" href="http://www.dayanzai.me/environment-variables.html">http://www.dayanzai.me/environment-variables.html</a></p>
+</blockquote>
+<ul>
+<li>环境变量 (environment variables) 是在操作系统中用来指定操作系统运行环境的一些参数。环境变量是在操作系统中一个具有特定名字的对象，它包含了一个或者多个应用程序所将使用到的信息。Windows 和 DOS 操作系统中的 <code>path</code> 环境变量，当要求系统运行一个程序而没有告诉它程序所在的完整路径时，系统除了在当前目录下面寻找此程序外，还应到 <code>path</code> 中指定的路径去找。用户通过设置环境变量，来更好的运行进程。</li>
+</ul>
+<p>环境变量可分为<strong>用户变量</strong>与<strong>系统变量</strong>两类，在注册表中都有对应的项。</p>
+<blockquote>
+<p>Notes: </p>
+<ul>
+<li><font color=purple>**环境变量不区分大小写**</font></li>
+<li>系统变量针对所有用户起作用，为了安全一般配置用户环境变量。</li>
+<li>用户变量只对当前用户起作用，不建议为了省事而配置系统环境变量。</li>
+<li>用户环境变量优先级高于系统环境变量。对于环境变量，系统会先检查用户变量，之后再检查系统变量。</li>
+</ul>
+</blockquote>
+<h4 id="3-1-1-用户变量"><a href="#3-1-1-用户变量" class="headerlink" title="3.1.1. 用户变量"></a>3.1.1. 用户变量</h4><p>注册表中用户变量所在位置：<code>HKEY_CURRENT_USER\Environment</code></p>
+<p><img src="https://gitee.com/Bluetom/img2/raw/master/img20240905/202410251055615.png" alt=""></p>
+<h4 id="3-1-2-系统变量"><a href="#3-1-2-系统变量" class="headerlink" title="3.1.2. 系统变量"></a>3.1.2. 系统变量</h4><p>注册表中系统变量所在位置：<code>HKEY_LOCAL_MACHINE\SYSTEM\ControlSet001\Control\Session Manager\Environment</code></p>
+<p><img src="https://gitee.com/Bluetom/img2/raw/master/img20240905/202410251055616.png" alt=""></p>
+<p>在原有变量 <code>Path</code> 的基础上添加英文状态下的分号，然后添加路径名。<em>不要删除原先的系统变量，只要用分号隔开，然后添加路径名，最后也要加上分号。</em></p>
+<h4 id="3-1-3-常用变量清单"><a href="#3-1-3-常用变量清单" class="headerlink" title="3.1.3. 常用变量清单"></a>3.1.3. 常用变量清单</h4><div class="table-container">
+<table>
+<thead>
+<tr>
+<th style="text-align:center">变量名称</th>
+<th>值</th>
+</tr>
+</thead>
+<tbody>
+<tr>
+<td style="text-align:center"><code>%ALLUSERSPROFILE%</code></td>
+<td>C:\ProgramData</td>
+</tr>
+<tr>
+<td style="text-align:center"><code>%APPDATA%</code></td>
+<td>列出应用程序数据的默认存放位置。C:\Users{username}\AppData\Roaming</td>
+</tr>
+<tr>
+<td style="text-align:center"><code>%LOCALAPPDATA%</code></td>
+<td>C:\Users{username}\AppData\Local</td>
+</tr>
+<tr>
+<td style="text-align:center"><code>%TEMP%</code>或<code>%TMP%</code></td>
+<td>C:\Users{username}\AppData\Local\Temp</td>
+</tr>
+<tr>
+<td style="text-align:center"><code>%COMMONPROGRAMFILES%</code></td>
+<td>C:\Program Files\Common Files</td>
+</tr>
+<tr>
+<td style="text-align:center"><code>%COMMONPROGRAMFILES(x86)%</code></td>
+<td>C:\Program Files (x86)\Common Files</td>
+</tr>
+<tr>
+<td style="text-align:center"><code>%CommonProgramW6432%</code></td>
+<td>C:\Program Files\Common Files</td>
+</tr>
+<tr>
+<td style="text-align:center"><code>%COMSPEC%</code></td>
+<td>C:\Windows\System32\cmd.exe</td>
+</tr>
+<tr>
+<td style="text-align:center"><code>%HOMEDRIVE%</code></td>
+<td>C:\</td>
+</tr>
+<tr>
+<td style="text-align:center"><code>%HOMEPATH%</code> 或 <code>%USERPROFILE%</code></td>
+<td>用户主目录的完整路径（当前用户的配置文件的位置）。C:\Users{username}</td>
+</tr>
+<tr>
+<td style="text-align:center"><code>%WINDIR%</code> 或 <code>%SYSTEMROOT%</code></td>
+<td>操作系统根目录。C:\Windows</td>
+</tr>
+<tr>
+<td style="text-align:center"><code>%LOGONSERVER%</code></td>
+<td>\{domain_logon_server}</td>
+</tr>
+<tr>
+<td style="text-align:center"><code>%PATH%</code></td>
+<td>C:\Windows\system32;C:\Windows;C:\Windows\System32\Wbem</td>
+</tr>
+<tr>
+<td style="text-align:center"><code>%PATHEXT%</code></td>
+<td>.com;.exe;.bat;.cmd;.vbs;.vbe;.js;.jse;.wsf;.wsh;.msc</td>
+</tr>
+<tr>
+<td style="text-align:center"><code>%PROGRAMDATA%</code></td>
+<td>C:\ProgramData</td>
+</tr>
+<tr>
+<td style="text-align:center"><code>%PROGRAMFILES%</code> 或 <code>%ProgramW6432%</code></td>
+<td>C:\Program Files</td>
+</tr>
+<tr>
+<td style="text-align:center"><code>%PROGRAMFILES(X86)%</code></td>
+<td>C:\Program Files (x86)</td>
+</tr>
+<tr>
+<td style="text-align:center"><code>%PROMPT%</code></td>
+<td><code>$P$G</code></td>
+</tr>
+<tr>
+<td style="text-align:center"><code>%SYSTEMDRIVE%</code></td>
+<td>C:</td>
+</tr>
+<tr>
+<td style="text-align:center"><code>%SystemRoot%</code></td>
+<td>C:\Windows</td>
+</tr>
+<tr>
+<td style="text-align:center"><code>%USERDOMAIN%</code></td>
+<td>与当前用户相关的用户域。</td>
+</tr>
+<tr>
+<td style="text-align:center"><code>%USERDOMAIN_ROAMINGPROFILE%</code></td>
+<td>与漫游配置文件相关的用户域。</td>
+</tr>
+<tr>
+<td style="text-align:center"><code>%USERNAME%</code></td>
+<td>当前系统用户名称。{username}</td>
+</tr>
+<tr>
+<td style="text-align:center"><code>%PUBLIC%</code></td>
+<td>C:\Users\Public</td>
+</tr>
+<tr>
+<td style="text-align:center"><code>%PSMODULEPATH%</code></td>
+<td>%SystemRoot%\system32\WindowsPowerShell\v1.0\Modules\</td>
+</tr>
+<tr>
+<td style="text-align:center"><code>%ONEDRIVE%</code></td>
+<td>C:\Users{username}\OneDrive</td>
+</tr>
+<tr>
+<td style="text-align:center"><code>%DriverData%</code></td>
+<td>C:\Windows\System32\Drivers\DriverData</td>
+</tr>
+<tr>
+<td style="text-align:center"><code>%CD%</code></td>
+<td>输出当前目录路径。(命令提示符)</td>
+</tr>
+<tr>
+<td style="text-align:center"><code>%CMDCMDLINE%</code></td>
+<td>输出用于启动当前命令提示符会话的命令行。(命令提示符)</td>
+</tr>
+<tr>
+<td style="text-align:center"><code>%CMDEXTVERSION%</code></td>
+<td>输出当前命令处理器扩展的数量。(命令提示符)</td>
+</tr>
+<tr>
+<td style="text-align:center"><code>%COMPUTERNAME%</code></td>
+<td>输出系统名称。</td>
+</tr>
+<tr>
+<td style="text-align:center"><code>%DATE%</code></td>
+<td>输出当前日期。(命令提示符)</td>
+</tr>
+<tr>
+<td style="text-align:center"><code>%TIME%</code></td>
+<td>输出时间。(命令提示符)</td>
+</tr>
+<tr>
+<td style="text-align:center"><code>%ERRORLEVEL%</code></td>
+<td>输出上一条命令的定义退出状态的数字。(命令提示符)</td>
+</tr>
+<tr>
+<td style="text-align:center"><code>%PROCESSOR_IDENTIFIER%</code></td>
+<td>输出处理器标识符。</td>
+</tr>
+<tr>
+<td style="text-align:center"><code>%PROCESSOR_LEVEL%</code></td>
+<td>输出处理器电平。</td>
+</tr>
+<tr>
+<td style="text-align:center"><code>%PROCESSOR_REVISION%</code></td>
+<td>输出处理器版本。</td>
+</tr>
+<tr>
+<td style="text-align:center"><code>%NUMBER_OF_PROCESSORS%</code></td>
+<td>输出物理和虚拟内核的数量。</td>
+</tr>
+<tr>
+<td style="text-align:center"><code>%RANDOM%</code></td>
+<td>输出从 0 到 32767 的随机数。</td>
+</tr>
+<tr>
+<td style="text-align:center"><code>%OS%</code></td>
+<td>Windows_NT</td>
+</tr>
+</tbody>
+</table>
+</div>
+<h3 id="3-2-hosts-文件"><a href="#3-2-hosts-文件" class="headerlink" title="3.2. hosts 文件"></a>3.2. hosts 文件</h3><p>window 系统的 hosts 文件位置：<code>%windir%\System32\drivers\etc</code></p>
+<h3 id="3-3-win10-锁屏壁纸位置"><a href="#3-3-win10-锁屏壁纸位置" class="headerlink" title="3.3. win10 锁屏壁纸位置"></a>3.3. win10 锁屏壁纸位置</h3><p>路径：<code>%HOMEPATH%\AppData\Local\Packages\Microsoft.Windows.ContentDeliveryManager_cw5n1h2txyewy\LocalState\Assets</code></p>
+<h3 id="3-4-C盘可清理内容"><a href="#3-4-C盘可清理内容" class="headerlink" title="3.4. C盘可清理内容"></a>3.4. C盘可清理内容</h3><ol>
+<li><strong>PerfLogs</strong>文件夹，系统的信息日志，文件夹可删。</li>
+<li><strong>Windows</strong>文件夹<ul>
+<li><code>C:\Windows\WinSxS</code>，装载了电脑从新装到现在的所有补丁文件，不能删除。但里面有一个“backup”备份文件夹，是可删的。</li>
+<li><code>C:\Windows\Help</code>，帮忙文件，可删</li>
+</ul>
+</li>
+<li><strong>用户</strong>文件夹：<code>C:\Users\用户名称\AppData\Local\Temp</code>。这个是Windows存留安装软件时解压的源文件，方便下次安装直接调取使用，节省解压时间，可删除。</li>
+</ol>
+<h3 id="3-5-win7-系统的Temporary-Internet-Files清空问题"><a href="#3-5-win7-系统的Temporary-Internet-Files清空问题" class="headerlink" title="3.5. win7 系统的Temporary Internet Files清空问题"></a>3.5. win7 系统的Temporary Internet Files清空问题</h3><ol>
+<li><code>cmd.exe</code></li>
+<li><code>cd AppData\Local\Microsoft\Windows\Temporary Internet Files</code>（或者如果有Content.IE5目录的话，cd Content.IE5）</li>
+<li><code>del /s/q/f *.*</code></li>
+</ol>
+<h3 id="3-6-备份开始菜单"><a href="#3-6-备份开始菜单" class="headerlink" title="3.6. 备份开始菜单"></a>3.6. 备份开始菜单</h3><ol>
+<li>按下Win+R打开运行窗口，输入命令powershell，然后点击确定按钮</li>
+<li>这时就会打开Windows Powershell窗口，在这里输入命令<code>Export-startlayout –path E:\start.xml</code>，可以根据自己实际情况来设置相应的路径</li>
+<li>按下回车键后，就会备份好开始菜单的布局文件</li>
+<li>如果需要恢复开始菜单布局的话，只需要再次打开Windows Powershell命令行窗口，然后输入命令<code>import-startlayout -layoutpath E:\start.xml -mountpath c:</code>，按下回车键后，就会马上把其还原回来了</li>
+</ol>
+<h3 id="3-7-电脑护眼颜色设置"><a href="#3-7-电脑护眼颜色设置" class="headerlink" title="3.7. 电脑护眼颜色设置"></a>3.7. 电脑护眼颜色设置</h3><p>win7系统：</p>
+<ol>
+<li>桌面-&gt;右键-&gt;属性-&gt;外观-&gt;高级-&gt;项目选择（窗口）</li>
+<li>颜色1（L）选择（其它）将色调改为：85。饱和度：123。亮度：205-&gt;添加到自定义颜色-&gt;在自定义颜色选定点确定-&gt;确定</li>
+<li>另一种相近的颜色设置：<code>R:204 G:232 B:207</code></li>
+</ol>
+<p>win10系统：</p>
+<ol>
+<li>windows+R键调出运行窗口（或者鼠标右击开始键，选择运行），在运行窗口中输入<code>regedit</code>调出注册表编辑器</li>
+<li>按照如下顺序找到windows：[HKEY_CURRENT_USER\Control Panel\Colors] windows。双击windows 进入编辑状态 将原本数值删除并输入：<code>202 234 206</code>。点击确定退出注册表。</li>
+<li>按照如下顺序找到 window：[HKEY_LOCAL_MACHINE\SOFTWARE\Microsoft\Windows\CurrentVersion\Themes\DefaultColors\Standard]。双击 window 打开编辑窗口，默认是勾选十六进制（若不是请勾选十六进制），将原始数据改为：<code>caeace</code>。点击确定退出注册表。</li>
+</ol>
+<h3 id="3-8-这个可能与ACHI有关系吧。你先去修改到-compatible（兼容模式）进入系统"><a href="#3-8-这个可能与ACHI有关系吧。你先去修改到-compatible（兼容模式）进入系统" class="headerlink" title="3.8. 这个可能与ACHI有关系吧。你先去修改到 compatible（兼容模式）进入系统"></a>3.8. 这个可能与ACHI有关系吧。你先去修改到 compatible（兼容模式）进入系统</h3><p>AHCI开启方法：</p>
+<ol>
+<li>依次展开：“开始” -&gt; “运行”（或使用Win+R) -&gt; 键入“regedit” -&gt; “确定”后 -&gt; 启动注册表编辑器 -&gt; 展开到<code>[HKEY_LOCAL_MACHINE\SYSTEM\CurrentControlSet\services\msahci]</code>分支。</li>
+<li>在右侧双击“Start” -&gt; “编辑DWORD值” -&gt; 将“数值数据”的键值由“3”改为“0” -&gt; 单击“确定”。</li>
+<li>关闭“注册表编辑器”窗口，并重新启动电脑。</li>
+<li>然后出来看看BIOS里面的硬盘模式，修改为ACHI后（如果没有就算了）</li>
+<li>然后在把SATA Operation Mode改为 enhanced（增强模式）</li>
+</ol>
+<h3 id="3-9-NSIS：使用netsh-advfirewall屏蔽某程序访问网络"><a href="#3-9-NSIS：使用netsh-advfirewall屏蔽某程序访问网络" class="headerlink" title="3.9. NSIS：使用netsh advfirewall屏蔽某程序访问网络"></a>3.9. NSIS：使用netsh advfirewall屏蔽某程序访问网络</h3><ul>
+<li>关闭防火墙</li>
+</ul>
+<figure class="highlight bash"><table><tr><td class="gutter"><pre><span class="line">1</span><br></pre></td><td class="code"><pre><span class="line">nsExec::Exec <span class="string">&#x27;cmd /c netsh advfirewall set allprofiles state off&#x27;</span></span><br></pre></td></tr></table></figure>
+<ul>
+<li>开启防火墙</li>
+</ul>
+<figure class="highlight bash"><table><tr><td class="gutter"><pre><span class="line">1</span><br></pre></td><td class="code"><pre><span class="line">nsExec::Exec <span class="string">&#x27;cmd /c netsh advfirewall set allprofiles state on&#x27;</span></span><br></pre></td></tr></table></figure>
+<ul>
+<li>删除屏蔽</li>
+</ul>
+<figure class="highlight bash"><table><tr><td class="gutter"><pre><span class="line">1</span><br></pre></td><td class="code"><pre><span class="line">nsExec::Exec <span class="string">&#x27;cmd /c netsh advfirewall firewall Delete rule name=&quot;TIM&quot;&#x27;</span></span><br></pre></td></tr></table></figure>
+<ul>
+<li>添加屏蔽</li>
+</ul>
+<figure class="highlight bash"><table><tr><td class="gutter"><pre><span class="line">1</span><br></pre></td><td class="code"><pre><span class="line">nsExec::Exec <span class="string">&#x27;cmd /c netsh advfirewall firewall add rule name=&quot;TIM&quot; dir=out action=block program=&quot;C:\Program Files\TIM Lite\Bin\TIM.exe&quot;&#x27;</span></span><br></pre></td></tr></table></figure>
+<h3 id="3-10-删掉-WIN10-回收站右键菜单的固定到＂开始＂屏幕！"><a href="#3-10-删掉-WIN10-回收站右键菜单的固定到＂开始＂屏幕！" class="headerlink" title="3.10. 删掉 WIN10 回收站右键菜单的固定到＂开始＂屏幕！"></a>3.10. 删掉 WIN10 回收站右键菜单的固定到＂开始＂屏幕！</h3><ul>
+<li>删除：打开注册表，定位到 <code>HKEY_LOCAL_MACHINE\SOFTWARE\Classes\Folder\shellex\ContextMenuHandlers</code>，删除其子键 <code>PintoStartScreen</code></li>
+<li>恢复：在 <code>HKEY_LOCAL_MACHINE\SOFTWARE\Classes\Folder\shellex\ContextMenuHandlers</code> 上单击右键，新建项 <code>PintoStartScreen</code>，修改其默认值为 <code>&#123;470C0EBD-5D73-4d58-9CED-E91E22E23282&#125;</code></li>
+</ul>
+<h3 id="3-11-限制保留宽带设置"><a href="#3-11-限制保留宽带设置" class="headerlink" title="3.11. 限制保留宽带设置"></a>3.11. 限制保留宽带设置</h3><ol>
+<li>按“WIN+R”，打开【运行】对话框；</li>
+<li>输入“regedit”，回车，打开注册表编辑器；</li>
+<li>依次展开“HKEY_CURRENT_USER\Software\Microsoft\Windows\CurrentVersion\Explorer\RunMRU”</li>
+<li>按“WIN+R”，打开【运行】对话框，输入gpedit.msc</li>
+<li>计算机配置－管理模板－网络－qos数据包计划程序－限制保留宽带</li>
+<li>选择已启用。一般默认是20，直接把它改成0。</li>
+</ol>
+<h3 id="3-12-win10-系统任务栏设置时间显示秒"><a href="#3-12-win10-系统任务栏设置时间显示秒" class="headerlink" title="3.12. win10 系统任务栏设置时间显示秒"></a>3.12. win10 系统任务栏设置时间显示秒</h3><ol>
+<li>按“WIN+R”，打开【运行】对话框；</li>
+<li>输入“regedit”，回车，打开注册表编辑器；</li>
+<li>在注册表中定位到以下子健：<code>HKEY_CURRENT_USER\SOFTWARE\Microsoft\Windows\CurrentVersion\Explorer\Advanced</code></li>
+<li>后在Advanced上鼠标右键点击呼出菜单，选择 -&gt; 新建（N） -&gt; DWORD(32位)值。也可以左键点击Advanced，在右边区域点击空白处点击鼠标右键呼出菜单选择 -&gt; 新建（N） -&gt; DWORD(32位)值。</li>
+<li>将新建 DWORD(32位)值，命名为 <code>ShowSecondsInSystemClock</code>，双击打开将数值数据改为1，并点击确定，关闭注册表。</li>
+</ol>
+<p><em>如果想恢复不显示秒，则将创建的<code>ShowSecondsInSystemClock</code>删除即可</em></p>
+<blockquote>
+<p>Notes: 微软承认 win 11 系统中，删除了注册表值“<code>ShowSecondsInSystemClock</code>”，该值允许任务栏时钟以秒为单位显示时间。如果时间需要显示秒，需要安装第三方软件</p>
+</blockquote>
+<h3 id="3-13-Win10系统删除无用的服务"><a href="#3-13-Win10系统删除无用的服务" class="headerlink" title="3.13. Win10系统删除无用的服务"></a>3.13. Win10系统删除无用的服务</h3><ol>
+<li>运行 -&gt; <code>regedit</code>，打开注册表编辑器</li>
+<li>定位到【计算机\HKEY_LOCAL_MACHINE\SYSTEM\CurrentControlSet\Services】，选择服务名称，右键删除即可</li>
+</ol>
+<h3 id="3-14-修改-window-默认系统安装目录"><a href="#3-14-修改-window-默认系统安装目录" class="headerlink" title="3.14. 修改 window 默认系统安装目录"></a>3.14. 修改 window 默认系统安装目录</h3><p>Windows10 系统更改软件程序默认安装目录的方法</p>
+<ol>
+<li>运行 -&gt; regedit，打开注册表编辑器</li>
+<li>进入注册表<code>HKEY_LOCAL_MACHINE\SOFTWARE\Microsoft\Windows\CurrentVersion</code>目录下，并左键单击：CurrentVersion；</li>
+<li>在CurrentVersion对应的右侧窗口，找到ProgramFilesDir，并左键双击ProgramFilesDir打开编辑字符串对话框，把Program Files的数值数据从C:\Program Files更改为D:\Program Files，再点击：确定；</li>
+<li>如果安装的是Windows10的64位系统，在CurrentVersion对应的右侧窗口，找到ProgramFilesDir（x86），并左键双击ProgramFilesDir（x86）打开编辑字符串对话框，把Program Files（x86）的数值数据从C:\Program Files（x86）更改为D:\Program Files（x86），再点击：确定；</li>
+</ol>
+<p>修改系统存储的保存位置</p>
+<ol>
+<li>左键点击系统桌面左下角的“开始”，在开始菜单中点击：设置</li>
+<li>在打开的设置窗口，点击：系统 —&gt; 窗口左侧的“存储”</li>
+<li>在存储对应的右侧窗口，用鼠标左键按住右侧的滑块向下拖动，找到：保存位置，在保存位置下，点击：新的应用将保存到此电脑（C:）后面的小勾</li>
+<li>修改成D盘。之后打开磁盘(D:)，可以看到磁盘(D:)中新增了三个文件夹：MoonZero（用户文件：文档、音乐、图片和视频）、Program Files（程序文件）和Windows Apps（窗口应用程序）；</li>
+</ol>
+<h3 id="3-15-win10-一般禁用的服务"><a href="#3-15-win10-一般禁用的服务" class="headerlink" title="3.15. win10 一般禁用的服务"></a>3.15. win10 一般禁用的服务</h3><ol>
+<li>运行输入【services.msc】打开服务面板，禁用以下服务<ol>
+<li>Connected User Experiences and Telemetry</li>
+<li>Diagnostic Execution Service</li>
+<li>Diagnostic Policy Service</li>
+<li>Diagnostic Service Host</li>
+<li>Diagnostic System Host</li>
+<li>SysMain（以前的 Windows Superfetch 感觉 SSD 上效果不大，不想禁用的可以改为“手动启动”）</li>
+<li>Windows Search （关联了 Win10 里的很多新功能，而且对于 SSD 影响也不大，可以不禁用）</li>
+</ol>
+</li>
+<li>右击“此电脑” -&gt; “属性” -&gt; “高级系统设置” -&gt; “高级” -&gt; “性能”</li>
+<li>点击“设置” -&gt; “更新与安全” -&gt; “Windows预览体验计划”，退出 Windows Insider 计划。</li>
+<li>右击任务栏空白处选择“任务管理器”，切换到“启动”标签，将没必要的自启动程序全部禁用。</li>
+</ol>
+<h3 id="3-16-修复-win10-右键无新建-txt-文本文件"><a href="#3-16-修复-win10-右键无新建-txt-文本文件" class="headerlink" title="3.16. 修复 win10 右键无新建 txt 文本文件"></a>3.16. 修复 win10 右键无新建 txt 文本文件</h3><figure class="highlight bat"><table><tr><td class="gutter"><pre><span class="line">1</span><br><span class="line">2</span><br><span class="line">3</span><br><span class="line">4</span><br><span class="line">5</span><br><span class="line">6</span><br><span class="line">7</span><br><span class="line">8</span><br><span class="line">9</span><br><span class="line">10</span><br><span class="line">11</span><br></pre></td><td class="code"><pre><span class="line">Windows Registry Editor Version <span class="number">5</span>.<span class="number">00</span></span><br><span class="line">[HKEY_CLASSES_ROOT\.txt]</span><br><span class="line">@=&quot;txtfile&quot;</span><br><span class="line">&quot;Content <span class="built_in">Type</span>&quot;=&quot;text/plain&quot;</span><br><span class="line">[HKEY_CLASSES_ROOT\.txt\ShellNew]</span><br><span class="line">&quot;NullFile&quot;=&quot;&quot; [HKEY_CLASSES_ROOT\txtfile]</span><br><span class="line">@=&quot;文本文档&quot;</span><br><span class="line">[HKEY_CLASSES_ROOT\txtfile\shell]</span><br><span class="line">[HKEY_CLASSES_ROOT\txtfile\shell\open]</span><br><span class="line">[HKEY_CLASSES_ROOT\txtfile\shell\open\command]</span><br><span class="line">@=&quot;NOTEPAD.EXE %<span class="number">1</span>&quot;</span><br></pre></td></tr></table></figure>
+<p>打开记事本，复制以上内容，另存为<code>xxx.reg</code>。点击文件，确认操作后，重启电脑生效</p>
+<h3 id="3-17-关闭cmd命令行窗口的中文输入法"><a href="#3-17-关闭cmd命令行窗口的中文输入法" class="headerlink" title="3.17. 关闭cmd命令行窗口的中文输入法"></a>3.17. 关闭cmd命令行窗口的中文输入法</h3><p>运行<code>regedit</code>命令，打开注册表窗口，修改注册表：<code>HKEY_CURRENT_USER\Console\LoadConIme</code> 的键值由<code>1</code>改为<code>0</code></p>
+<h3 id="3-18-修改cmd-powershell命令行窗口默认编码"><a href="#3-18-修改cmd-powershell命令行窗口默认编码" class="headerlink" title="3.18. 修改cmd/powershell命令行窗口默认编码"></a>3.18. 修改cmd/powershell命令行窗口默认编码</h3><p><strong>临时修改</strong></p>
+<ul>
+<li>使用<code>chcp</code>命令可以输出当前编码的数值，如：<code>GBK</code>是936，<code>UTF-8</code>是65001</li>
+</ul>
+<p><strong>修改注册表</strong></p>
+<ul>
+<li><strong>修改powershell默认编码</strong>：运行<code>regedit</code>命令打开注册表，展开注册表<code>计算机\HKEY_CURRENT_USER\Console</code>项。选择powershell，点击修改右边窗口中<code>CodePage</code>项，选择十进制，修改值为<code>65001</code>。修改后就每次启动都默认改成UTF-8的编码</li>
+<li><strong>修改cmd编码</strong>：运行<code>regedit</code>命令打开注册表，展开注册表<code>计算机\HKEY_LOCAL_MACHINE\SOFTWARE\Microsoft\Command Processor</code>项。如果右边窗口没有<code>autorun</code>字符串值，则右键新建字符串值，数值名称：<code>autorun</code>，数值数据：<code>chcp 65001</code>。修改后就每次启动都默认改成UTF-8的编码</li>
+</ul>
+<h3 id="3-19-彻底关闭Cortana小娜"><a href="#3-19-彻底关闭Cortana小娜" class="headerlink" title="3.19. 彻底关闭Cortana小娜"></a>3.19. 彻底关闭Cortana小娜</h3><ul>
+<li><strong>关闭Cortana小娜的权限</strong></li>
+</ul>
+<p>Win10的设置菜单 -&gt; “应用” -&gt; 在应用列表中搜索找到Cortana -&gt; 高级选项 -&gt; 可以将Cortana小娜的麦克风、后台以及开机启动的权限全部关闭</p>
+<ul>
+<li><strong>彻底关闭Cortana小娜</strong></li>
+</ul>
+<p>运行<code>regedit</code>进入注册表 -&gt; <code>计算机\HKEY_LOCAL_MACHINE\SOFTWARE\Policies\Microsoft\Windows</code> -&gt; 用右键点击“Windows”目录，选择“新建”，新建一个“项”。将这个项命名为“Windows Search” -&gt; 右键点击“Windows Search”，新建一个“DWORD(32位)值” -&gt; 将这个值命名为“AllowCortana”，然后双击这个值，确认它的数值为“0”，然后按下确定保存 -&gt; 之后，Cortana就会被禁用了。这时候再打开Cortana，就会看到禁用的提示</p>
+<ul>
+<li><strong>完全删除Cortana小娜</strong></li>
+</ul>
+<p>以管理员模式运行Powershell -&gt; 运行以下代码删除</p>
+<figure class="highlight bash"><table><tr><td class="gutter"><pre><span class="line">1</span><br></pre></td><td class="code"><pre><span class="line">Get-AppxPackage -allusers Microsoft.549981C3F5F10 | Remove-AppxPackage</span><br></pre></td></tr></table></figure>
+<h3 id="3-20-关闭-Win11-Win-10-内存压缩"><a href="#3-20-关闭-Win11-Win-10-内存压缩" class="headerlink" title="3.20. 关闭 Win11/ Win 10 内存压缩"></a>3.20. 关闭 Win11/ Win 10 内存压缩</h3><p>Win11默认开启了内存压缩功能。可以压缩内存中的数据，让内存占用更少，同时减少Swap频次，带来更高的I/O效率。但CPU性能较弱的设备，例如轻薄本，开启内存压缩可能会造成卡顿缓慢。同时，内存压缩需要消耗额外的CPU资源，带来更多耗电发热，这对注重续航的设备来说也是不合适的。</p>
+<ul>
+<li><strong>通过任务管理器查看内存压缩的开启状态</strong>。如果开启了内存压缩，那么在任务管理器中，就会显示压缩内存的数据</li>
+<li><strong>通过命令行查看内存压缩的开启状态</strong>。使用系统管理员权限，打开PowerShell，然后输入命令 <code>Get-MMAgent</code> 后。如果看到“MemoryCompression”这一项是“Ture”，那么说明内存压缩已经开启。</li>
+<li><strong>关闭内存压缩</strong>。使用系统管理员权限，打开PowerShell，然后输入命令 <code>Disable-MMAgent -mc</code> 后，重启系统，内存压缩就关闭了。</li>
+<li><strong>重新打开内存压缩</strong>。使用系统管理员权限，打开PowerShell，然后输入命令 <code>Enable-MMAgent -mc</code> 后，重启系统，内存压缩就重新开启。</li>
+</ul>
+<h3 id="3-21-清除电脑的运行记录"><a href="#3-21-清除电脑的运行记录" class="headerlink" title="3.21. 清除电脑的运行记录"></a>3.21. 清除电脑的运行记录</h3><ol>
+<li>win+R 打开运行窗口，输入 <code>regedit</code> 打开注册表编辑器</li>
+<li>展开 <code>HKEY_CURRENT_USER\Software\Microsoft\Windows\CurrentVersion\Explorer\RunMRU</code>在右侧除了默认</li>
+<li>将其他选项都删除掉</li>
+</ol>
+<h3 id="3-22-删除资源管理器中“此电脑”下面多余的图标"><a href="#3-22-删除资源管理器中“此电脑”下面多余的图标" class="headerlink" title="3.22. 删除资源管理器中“此电脑”下面多余的图标"></a>3.22. 删除资源管理器中“此电脑”下面多余的图标</h3><ol>
+<li>WIN+R 打开运行窗口，输入 <code>regedit</code> 打开注册表编辑器</li>
+<li>在注册表中定位到：<code>HKEY_CURRENT_USER\SOFTWARE\Microsoft\Windows\CurrentVersion\Explorer\MyComputer\NameSpace</code> 项</li>
+<li>选中“NameSpace”后，在右键窗口中删除相应的键值</li>
+<li>退出注册表后，此电脑中多余图标消失</li>
+</ol>
+<p>也可以保存以下语句为<code>*.reg</code>文件，运行即可移除。</p>
+<figure class="highlight plaintext"><table><tr><td class="gutter"><pre><span class="line">1</span><br><span class="line">2</span><br><span class="line">3</span><br><span class="line">4</span><br><span class="line">5</span><br><span class="line">6</span><br><span class="line">7</span><br><span class="line">8</span><br><span class="line">9</span><br><span class="line">10</span><br><span class="line">11</span><br><span class="line">12</span><br><span class="line">13</span><br><span class="line">14</span><br><span class="line">15</span><br><span class="line">16</span><br><span class="line">17</span><br><span class="line">18</span><br></pre></td><td class="code"><pre><span class="line">Windows Registry Editor Version 5.00</span><br><span class="line"></span><br><span class="line">;如需还原去除上语句前减号即可</span><br><span class="line"></span><br><span class="line">;取消我的电脑&quot;视频&quot;文件夹</span><br><span class="line">[-HKEY_LOCAL_MACHINE\SOFTWARE\Microsoft\Windows\CurrentVersion\Explorer\MyComputer\NameSpace\&#123;f86fa3ab-70d2-4fc7-9c99-fcbf05467f3a&#125;]</span><br><span class="line">;取消我的电脑&quot;文档&quot;文件夹</span><br><span class="line">[-HKEY_LOCAL_MACHINE\SOFTWARE\Microsoft\Windows\CurrentVersion\Explorer\MyComputer\NameSpace\&#123;d3162b92-9365-467a-956b-92703aca08af&#125;]</span><br><span class="line">;取消我的电脑&quot;桌面&quot;文件夹</span><br><span class="line">[-HKEY_LOCAL_MACHINE\SOFTWARE\Microsoft\Windows\CurrentVersion\Explorer\MyComputer\NameSpace\&#123;B4BFCC3A-DB2C-424C-B029-7FE99A87C641&#125;]</span><br><span class="line">;取消我的电脑&quot;音乐&quot;文件夹</span><br><span class="line">[-HKEY_LOCAL_MACHINE\SOFTWARE\Microsoft\Windows\CurrentVersion\Explorer\MyComputer\NameSpace\&#123;3dfdf296-dbec-4fb4-81d1-6a3438bcf4de&#125;]</span><br><span class="line">;取消我的电脑&quot;下载&quot;文件夹</span><br><span class="line">[-HKEY_LOCAL_MACHINE\SOFTWARE\Microsoft\Windows\CurrentVersion\Explorer\MyComputer\NameSpace\&#123;088e3905-0323-4b02-9826-5d99428e115f&#125;]</span><br><span class="line">;取消我的电脑&quot;图片&quot;文件夹</span><br><span class="line">[-HKEY_LOCAL_MACHINE\SOFTWARE\Microsoft\Windows\CurrentVersion\Explorer\MyComputer\NameSpace\&#123;24ad3ad4-a569-4530-98e1-ab02f9417aa8&#125;]</span><br><span class="line">;取消我的电脑&quot;3D对象&quot;文件夹</span><br><span class="line">[-HKEY_LOCAL_MACHINE\SOFTWARE\Microsoft\Windows\CurrentVersion\Explorer\MyComputer\NameSpace\&#123;0DB7E03F-FC29-4DC6-9020-FF41B59E513A&#125;]</span><br></pre></td></tr></table></figure>
+<h2 id="4-Windows-11-系统配置"><a href="#4-Windows-11-系统配置" class="headerlink" title="4. Windows 11 系统配置"></a>4. Windows 11 系统配置</h2><h3 id="4-1-取消显示快速访问中“文档、视频…”等图标"><a href="#4-1-取消显示快速访问中“文档、视频…”等图标" class="headerlink" title="4.1. 取消显示快速访问中“文档、视频…”等图标"></a>4.1. 取消显示快速访问中“文档、视频…”等图标</h3><p>使用快捷键 win+R 打开运行命令窗口，输入<code>regedit</code>命令打开注册表。在地址栏定位到以下地址：</p>
+<figure class="highlight plaintext"><table><tr><td class="gutter"><pre><span class="line">1</span><br></pre></td><td class="code"><pre><span class="line">计算机\HKEY_LOCAL_MACHINE\SOFTWARE\Microsoft\Windows\CurrentVersion\Explorer\FolderDescriptions</span><br></pre></td></tr></table></figure>
+<p>找到文件相应的代码字符串，展开并选择【PropertyBag】，选择右侧窗口中的【ThisPCPolicy】鼠标右键点击修改，将值修改为<code>Hide</code>。<font color=red><strong>注意：首字母<code>H</code>必须大写</strong></font></p>
+<ul>
+<li>图片：<code>&#123;0ddd015d-b06c-45d5-8c4c-f59713854639&#125;</code></li>
+<li>视频：<code>&#123;35286a68-3c57-41a1-bbb1-0eae73d76c95&#125;</code></li>
+<li>下载：<code>&#123;7d83ee9b-2244-4e70-b1f5-5393042af1e4&#125;</code></li>
+<li>音乐：<code>&#123;a0c69a99-21c8-4671-8703-7934162fcf1d&#125;</code></li>
+<li>文档：<code>&#123;f42ee2d3-909f-4907-8871-4c22fc0bf756&#125;</code></li>
+</ul>
+<h3 id="4-2-设置任务栏小图标"><a href="#4-2-设置任务栏小图标" class="headerlink" title="4.2. 设置任务栏小图标"></a>4.2. 设置任务栏小图标</h3><ol>
+<li>使用快捷键 win+R 打开运行命令窗口，输入<code>regedit</code>命令打开注册表。在地址栏定位到以下地址：</li>
+</ol>
+<figure class="highlight plaintext"><table><tr><td class="gutter"><pre><span class="line">1</span><br></pre></td><td class="code"><pre><span class="line">计算机\HKEY_CURRENT_USER\Software\Microsoft\Windows\CurrentVersion\Explorer\Advanced</span><br></pre></td></tr></table></figure>
+<ol>
+<li>右键新建【DWORD (32位)值】，命名为 <code>TaskbarSi</code></li>
+<li>修改<code>TaskbarSi</code>数值数据，<code>0</code>表示强制使用小图标；<code>1</code>表示使用中等图标；<code>2</code>表示使用大图标</li>
+</ol>
+<blockquote>
+<font color=purple>**但目前 win 11 不支持修改小图标的任务栏，修改后时间日期会出现下沉超出屏幕的问题。**</font>
+
+</blockquote>
+<h3 id="4-3-开启-Windows-11-隐藏的教育主题"><a href="#4-3-开启-Windows-11-隐藏的教育主题" class="headerlink" title="4.3. 开启 Windows 11 隐藏的教育主题"></a>4.3. 开启 Windows 11 隐藏的教育主题</h3><p>教育主题适用于 Windows 11 家庭版、专业版和企业版。11若要使 Windows 11 教育版主题可用，用户需要执行以下操作：</p>
+<ol>
+<li>按键盘上的 Win+R 打开运行窗口</li>
+<li>输入 <code>regedit</code> 按回车打开注册表编辑器</li>
+<li>导航到注册表中的相应路径：</li>
+</ol>
+<figure class="highlight plaintext"><table><tr><td class="gutter"><pre><span class="line">1</span><br></pre></td><td class="code"><pre><span class="line">HKEY_LOCAL_MACHINE\SOFTWARE\Microsoft\PolicyManager\current\device\</span><br></pre></td></tr></table></figure>
+<ol>
+<li>右键单击 device 文件夹，然后选择新建 -&gt; 项，命名为：<code>Education</code></li>
+<li>再选择 <code>Education</code> 右键新建 DWORD 值（32 位），命名为：<code>EnableEduThemes</code></li>
+<li>双击 → 将值设置为 1</li>
+<li>重新启动计算机。</li>
+</ol>
+<p>或者，可以选择创建包含以下内容的文本文件，然后将其重命名为 <code>.reg</code> 后缀文件，并双击导入注册表。</p>
+<figure class="highlight plaintext"><table><tr><td class="gutter"><pre><span class="line">1</span><br><span class="line">2</span><br><span class="line">3</span><br></pre></td><td class="code"><pre><span class="line">Windows Registry Editor Version 5.00</span><br><span class="line">[HKEY_LOCAL_MACHINE\SOFTWARE\Microsoft\PolicyManager\current\device\Education]</span><br><span class="line">&quot;EnableEduThemes&quot;=dword:00000001</span><br></pre></td></tr></table></figure>
+<p>完成上述步骤后，计算机应该在重启后在后台自动下载其他主题。您可能需要等待一段时间，直到此过程完成。安装后，可以通过转到“设置”应用并选择“个性化” -&gt; “主题”来应用新主题。</p>
+<h2 id="5-Windows-11-键盘快捷键终极列表"><a href="#5-Windows-11-键盘快捷键终极列表" class="headerlink" title="5. Windows 11 键盘快捷键终极列表"></a>5. Windows 11 键盘快捷键终极列表</h2><blockquote>
+<p>参考：<a target="_blank" rel="noopener" href="http://www.dayanzai.me/windows-11-keyboard-shortcuts.html">http://www.dayanzai.me/windows-11-keyboard-shortcuts.html</a></p>
+</blockquote>
+<h3 id="5-1-Windows-11-新增快捷键"><a href="#5-1-Windows-11-新增快捷键" class="headerlink" title="5.1. Windows 11 新增快捷键"></a>5.1. Windows 11 新增快捷键</h3><p>Microsoft 在 Windows 11 中添加了一些新功能。例如，Snap Layouts。如果将鼠标悬停在最大化按钮（每个窗口右上角关闭十字符号旁边的方块）上，将看到多个网格。可以使用这些网格以想要的方式排列窗口。还有一个访问 Snap Layouts 的键盘快捷键。</p>
+<div class="table-container">
+<table>
+<thead>
+<tr>
+<th style="text-align:center">操作</th>
+<th style="text-align:center">快捷键</th>
+</tr>
+</thead>
+<tbody>
+<tr>
+<td style="text-align:center">打开操作中心</td>
+<td style="text-align:center">Win + A</td>
+</tr>
+<tr>
+<td style="text-align:center">打开通知面板（通知中心）</td>
+<td style="text-align:center">Win + N</td>
+</tr>
+<tr>
+<td style="text-align:center">打开小部件面板</td>
+<td style="text-align:center">Win + W</td>
+</tr>
+<tr>
+<td style="text-align:center">快速访问 Snap 布局</td>
+<td style="text-align:center">Win + Z</td>
+</tr>
+<tr>
+<td style="text-align:center">打开 Microsoft Teams</td>
+<td style="text-align:center">Win + C</td>
+</tr>
+</tbody>
+</table>
+</div>
+<h3 id="5-2-文本编辑键盘快捷键"><a href="#5-2-文本编辑键盘快捷键" class="headerlink" title="5.2. 文本编辑键盘快捷键"></a>5.2. 文本编辑键盘快捷键</h3><div class="table-container">
+<table>
+<thead>
+<tr>
+<th style="text-align:center">操作</th>
+<th style="text-align:center">快捷键</th>
+</tr>
+</thead>
+<tbody>
+<tr>
+<td style="text-align:center">剪切所选项目</td>
+<td style="text-align:center">Ctrl + X</td>
+</tr>
+<tr>
+<td style="text-align:center">复制所选项目</td>
+<td style="text-align:center">Ctrl + C</td>
+</tr>
+<tr>
+<td style="text-align:center">粘贴所选项目</td>
+<td style="text-align:center">Ctrl + V</td>
+</tr>
+<tr>
+<td style="text-align:center">加粗所选文本</td>
+<td style="text-align:center">Ctrl + B</td>
+</tr>
+<tr>
+<td style="text-align:center">斜体所选文本</td>
+<td style="text-align:center">Ctrl + I</td>
+</tr>
+<tr>
+<td style="text-align:center">为所选文本加下划线</td>
+<td style="text-align:center">Ctrl + U</td>
+</tr>
+<tr>
+<td style="text-align:center">移动光标到当前行的开头</td>
+<td style="text-align:center">Home</td>
+</tr>
+<tr>
+<td style="text-align:center">移动光标到当前行的结束</td>
+<td style="text-align:center">End</td>
+</tr>
+</tbody>
+</table>
+</div>
+<h3 id="5-3-通用-Windows-键盘快捷键"><a href="#5-3-通用-Windows-键盘快捷键" class="headerlink" title="5.3. 通用 Windows 键盘快捷键"></a>5.3. 通用 Windows 键盘快捷键</h3><div class="table-container">
+<table>
+<thead>
+<tr>
+<th style="text-align:center">操作</th>
+<th style="text-align:center">快捷键</th>
+</tr>
+</thead>
+<tbody>
+<tr>
+<td style="text-align:center">在打开的应用程序之间切换</td>
+<td style="text-align:center">Alt + Tab</td>
+</tr>
+<tr>
+<td style="text-align:center">关闭活动项，或退出活动应用程序</td>
+<td style="text-align:center">Alt + F4</td>
+</tr>
+<tr>
+<td style="text-align:center">锁定你的电脑</td>
+<td style="text-align:center">Win + L</td>
+</tr>
+<tr>
+<td style="text-align:center">显示和隐藏桌面</td>
+<td style="text-align:center">Win + D</td>
+</tr>
+<tr>
+<td style="text-align:center">打开资源管理器</td>
+<td style="text-align:center">Win + E</td>
+</tr>
+<tr>
+<td style="text-align:center">搜索</td>
+<td style="text-align:center">Win + S</td>
+</tr>
+<tr>
+<td style="text-align:center">多重剪贴板</td>
+<td style="text-align:center">Win + V</td>
+</tr>
+<tr>
+<td style="text-align:center">切“桌面”</td>
+<td style="text-align:center">Win + Ctrl + →/←</td>
+</tr>
+<tr>
+<td style="text-align:center">截图</td>
+<td style="text-align:center">Win + Shift + S</td>
+</tr>
+<tr>
+<td style="text-align:center">白板（需要下载白板应用）</td>
+<td style="text-align:center">Win + W</td>
+</tr>
+<tr>
+<td style="text-align:center">显示日历</td>
+<td style="text-align:center">Win + Alt + D</td>
+</tr>
+<tr>
+<td style="text-align:center">投影</td>
+<td style="text-align:center">Win + P</td>
+</tr>
+<tr>
+<td style="text-align:center">连智能电视</td>
+<td style="text-align:center">Win + K</td>
+</tr>
+<tr>
+<td style="text-align:center">执行该字母的命令</td>
+<td style="text-align:center">Alt + 带下划线的字母</td>
+</tr>
+<tr>
+<td style="text-align:center">显示所选项目的属性</td>
+<td style="text-align:center">Alt + Enter</td>
+</tr>
+<tr>
+<td style="text-align:center">打开活动窗口的快捷菜单</td>
+<td style="text-align:center">Alt + Spacebar</td>
+</tr>
+<tr>
+<td style="text-align:center">转到退回</td>
+<td style="text-align:center">Alt + 左箭头</td>
+</tr>
+<tr>
+<td style="text-align:center">转到向前</td>
+<td style="text-align:center">Alt + 右箭头</td>
+</tr>
+<tr>
+<td style="text-align:center">向上移动一屏</td>
+<td style="text-align:center">Alt + Page Up</td>
+</tr>
+<tr>
+<td style="text-align:center">向下移动一屏</td>
+<td style="text-align:center">Alt + Page Down</td>
+</tr>
+<tr>
+<td style="text-align:center">关闭活动文档</td>
+<td style="text-align:center">Ctrl + F4</td>
+</tr>
+<tr>
+<td style="text-align:center">选择文档或窗口中的所有项目</td>
+<td style="text-align:center">Ctrl + A</td>
+</tr>
+<tr>
+<td style="text-align:center">删除所选项目并将其移至回收站</td>
+<td style="text-align:center">Ctrl + D</td>
+</tr>
+<tr>
+<td style="text-align:center">刷新活动窗口</td>
+<td style="text-align:center">Ctrl + R</td>
+</tr>
+<tr>
+<td style="text-align:center">重做操作</td>
+<td style="text-align:center">Ctrl + Y</td>
+</tr>
+<tr>
+<td style="text-align:center">将光标移动到下一个单词的开头</td>
+<td style="text-align:center">Ctrl + 右箭头</td>
+</tr>
+<tr>
+<td style="text-align:center">将光标移动到上一个单词的开头</td>
+<td style="text-align:center">Ctrl + 左箭头</td>
+</tr>
+<tr>
+<td style="text-align:center">将光标移动到下一段的开头</td>
+<td style="text-align:center">Ctrl + 下箭头</td>
+</tr>
+<tr>
+<td style="text-align:center">将光标移动到上一段的开头</td>
+<td style="text-align:center">Ctrl + 上箭头</td>
+</tr>
+<tr>
+<td style="text-align:center">使用箭头键在所有打开的应用程序之间切换</td>
+<td style="text-align:center">Ctrl + Alt + Tab</td>
+</tr>
+<tr>
+<td style="text-align:center">当组或磁贴在“开始”菜单上处于焦点时，将其向指定方向移动</td>
+<td style="text-align:center">Alt + Shift + 箭头键</td>
+</tr>
+<tr>
+<td style="text-align:center">当一个磁贴在“开始”菜单上处于焦点时，将其移动到另一个磁贴中以创建文件夹</td>
+<td style="text-align:center">Ctrl + Shift + 箭头键</td>
+</tr>
+<tr>
+<td style="text-align:center">开始菜单打开时调整大小</td>
+<td style="text-align:center">Ctrl + 箭头键</td>
+</tr>
+<tr>
+<td style="text-align:center">在窗口或桌面上选择多个单独的项目</td>
+<td style="text-align:center">Ctrl + 箭头键 + spacebar</td>
+</tr>
+<tr>
+<td style="text-align:center">选择一个文本块</td>
+<td style="text-align:center">Ctrl + Shift 和箭头键</td>
+</tr>
+<tr>
+<td style="text-align:center">打开启动</td>
+<td style="text-align:center">Ctrl + Esc</td>
+</tr>
+<tr>
+<td style="text-align:center">打开任务管理器</td>
+<td style="text-align:center">Ctrl + Shift + Esc</td>
+</tr>
+<tr>
+<td style="text-align:center">当多个键盘布局可用时切换键盘布局</td>
+<td style="text-align:center">Ctrl + Shift</td>
+</tr>
+<tr>
+<td style="text-align:center">打开或关闭中文输入法编辑器 (IME)</td>
+<td style="text-align:center">Ctrl + Spacebar</td>
+</tr>
+<tr>
+<td style="text-align:center">显示所选项目的快捷菜单</td>
+<td style="text-align:center">Shift + F10</td>
+</tr>
+<tr>
+<td style="text-align:center">删除所选项目而不先将其移动到回收站</td>
+<td style="text-align:center">Shift + Delete</td>
+</tr>
+<tr>
+<td style="text-align:center">打开右侧的下一个菜单，或打开一个子菜单</td>
+<td style="text-align:center">右箭头</td>
+</tr>
+<tr>
+<td style="text-align:center">打开左侧的下一个菜单，或关闭子菜单</td>
+<td style="text-align:center">左箭头</td>
+</tr>
+<tr>
+<td style="text-align:center">停止或离开当前任务</td>
+<td style="text-align:center">Esc</td>
+</tr>
+<tr>
+<td style="text-align:center">截取整个屏幕的屏幕截图并将其复制到剪贴板</td>
+<td style="text-align:center">PrtScn</td>
+</tr>
+</tbody>
+</table>
+</div>
+<h3 id="5-4-功能键键盘快捷键"><a href="#5-4-功能键键盘快捷键" class="headerlink" title="5.4. 功能键键盘快捷键"></a>5.4. 功能键键盘快捷键</h3><div class="table-container">
+<table>
+<thead>
+<tr>
+<th style="text-align:center">操作</th>
+<th style="text-align:center">快捷键</th>
+</tr>
+</thead>
+<tbody>
+<tr>
+<td style="text-align:center">重命名所选项目</td>
+<td style="text-align:center">F2</td>
+</tr>
+<tr>
+<td style="text-align:center">在文件资源管理器中搜索文件或文件夹</td>
+<td style="text-align:center">F3</td>
+</tr>
+<tr>
+<td style="text-align:center">在文件资源管理器中显示地址栏列表</td>
+<td style="text-align:center">F4</td>
+</tr>
+<tr>
+<td style="text-align:center">刷新活动窗口</td>
+<td style="text-align:center">F5</td>
+</tr>
+<tr>
+<td style="text-align:center">在窗口或桌面上循环浏览屏幕元素</td>
+<td style="text-align:center">F6</td>
+</tr>
+<tr>
+<td style="text-align:center">激活活动应用程序中的菜单栏</td>
+<td style="text-align:center">F10</td>
+</tr>
+<tr>
+<td style="text-align:center">最大化或最小化活动窗口</td>
+<td style="text-align:center">F11</td>
+</tr>
+</tbody>
+</table>
+</div>
+<h3 id="5-5-文件资源管理器键盘快捷键"><a href="#5-5-文件资源管理器键盘快捷键" class="headerlink" title="5.5. 文件资源管理器键盘快捷键"></a>5.5. 文件资源管理器键盘快捷键</h3><div class="table-container">
+<table>
+<thead>
+<tr>
+<th style="text-align:center">操作</th>
+<th style="text-align:center">快捷键</th>
+</tr>
+</thead>
+<tbody>
+<tr>
+<td style="text-align:center">选择地址栏</td>
+<td style="text-align:center">Alt + D</td>
+</tr>
+<tr>
+<td style="text-align:center">选择搜索框</td>
+<td style="text-align:center">Ctrl + E</td>
+</tr>
+<tr>
+<td style="text-align:center">打开一个新窗口</td>
+<td style="text-align:center">Ctrl + N</td>
+</tr>
+<tr>
+<td style="text-align:center">关闭活动窗口</td>
+<td style="text-align:center">Ctrl + W</td>
+</tr>
+<tr>
+<td style="text-align:center">更改文件和文件夹图标的大小和外观</td>
+<td style="text-align:center">Ctrl + 鼠标滚轮</td>
+</tr>
+<tr>
+<td style="text-align:center">显示所选文件夹上方的所有文件夹</td>
+<td style="text-align:center">Ctrl + Shift + E</td>
+</tr>
+<tr>
+<td style="text-align:center">创建一个新文件夹</td>
+<td style="text-align:center">Ctrl + Shift + N</td>
+</tr>
+<tr>
+<td style="text-align:center">显示所选文件夹下的所有子文件夹</td>
+<td style="text-align:center">Num Lock + asterisk (*)</td>
+</tr>
+<tr>
+<td style="text-align:center">显示所选文件夹的内容</td>
+<td style="text-align:center">Num Lock + plus (+)</td>
+</tr>
+<tr>
+<td style="text-align:center">折叠所选文件夹</td>
+<td style="text-align:center">Num Lock + minus (-)</td>
+</tr>
+<tr>
+<td style="text-align:center">显示预览面板</td>
+<td style="text-align:center">Alt + P</td>
+</tr>
+<tr>
+<td style="text-align:center">打开所选项目的“属性”对话框</td>
+<td style="text-align:center">Alt + Enter</td>
+</tr>
+<tr>
+<td style="text-align:center">查看下一个文件夹</td>
+<td style="text-align:center">Alt + 右箭头</td>
+</tr>
+<tr>
+<td style="text-align:center">查看文件夹所在的文件夹</td>
+<td style="text-align:center">Alt + 上箭头</td>
+</tr>
+<tr>
+<td style="text-align:center">查看上一个文件夹</td>
+<td style="text-align:center">Alt + 左箭头 或 Backspace</td>
+</tr>
+<tr>
+<td style="text-align:center">显示当前选择</td>
+<td style="text-align:center">右箭头</td>
+</tr>
+<tr>
+<td style="text-align:center">折叠当前选择</td>
+<td style="text-align:center">左箭头</td>
+</tr>
+<tr>
+<td style="text-align:center">显示活动窗口的底部</td>
+<td style="text-align:center">End</td>
+</tr>
+<tr>
+<td style="text-align:center">显示活动窗口的顶部</td>
+<td style="text-align:center">Home</td>
+</tr>
+</tbody>
+</table>
+</div>
+<h3 id="5-6-任务栏键盘快捷键"><a href="#5-6-任务栏键盘快捷键" class="headerlink" title="5.6. 任务栏键盘快捷键"></a>5.6. 任务栏键盘快捷键</h3><div class="table-container">
+<table>
+<thead>
+<tr>
+<th style="text-align:center">操作</th>
+<th style="text-align:center">快捷键</th>
+</tr>
+</thead>
+<tbody>
+<tr>
+<td style="text-align:center">打开一个应用程序或快速打开另一个应用程序实例</td>
+<td style="text-align:center">Shift + 左键单击应用程序图标</td>
+</tr>
+<tr>
+<td style="text-align:center">以管理员身份打开应用</td>
+<td style="text-align:center">Ctrl + Shift + 左键单击应用程序图标</td>
+</tr>
+<tr>
+<td style="text-align:center">显示应用程序的窗口菜单</td>
+<td style="text-align:center">Shift + 右键单击应用程序图标</td>
+</tr>
+<tr>
+<td style="text-align:center">在任务栏中循环浏览应用程序</td>
+<td style="text-align:center">Win + T</td>
+</tr>
+<tr>
+<td style="text-align:center">根据固定编号在任务栏中打开应用</td>
+<td style="text-align:center">Win + Number 键</td>
+</tr>
+<tr>
+<td style="text-align:center">循环通过组的窗口</td>
+<td style="text-align:center">Ctrl + 单击分组的任务栏按钮</td>
+</tr>
+</tbody>
+</table>
+</div>
+<h3 id="5-7-设置键盘快捷键"><a href="#5-7-设置键盘快捷键" class="headerlink" title="5.7. 设置键盘快捷键"></a>5.7. 设置键盘快捷键</h3><div class="table-container">
+<table>
+<thead>
+<tr>
+<th style="text-align:center">操作</th>
+<th style="text-align:center">快捷键</th>
+</tr>
+</thead>
+<tbody>
+<tr>
+<td style="text-align:center">打开设置</td>
+<td style="text-align:center">Win + I</td>
+</tr>
+<tr>
+<td style="text-align:center">返回设置主页</td>
+<td style="text-align:center">Backspace</td>
+</tr>
+<tr>
+<td style="text-align:center">搜索设置</td>
+<td style="text-align:center">在带有搜索框的任何页面上键入</td>
+</tr>
+</tbody>
+</table>
+</div>
+<h3 id="5-8-虚拟桌面键盘快捷键"><a href="#5-8-虚拟桌面键盘快捷键" class="headerlink" title="5.8. 虚拟桌面键盘快捷键"></a>5.8. 虚拟桌面键盘快捷键</h3><div class="table-container">
+<table>
+<thead>
+<tr>
+<th style="text-align:center">操作</th>
+<th style="text-align:center">快捷键</th>
+</tr>
+</thead>
+<tbody>
+<tr>
+<td style="text-align:center">打开任务视图</td>
+<td style="text-align:center">Win + Tab</td>
+</tr>
+<tr>
+<td style="text-align:center">添加虚拟桌面</td>
+<td style="text-align:center">Win + Ctrl + D</td>
+</tr>
+<tr>
+<td style="text-align:center">在右侧创建的虚拟桌面之间切换</td>
+<td style="text-align:center">Win + Ctrl + 右箭头</td>
+</tr>
+<tr>
+<td style="text-align:center">在左侧创建的虚拟桌面之间切换</td>
+<td style="text-align:center">Win + Ctrl + 左箭头</td>
+</tr>
+<tr>
+<td style="text-align:center">关闭您正在使用的虚拟桌面</td>
+<td style="text-align:center">Win + Ctrl + F4</td>
+</tr>
+</tbody>
+</table>
+</div>
+<h3 id="5-9-对话框快捷键"><a href="#5-9-对话框快捷键" class="headerlink" title="5.9. 对话框快捷键"></a>5.9. 对话框快捷键</h3><div class="table-container">
+<table>
+<thead>
+<tr>
+<th style="text-align:center">操作</th>
+<th style="text-align:center">快捷键</th>
+</tr>
+</thead>
+<tbody>
+<tr>
+<td style="text-align:center">显示活动列表中的项目</td>
+<td style="text-align:center">F4</td>
+</tr>
+<tr>
+<td style="text-align:center">通过选项卡向后移动</td>
+<td style="text-align:center">Ctrl + Shift + Tab</td>
+</tr>
+<tr>
+<td style="text-align:center">移至第 n 个选项卡</td>
+<td style="text-align:center">Ctrl + 编号（编号 1–9）</td>
+</tr>
+<tr>
+<td style="text-align:center">通过选项前进</td>
+<td style="text-align:center">Tab</td>
+</tr>
+<tr>
+<td style="text-align:center">执行与该字母一起使用的命令（或选择选项）</td>
+<td style="text-align:center">Alt + 带下划线的字母</td>
+</tr>
+<tr>
+<td style="text-align:center">如果活动选项是复选框，则选中或清除复选框</td>
+<td style="text-align:center">Spacebar</td>
+</tr>
+<tr>
+<td style="text-align:center">如果在“另存为”或“打开”对话框中选择了文件夹，则打开上一级文件夹</td>
+<td style="text-align:center">Backspace</td>
+</tr>
+<tr>
+<td style="text-align:center">如果活动选项是一组选项按钮，则选择一个按钮</td>
+<td style="text-align:center">箭头键</td>
+</tr>
+</tbody>
+</table>
+</div>
+<h3 id="5-10-命令提示符键盘快捷键"><a href="#5-10-命令提示符键盘快捷键" class="headerlink" title="5.10. 命令提示符键盘快捷键"></a>5.10. 命令提示符键盘快捷键</h3><div class="table-container">
+<table>
+<thead>
+<tr>
+<th style="text-align:center">操作</th>
+<th style="text-align:center">快捷键</th>
+</tr>
+</thead>
+<tbody>
+<tr>
+<td style="text-align:center">复制所选文本</td>
+<td style="text-align:center">Ctrl + C</td>
+</tr>
+<tr>
+<td style="text-align:center">粘贴所选文本</td>
+<td style="text-align:center">Ctrl + V</td>
+</tr>
+<tr>
+<td style="text-align:center">进入标记模式</td>
+<td style="text-align:center">Ctrl + M</td>
+</tr>
+<tr>
+<td style="text-align:center">在块模式下开始选择</td>
+<td style="text-align:center">Alt + 选择键</td>
+</tr>
+<tr>
+<td style="text-align:center">在指定的方向移动光标</td>
+<td style="text-align:center">箭头键</td>
+</tr>
+<tr>
+<td style="text-align:center">将光标向上移动一页</td>
+<td style="text-align:center">Page up</td>
+</tr>
+<tr>
+<td style="text-align:center">将光标向下移动一页</td>
+<td style="text-align:center">Page down</td>
+</tr>
+<tr>
+<td style="text-align:center">将光标移动到缓冲区的开头</td>
+<td style="text-align:center">Ctrl + Home</td>
+</tr>
+<tr>
+<td style="text-align:center">将光标移动到缓冲区的末尾</td>
+<td style="text-align:center">Ctrl + End</td>
+</tr>
+<tr>
+<td style="text-align:center">在输出历史中向上移动一行</td>
+<td style="text-align:center">Ctrl + 上箭头</td>
+</tr>
+<tr>
+<td style="text-align:center">在输出历史记录中下移一行</td>
+<td style="text-align:center">Ctrl + 下箭头</td>
+</tr>
+</tbody>
+</table>
+</div>
+<h3 id="5-11-游戏栏键盘快捷键"><a href="#5-11-游戏栏键盘快捷键" class="headerlink" title="5.11. 游戏栏键盘快捷键"></a>5.11. 游戏栏键盘快捷键</h3><div class="table-container">
+<table>
+<thead>
+<tr>
+<th style="text-align:center">操作</th>
+<th style="text-align:center">快捷键</th>
+</tr>
+</thead>
+<tbody>
+<tr>
+<td style="text-align:center">打开游戏栏</td>
+<td style="text-align:center">Win + G</td>
+</tr>
+<tr>
+<td style="text-align:center">截取当前游戏的截图</td>
+<td style="text-align:center">Win + Alt + PrtSc</td>
+</tr>
+<tr>
+<td style="text-align:center">记录活动游戏的最后 30 秒</td>
+<td style="text-align:center">Win + Alt + G</td>
+</tr>
+<tr>
+<td style="text-align:center">开始或停止记录活动游戏</td>
+<td style="text-align:center">Win + Alt + R</td>
+</tr>
+<tr>
+<td style="text-align:center">显示/隐藏当前游戏的录制计时器</td>
+<td style="text-align:center">Win + Alt + T</td>
+</tr>
+</tbody>
+</table>
+</div>
+<h3 id="5-12-辅助功能键盘快捷键"><a href="#5-12-辅助功能键盘快捷键" class="headerlink" title="5.12. 辅助功能键盘快捷键"></a>5.12. 辅助功能键盘快捷键</h3><div class="table-container">
+<table>
+<thead>
+<tr>
+<th style="text-align:center">操作</th>
+<th style="text-align:center">快捷键</th>
+</tr>
+</thead>
+<tbody>
+<tr>
+<td style="text-align:center">打开放大镜和缩放</td>
+<td style="text-align:center">Win + plus (+)</td>
+</tr>
+<tr>
+<td style="text-align:center">使用放大镜缩小</td>
+<td style="text-align:center">Win + minus (-)</td>
+</tr>
+<tr>
+<td style="text-align:center">在 Windows 设置中打开“轻松访问”中心</td>
+<td style="text-align:center">Win + U</td>
+</tr>
+<tr>
+<td style="text-align:center">退出放大镜</td>
+<td style="text-align:center">Win + Esc</td>
+</tr>
+<tr>
+<td style="text-align:center">在放大镜中切换到停靠模式</td>
+<td style="text-align:center">Alt + Ctrl + D</td>
+</tr>
+<tr>
+<td style="text-align:center">在放大镜中切换到全屏模式</td>
+<td style="text-align:center">Alt + Ctrl + F</td>
+</tr>
+<tr>
+<td style="text-align:center">打开或关闭粘滞键</td>
+<td style="text-align:center">按 Shift 五次</td>
+</tr>
+<tr>
+<td style="text-align:center">在放大镜中切换到镜头模式</td>
+<td style="text-align:center">Alt + Ctrl + L</td>
+</tr>
+<tr>
+<td style="text-align:center">在放大镜中反转颜色</td>
+<td style="text-align:center">Alt + Ctrl + I</td>
+</tr>
+<tr>
+<td style="text-align:center">在放大镜中循环浏览视图</td>
+<td style="text-align:center">Alt + Ctrl + M</td>
+</tr>
+<tr>
+<td style="text-align:center">在放大镜中使用鼠标调整镜头大小</td>
+<td style="text-align:center">Alt + Ctrl + R</td>
+</tr>
+<tr>
+<td style="text-align:center">在放大镜中平移</td>
+<td style="text-align:center">Alt + Ctrl + 箭头键</td>
+</tr>
+<tr>
+<td style="text-align:center">放大或缩小</td>
+<td style="text-align:center">Ctrl + Alt + 鼠标滚动</td>
+</tr>
+<tr>
+<td style="text-align:center">打开旁白</td>
+<td style="text-align:center">Win + Enter</td>
+</tr>
+<tr>
+<td style="text-align:center">打开或关闭切换键</td>
+<td style="text-align:center">按住 Num Lock 五秒钟</td>
+</tr>
+<tr>
+<td style="text-align:center">在 Windows 11 中使用此快捷方式打开屏幕键盘</td>
+<td style="text-align:center">Win + Ctrl + O</td>
+</tr>
+<tr>
+<td style="text-align:center">打开和关闭筛选键</td>
+<td style="text-align:center">按住右 Shift 八秒钟</td>
+</tr>
+<tr>
+<td style="text-align:center">打开或关闭高对比度</td>
+<td style="text-align:center">左 Alt 键 + 左 Shift 键 + PrtSc</td>
+</tr>
+<tr>
+<td style="text-align:center">打开或关闭鼠标键</td>
+<td style="text-align:center">左 Alt 键 + 左 Shift 键 + Num Lock</td>
+</tr>
+</tbody>
+</table>
+</div>
+<h3 id="5-13-浏览器快捷方式"><a href="#5-13-浏览器快捷方式" class="headerlink" title="5.13. 浏览器快捷方式"></a>5.13. 浏览器快捷方式</h3><div class="table-container">
+<table>
+<thead>
+<tr>
+<th style="text-align:center">操作</th>
+<th style="text-align:center">快捷键</th>
+</tr>
+</thead>
+<tbody>
+<tr>
+<td style="text-align:center">在页面上查找</td>
+<td style="text-align:center">Ctrl + F</td>
+</tr>
+<tr>
+<td style="text-align:center">在地址栏中选择 URL 进行编辑</td>
+<td style="text-align:center">Alt + D</td>
+</tr>
+<tr>
+<td style="text-align:center">在 Windows 设置中打开“轻松访问”中心</td>
+<td style="text-align:center">Win + U</td>
+</tr>
+<tr>
+<td style="text-align:center">打开历史</td>
+<td style="text-align:center">Ctrl + H</td>
+</tr>
+<tr>
+<td style="text-align:center">在新选项卡中打开下载</td>
+<td style="text-align:center">Ctrl + J</td>
+</tr>
+<tr>
+<td style="text-align:center">打开一个新窗口</td>
+<td style="text-align:center">Ctrl + N</td>
+</tr>
+<tr>
+<td style="text-align:center">打印当前页面</td>
+<td style="text-align:center">Ctrl + P</td>
+</tr>
+<tr>
+<td style="text-align:center">重新加载当前页面</td>
+<td style="text-align:center">Ctrl + R</td>
+</tr>
+<tr>
+<td style="text-align:center">打开一个新选项卡并切换到它</td>
+<td style="text-align:center">Ctrl + T</td>
+</tr>
+</tbody>
+</table>
+</div>
+</article><div class="post-copyright"><div class="post-copyright__author"><span class="post-copyright-meta"><i class="fas fa-circle-user fa-fw"></i>文章作者: </span><span class="post-copyright-info"><a href="https://ktzxy.github.io">蓝桉</a></span></div><div class="post-copyright__type"><span class="post-copyright-meta"><i class="fas fa-square-arrow-up-right fa-fw"></i>文章链接: </span><span class="post-copyright-info"><a href="https://ktzxy.github.io/posts/2c5abc07.html">https://ktzxy.github.io/posts/2c5abc07.html</a></span></div><div class="post-copyright__notice"><span class="post-copyright-meta"><i class="fas fa-circle-exclamation fa-fw"></i>版权声明: </span><span class="post-copyright-info">本博客所有文章除特别声明外，均采用 <a href="https://creativecommons.org/licenses/by-nc-sa/4.0/" target="_blank">CC BY-NC-SA 4.0</a> 许可协议。转载请注明来源 <a href="https://ktzxy.github.io" target="_blank">蓝桉`Blog</a>！</span></div></div><div class="tag_share"><div class="post-meta__tag-list"><a class="post-meta__tags" href="/tags/%E6%93%8D%E4%BD%9C%E7%B3%BB%E7%BB%9F/">操作系统</a></div><div class="post-share"><div class="social-share" data-image="/bg/Image00029.webp" data-sites="facebook,twitter,wechat,weibo,qq"></div><link rel="stylesheet" href="https://cdn.jsdelivr.net/npm/butterfly-extsrc/sharejs/dist/css/share.min.css" media="print" onload="this.media='all'"><script src="https://cdn.jsdelivr.net/npm/butterfly-extsrc/sharejs/dist/js/social-share.min.js" defer></script></div></div><link rel="stylesheet" href="/css/coin/coin.css" media="defer" onload="this.media='all'"/><div class="post-reward"><button class="tip-button reward-button"><span class="tip-button__text">不给糖果就捣蛋</span><div class="coin-wrapper"><div class="coin"><div class="coin__middle"></div><div class="coin__back"></div><div class="coin__front"></div></div></div><div class="reward-main"><ul class="reward-all"><li class="reward-item"><a href="/img/wechat.webp" target="_blank"><img class="post-qr-code-img" src="/img/wechat.webp" alt="wechat"/></a><div class="post-qr-code-desc">wechat</div></li><li class="reward-item"><a href="/img/alipay.webp" target="_blank"><img class="post-qr-code-img" src="/img/alipay.webp" alt="alipay"/></a><div class="post-qr-code-desc">alipay</div></li></ul></div></button></div><audio id="coinAudio" src="https://cdn.cbd.int/akilar-candyassets@1.0.36/audio/aowu.m4a"></audio><script defer="defer" src="/js/coin/coin.js"></script><nav class="pagination-post" id="pagination"><a class="pagination-related" href="/posts/83eec826.html" title="博客问题记录"><img class="cover" src="/bg/Image00019.webp" onerror="onerror=null;src='/img/404.jpg'" alt="cover of previous post"><div class="info"><div class="info-1"><div class="info-item-1">上一篇</div><div class="info-item-2">博客问题记录</div></div><div class="info-2"><div class="info-item-1">问题一1npm ERR! path D:\Mynotebook&amp;&amp;blog\blog\hexo-source-repo\node_modules\hexo-he 创建的博客存放目录，不要带&amp;&amp; 问题二1fatal: unable to access &#x27;https:/.git/&#x27;: OpenSSL SSL_read: SSL_ERROR_SYSCALL, 解决123456// 取消http代理git config --global --unset http.proxy// 取消https代理 git config --global --unset https.proxy设置系统代理 在终端输入以下命令，设置 Git 使用本地代理：git config --global http.proxy http://127.0.0.1:7890 </div></div></div></a><a class="pagination-related" href="/posts/deb5175a.html" title="Linux学习"><img class="cover" src="/bg/Image00025.webp" onerror="onerror=null;src='/img/404.jpg'" alt="cover of next post"><div class="info text-right"><div class="info-1"><div class="info-item-1">下一篇</div><div class="info-item-2">Linux学习</div></div><div class="info-2"><div class="info-item-1">概述Linux是一种自由和开放源码的类UNIX操作系统。该操作系统的内核由林纳斯·托瓦兹在1991年10月5日首次发布在加上用户空间的应用程序之后，成为Linux操作系统。 安装与下载VMware虚拟机下载安装Linux(CentOS7)系统虚拟机linux系统下载 目录结构Linux 的一切资源都挂载在 / 节点下。/bin： Binary的缩写。存放系统命令，普通用户和 root 都可以执行。放在 /bin 下的命令在单用户模式下也可以执行。/boot： 这里存放的是启动 Linux 时使用的一些核心文件，包括一些连接文件以及镜像文件。/dev： Device的缩写。该目录下存放的是 Linux 的外部设备，在 Linux 中访问设备的方式和访问文件的方式是相同的。/etc： Etcetera的缩写。这个目录用来存放所有的系统管理所需要的配置文件和子目录。/home： 用户的主目录，在 Linux 中，每个用户都有一个自己的目录，一般该目录名是以用户的账号命名的。/lib： Library的缩写。这个目录里存放着系统最基本的动态连接共享库，其作用类似于 Windows 里的 ...</div></div></div></a></nav><div class="relatedPosts"><div class="headline"><i class="fas fa-thumbs-up fa-fw"></i><span>相关推荐</span></div><div class="relatedPosts-list"><a class="pagination-related" href="/posts/deb5175a.html" title="Linux学习"><img class="cover" src="/bg/Image00025.webp" alt="cover"><div class="info text-center"><div class="info-1"><div class="info-item-1"><i class="far fa-calendar-alt fa-fw"></i> 2025-07-09</div><div class="info-item-2">Linux学习</div></div><div class="info-2"><div class="info-item-1">概述Linux是一种自由和开放源码的类UNIX操作系统。该操作系统的内核由林纳斯·托瓦兹在1991年10月5日首次发布在加上用户空间的应用程序之后，成为Linux操作系统。 安装与下载VMware虚拟机下载安装Linux(CentOS7)系统虚拟机linux系统下载 目录结构Linux 的一切资源都挂载在 / 节点下。/bin： Binary的缩写。存放系统命令，普通用户和 root 都可以执行。放在 /bin 下的命令在单用户模式下也可以执行。/boot： 这里存放的是启动 Linux 时使用的一些核心文件，包括一些连接文件以及镜像文件。/dev： Device的缩写。该目录下存放的是 Linux 的外部设备，在 Linux 中访问设备的方式和访问文件的方式是相同的。/etc： Etcetera的缩写。这个目录用来存放所有的系统管理所需要的配置文件和子目录。/home： 用户的主目录，在 Linux 中，每个用户都有一个自己的目录，一般该目录名是以用户的账号命名的。/lib： Library的缩写。这个目录里存放着系统最基本的动态连接共享库，其作用类似于 Windows 里的 ...</div></div></div></a></div></div></div><div class="aside-content" id="aside-content"><div class="card-widget card-info text-center"><div class="avatar-img"><img src="/img/avatar.webp" onerror="this.onerror=null;this.src='/img/friend_404.gif'" alt="avatar"/></div><div class="author-info-name">蓝桉</div><div class="author-info-description"><div style="line-height:1.38;margin:0.6rem 0;text-align:justify;color:rgba(255, 255, 255, 0.8);">这有关于<b style="color:#fff">生活、学习、技术</b>相关的问题和看法，还有<b style="color:#fff">文章教程</b>和<b style="color:#fff">分享</b>。</div><div style="line-height:1.38;margin:0.6rem 0;text-align:justify;color:rgba(255, 255, 255, 0.8);">相信你可以在这里找到对你有用的<b style="color:#fff">知识</b>和<b style="color:#fff">教程</b>。</div></div><div class="site-data"><a href="/archives/"><div class="headline">文章</div><div class="length-num">264</div></a><a href="/tags/"><div class="headline">标签</div><div class="length-num">38</div></a><a href="/categories/"><div class="headline">分类</div><div class="length-num">37</div></a></div><a id="card-info-btn" target="_blank" rel="noopener" href="https://github.com/ktzxy"><i class="fab fa-github"></i><span>Follow Me</span></a><div class="card-info-social-icons"><a class="social-icon faa-parent animated-hover" href="https://github.com/ktzxy" target="_blank" title="Github"><svg class="social_icon faa-tada" aria-hidden="true"><use xlink:href="#icon-github"></use></svg></a><a class="social-icon faa-parent animated-hover" href="https://mail.qq.com/cgi-bin/qm_share?t=qm_mailme&amp;email=2251511764@qq.com" target="_blank" title="Email"><svg class="social_icon faa-tada" aria-hidden="true"><use xlink:href="#icon-youxiang"></use></svg></a><a class="social-icon faa-parent animated-hover" href="/atom.xml" target="_blank" title="RSS"><svg class="social_icon faa-tada" aria-hidden="true"><use xlink:href="#icon-RSS"></use></svg></a><a class="social-icon faa-parent animated-hover" href="https://space.bilibili.com/496148176" target="_blank" title="BiliBili"><svg class="social_icon faa-tada" aria-hidden="true"><use xlink:href="#icon-QX-BILIBILI"></use></svg></a><a class="social-icon faa-parent animated-hover" href="tencent://Message/?Uin=2251511764&amp;amp;websiteName=local.edu.com:8888=&amp;amp;Menu=yes" target="_blank" title="QQ"><svg class="social_icon faa-tada" aria-hidden="true"><use xlink:href="#icon-QQ"></use></svg></a></div></div><div class="card-widget card-announcement"><div class="item-headline"><i class="fas fa-bullhorn fa-shake"></i><span>公告</span></div><div class="announcement_content">This is my Blog</div></div><div class="sticky_layout"><div class="card-widget" id="card-toc"><div class="item-headline"><i class="fas fa-stream"></i><span>目录</span><span class="toc-percentage"></span></div><div class="toc-content"><ol class="toc"><li class="toc-item toc-level-2"><a class="toc-link" href="#1-%E5%B8%B8%E7%94%A8DOS%E5%91%BD%E4%BB%A4"><span class="toc-number">1.</span> <span class="toc-text">1. 常用DOS命令</span></a><ol class="toc-child"><li class="toc-item toc-level-3"><a class="toc-link" href="#1-1-windows-%E5%B8%B8%E7%94%A8%E5%91%BD%E4%BB%A4"><span class="toc-number">1.1.</span> <span class="toc-text">1.1. windows 常用命令</span></a></li><li class="toc-item toc-level-3"><a class="toc-link" href="#1-2-%E8%87%AA%E7%94%A8%E7%9A%84%E7%B3%BB%E7%BB%9F%E8%84%9A%E6%9C%AC"><span class="toc-number">1.2.</span> <span class="toc-text">1.2. 自用的系统脚本</span></a><ol class="toc-child"><li class="toc-item toc-level-4"><a class="toc-link" href="#1-2-1-%E5%86%85%E5%A4%96%E7%BD%91IP%E5%88%87%E6%8D%A2%EF%BC%88%E9%80%82%E7%94%A8win10%E7%B3%BB%E7%BB%9F%EF%BC%89-20171122"><span class="toc-number">1.2.1.</span> <span class="toc-text">1.2.1. 内外网IP切换（适用win10系统）.20171122</span></a></li><li class="toc-item toc-level-4"><a class="toc-link" href="#1-2-2-%E5%86%85%E5%A4%96%E7%BD%91IP%E5%88%87%E6%8D%A2%EF%BC%88%E9%80%82%E7%94%A8win7%E7%B3%BB%E7%BB%9F%EF%BC%89"><span class="toc-number">1.2.2.</span> <span class="toc-text">1.2.2. 内外网IP切换（适用win7系统）</span></a></li><li class="toc-item toc-level-4"><a class="toc-link" href="#1-2-3-%E4%B8%80%E9%94%AE%E5%88%A0%E9%99%A4%E7%94%B5%E8%84%91%E4%B8%AD%E7%9A%84%E7%A9%BA%E6%96%87%E4%BB%B6%E5%A4%B9%E8%84%9A%E6%9C%AC%EF%BC%88%E6%9C%AA%E6%B5%8B%E8%AF%95%EF%BC%81%EF%BC%81%EF%BC%89"><span class="toc-number">1.2.3.</span> <span class="toc-text">1.2.3. 一键删除电脑中的空文件夹脚本（未测试！！）</span></a></li><li class="toc-item toc-level-4"><a class="toc-link" href="#1-2-4-%E5%90%AF%E7%94%A8-%E7%A6%81%E7%94%A8%E7%BD%91%E7%BB%9C%E6%9C%AC%E5%9C%B0%E8%BF%9E%E6%8E%A5"><span class="toc-number">1.2.4.</span> <span class="toc-text">1.2.4. 启用&#x2F;禁用网络本地连接</span></a></li></ol></li><li class="toc-item toc-level-3"><a class="toc-link" href="#1-3-%E6%89%B9%E5%A4%84%E7%90%86-bat-%E8%84%9A%E6%9C%AC%E5%91%BD%E4%BB%A4%E6%B1%87%E6%80%BB%EF%BC%88%E5%BE%85%E6%95%B4%E7%90%86%EF%BC%89"><span class="toc-number">1.3.</span> <span class="toc-text">1.3. 批处理(bat)脚本命令汇总（待整理）</span></a></li></ol></li><li class="toc-item toc-level-2"><a class="toc-link" href="#2-%E7%B3%BB%E7%BB%9F%E8%BF%90%E8%A1%8C%E5%91%BD%E4%BB%A4"><span class="toc-number">2.</span> <span class="toc-text">2. 系统运行命令</span></a><ol class="toc-child"><li class="toc-item toc-level-3"><a class="toc-link" href="#2-1-%E5%A6%82%E4%BD%95%E4%BD%BF%E7%94%A8-WIN-R-%E8%BF%90%E8%A1%8C%E8%87%AA%E5%AE%9A%E4%B9%89%E5%91%BD%E4%BB%A4%E5%90%AF%E5%8A%A8%E7%A8%8B%E5%BA%8F"><span class="toc-number">2.1.</span> <span class="toc-text">2.1. 如何使用 WIN+R 运行自定义命令启动程序</span></a></li><li class="toc-item toc-level-3"><a class="toc-link" href="#2-2-window-%E7%B3%BB%E7%BB%9F%E5%B8%B8%E7%94%A8%E5%8E%9F%E7%94%9F%E5%91%BD%E4%BB%A4"><span class="toc-number">2.2.</span> <span class="toc-text">2.2. window 系统常用原生命令</span></a></li></ol></li><li class="toc-item toc-level-2"><a class="toc-link" href="#3-windows-%E7%B3%BB%E7%BB%9F%E7%9B%B8%E5%85%B3%E8%AE%BE%E7%BD%AE"><span class="toc-number">3.</span> <span class="toc-text">3. windows 系统相关设置</span></a><ol class="toc-child"><li class="toc-item toc-level-3"><a class="toc-link" href="#3-1-%E7%8E%AF%E5%A2%83%E5%8F%98%E9%87%8F-%E7%94%A8%E6%88%B7%E5%8F%98%E9%87%8F%E4%B8%8E%E7%B3%BB%E7%BB%9F%E5%8F%98%E9%87%8F"><span class="toc-number">3.1.</span> <span class="toc-text">3.1. 环境变量 (用户变量与系统变量)</span></a><ol class="toc-child"><li class="toc-item toc-level-4"><a class="toc-link" href="#3-1-1-%E7%94%A8%E6%88%B7%E5%8F%98%E9%87%8F"><span class="toc-number">3.1.1.</span> <span class="toc-text">3.1.1. 用户变量</span></a></li><li class="toc-item toc-level-4"><a class="toc-link" href="#3-1-2-%E7%B3%BB%E7%BB%9F%E5%8F%98%E9%87%8F"><span class="toc-number">3.1.2.</span> <span class="toc-text">3.1.2. 系统变量</span></a></li><li class="toc-item toc-level-4"><a class="toc-link" href="#3-1-3-%E5%B8%B8%E7%94%A8%E5%8F%98%E9%87%8F%E6%B8%85%E5%8D%95"><span class="toc-number">3.1.3.</span> <span class="toc-text">3.1.3. 常用变量清单</span></a></li></ol></li><li class="toc-item toc-level-3"><a class="toc-link" href="#3-2-hosts-%E6%96%87%E4%BB%B6"><span class="toc-number">3.2.</span> <span class="toc-text">3.2. hosts 文件</span></a></li><li class="toc-item toc-level-3"><a class="toc-link" href="#3-3-win10-%E9%94%81%E5%B1%8F%E5%A3%81%E7%BA%B8%E4%BD%8D%E7%BD%AE"><span class="toc-number">3.3.</span> <span class="toc-text">3.3. win10 锁屏壁纸位置</span></a></li><li class="toc-item toc-level-3"><a class="toc-link" href="#3-4-C%E7%9B%98%E5%8F%AF%E6%B8%85%E7%90%86%E5%86%85%E5%AE%B9"><span class="toc-number">3.4.</span> <span class="toc-text">3.4. C盘可清理内容</span></a></li><li class="toc-item toc-level-3"><a class="toc-link" href="#3-5-win7-%E7%B3%BB%E7%BB%9F%E7%9A%84Temporary-Internet-Files%E6%B8%85%E7%A9%BA%E9%97%AE%E9%A2%98"><span class="toc-number">3.5.</span> <span class="toc-text">3.5. win7 系统的Temporary Internet Files清空问题</span></a></li><li class="toc-item toc-level-3"><a class="toc-link" href="#3-6-%E5%A4%87%E4%BB%BD%E5%BC%80%E5%A7%8B%E8%8F%9C%E5%8D%95"><span class="toc-number">3.6.</span> <span class="toc-text">3.6. 备份开始菜单</span></a></li><li class="toc-item toc-level-3"><a class="toc-link" href="#3-7-%E7%94%B5%E8%84%91%E6%8A%A4%E7%9C%BC%E9%A2%9C%E8%89%B2%E8%AE%BE%E7%BD%AE"><span class="toc-number">3.7.</span> <span class="toc-text">3.7. 电脑护眼颜色设置</span></a></li><li class="toc-item toc-level-3"><a class="toc-link" href="#3-8-%E8%BF%99%E4%B8%AA%E5%8F%AF%E8%83%BD%E4%B8%8EACHI%E6%9C%89%E5%85%B3%E7%B3%BB%E5%90%A7%E3%80%82%E4%BD%A0%E5%85%88%E5%8E%BB%E4%BF%AE%E6%94%B9%E5%88%B0-compatible%EF%BC%88%E5%85%BC%E5%AE%B9%E6%A8%A1%E5%BC%8F%EF%BC%89%E8%BF%9B%E5%85%A5%E7%B3%BB%E7%BB%9F"><span class="toc-number">3.8.</span> <span class="toc-text">3.8. 这个可能与ACHI有关系吧。你先去修改到 compatible（兼容模式）进入系统</span></a></li><li class="toc-item toc-level-3"><a class="toc-link" href="#3-9-NSIS%EF%BC%9A%E4%BD%BF%E7%94%A8netsh-advfirewall%E5%B1%8F%E8%94%BD%E6%9F%90%E7%A8%8B%E5%BA%8F%E8%AE%BF%E9%97%AE%E7%BD%91%E7%BB%9C"><span class="toc-number">3.9.</span> <span class="toc-text">3.9. NSIS：使用netsh advfirewall屏蔽某程序访问网络</span></a></li><li class="toc-item toc-level-3"><a class="toc-link" href="#3-10-%E5%88%A0%E6%8E%89-WIN10-%E5%9B%9E%E6%94%B6%E7%AB%99%E5%8F%B3%E9%94%AE%E8%8F%9C%E5%8D%95%E7%9A%84%E5%9B%BA%E5%AE%9A%E5%88%B0%EF%BC%82%E5%BC%80%E5%A7%8B%EF%BC%82%E5%B1%8F%E5%B9%95%EF%BC%81"><span class="toc-number">3.10.</span> <span class="toc-text">3.10. 删掉 WIN10 回收站右键菜单的固定到＂开始＂屏幕！</span></a></li><li class="toc-item toc-level-3"><a class="toc-link" href="#3-11-%E9%99%90%E5%88%B6%E4%BF%9D%E7%95%99%E5%AE%BD%E5%B8%A6%E8%AE%BE%E7%BD%AE"><span class="toc-number">3.11.</span> <span class="toc-text">3.11. 限制保留宽带设置</span></a></li><li class="toc-item toc-level-3"><a class="toc-link" href="#3-12-win10-%E7%B3%BB%E7%BB%9F%E4%BB%BB%E5%8A%A1%E6%A0%8F%E8%AE%BE%E7%BD%AE%E6%97%B6%E9%97%B4%E6%98%BE%E7%A4%BA%E7%A7%92"><span class="toc-number">3.12.</span> <span class="toc-text">3.12. win10 系统任务栏设置时间显示秒</span></a></li><li class="toc-item toc-level-3"><a class="toc-link" href="#3-13-Win10%E7%B3%BB%E7%BB%9F%E5%88%A0%E9%99%A4%E6%97%A0%E7%94%A8%E7%9A%84%E6%9C%8D%E5%8A%A1"><span class="toc-number">3.13.</span> <span class="toc-text">3.13. Win10系统删除无用的服务</span></a></li><li class="toc-item toc-level-3"><a class="toc-link" href="#3-14-%E4%BF%AE%E6%94%B9-window-%E9%BB%98%E8%AE%A4%E7%B3%BB%E7%BB%9F%E5%AE%89%E8%A3%85%E7%9B%AE%E5%BD%95"><span class="toc-number">3.14.</span> <span class="toc-text">3.14. 修改 window 默认系统安装目录</span></a></li><li class="toc-item toc-level-3"><a class="toc-link" href="#3-15-win10-%E4%B8%80%E8%88%AC%E7%A6%81%E7%94%A8%E7%9A%84%E6%9C%8D%E5%8A%A1"><span class="toc-number">3.15.</span> <span class="toc-text">3.15. win10 一般禁用的服务</span></a></li><li class="toc-item toc-level-3"><a class="toc-link" href="#3-16-%E4%BF%AE%E5%A4%8D-win10-%E5%8F%B3%E9%94%AE%E6%97%A0%E6%96%B0%E5%BB%BA-txt-%E6%96%87%E6%9C%AC%E6%96%87%E4%BB%B6"><span class="toc-number">3.16.</span> <span class="toc-text">3.16. 修复 win10 右键无新建 txt 文本文件</span></a></li><li class="toc-item toc-level-3"><a class="toc-link" href="#3-17-%E5%85%B3%E9%97%ADcmd%E5%91%BD%E4%BB%A4%E8%A1%8C%E7%AA%97%E5%8F%A3%E7%9A%84%E4%B8%AD%E6%96%87%E8%BE%93%E5%85%A5%E6%B3%95"><span class="toc-number">3.17.</span> <span class="toc-text">3.17. 关闭cmd命令行窗口的中文输入法</span></a></li><li class="toc-item toc-level-3"><a class="toc-link" href="#3-18-%E4%BF%AE%E6%94%B9cmd-powershell%E5%91%BD%E4%BB%A4%E8%A1%8C%E7%AA%97%E5%8F%A3%E9%BB%98%E8%AE%A4%E7%BC%96%E7%A0%81"><span class="toc-number">3.18.</span> <span class="toc-text">3.18. 修改cmd&#x2F;powershell命令行窗口默认编码</span></a></li><li class="toc-item toc-level-3"><a class="toc-link" href="#3-19-%E5%BD%BB%E5%BA%95%E5%85%B3%E9%97%ADCortana%E5%B0%8F%E5%A8%9C"><span class="toc-number">3.19.</span> <span class="toc-text">3.19. 彻底关闭Cortana小娜</span></a></li><li class="toc-item toc-level-3"><a class="toc-link" href="#3-20-%E5%85%B3%E9%97%AD-Win11-Win-10-%E5%86%85%E5%AD%98%E5%8E%8B%E7%BC%A9"><span class="toc-number">3.20.</span> <span class="toc-text">3.20. 关闭 Win11&#x2F; Win 10 内存压缩</span></a></li><li class="toc-item toc-level-3"><a class="toc-link" href="#3-21-%E6%B8%85%E9%99%A4%E7%94%B5%E8%84%91%E7%9A%84%E8%BF%90%E8%A1%8C%E8%AE%B0%E5%BD%95"><span class="toc-number">3.21.</span> <span class="toc-text">3.21. 清除电脑的运行记录</span></a></li><li class="toc-item toc-level-3"><a class="toc-link" href="#3-22-%E5%88%A0%E9%99%A4%E8%B5%84%E6%BA%90%E7%AE%A1%E7%90%86%E5%99%A8%E4%B8%AD%E2%80%9C%E6%AD%A4%E7%94%B5%E8%84%91%E2%80%9D%E4%B8%8B%E9%9D%A2%E5%A4%9A%E4%BD%99%E7%9A%84%E5%9B%BE%E6%A0%87"><span class="toc-number">3.22.</span> <span class="toc-text">3.22. 删除资源管理器中“此电脑”下面多余的图标</span></a></li></ol></li><li class="toc-item toc-level-2"><a class="toc-link" href="#4-Windows-11-%E7%B3%BB%E7%BB%9F%E9%85%8D%E7%BD%AE"><span class="toc-number">4.</span> <span class="toc-text">4. Windows 11 系统配置</span></a><ol class="toc-child"><li class="toc-item toc-level-3"><a class="toc-link" href="#4-1-%E5%8F%96%E6%B6%88%E6%98%BE%E7%A4%BA%E5%BF%AB%E9%80%9F%E8%AE%BF%E9%97%AE%E4%B8%AD%E2%80%9C%E6%96%87%E6%A1%A3%E3%80%81%E8%A7%86%E9%A2%91%E2%80%A6%E2%80%9D%E7%AD%89%E5%9B%BE%E6%A0%87"><span class="toc-number">4.1.</span> <span class="toc-text">4.1. 取消显示快速访问中“文档、视频…”等图标</span></a></li><li class="toc-item toc-level-3"><a class="toc-link" href="#4-2-%E8%AE%BE%E7%BD%AE%E4%BB%BB%E5%8A%A1%E6%A0%8F%E5%B0%8F%E5%9B%BE%E6%A0%87"><span class="toc-number">4.2.</span> <span class="toc-text">4.2. 设置任务栏小图标</span></a></li><li class="toc-item toc-level-3"><a class="toc-link" href="#4-3-%E5%BC%80%E5%90%AF-Windows-11-%E9%9A%90%E8%97%8F%E7%9A%84%E6%95%99%E8%82%B2%E4%B8%BB%E9%A2%98"><span class="toc-number">4.3.</span> <span class="toc-text">4.3. 开启 Windows 11 隐藏的教育主题</span></a></li></ol></li><li class="toc-item toc-level-2"><a class="toc-link" href="#5-Windows-11-%E9%94%AE%E7%9B%98%E5%BF%AB%E6%8D%B7%E9%94%AE%E7%BB%88%E6%9E%81%E5%88%97%E8%A1%A8"><span class="toc-number">5.</span> <span class="toc-text">5. Windows 11 键盘快捷键终极列表</span></a><ol class="toc-child"><li class="toc-item toc-level-3"><a class="toc-link" href="#5-1-Windows-11-%E6%96%B0%E5%A2%9E%E5%BF%AB%E6%8D%B7%E9%94%AE"><span class="toc-number">5.1.</span> <span class="toc-text">5.1. Windows 11 新增快捷键</span></a></li><li class="toc-item toc-level-3"><a class="toc-link" href="#5-2-%E6%96%87%E6%9C%AC%E7%BC%96%E8%BE%91%E9%94%AE%E7%9B%98%E5%BF%AB%E6%8D%B7%E9%94%AE"><span class="toc-number">5.2.</span> <span class="toc-text">5.2. 文本编辑键盘快捷键</span></a></li><li class="toc-item toc-level-3"><a class="toc-link" href="#5-3-%E9%80%9A%E7%94%A8-Windows-%E9%94%AE%E7%9B%98%E5%BF%AB%E6%8D%B7%E9%94%AE"><span class="toc-number">5.3.</span> <span class="toc-text">5.3. 通用 Windows 键盘快捷键</span></a></li><li class="toc-item toc-level-3"><a class="toc-link" href="#5-4-%E5%8A%9F%E8%83%BD%E9%94%AE%E9%94%AE%E7%9B%98%E5%BF%AB%E6%8D%B7%E9%94%AE"><span class="toc-number">5.4.</span> <span class="toc-text">5.4. 功能键键盘快捷键</span></a></li><li class="toc-item toc-level-3"><a class="toc-link" href="#5-5-%E6%96%87%E4%BB%B6%E8%B5%84%E6%BA%90%E7%AE%A1%E7%90%86%E5%99%A8%E9%94%AE%E7%9B%98%E5%BF%AB%E6%8D%B7%E9%94%AE"><span class="toc-number">5.5.</span> <span class="toc-text">5.5. 文件资源管理器键盘快捷键</span></a></li><li class="toc-item toc-level-3"><a class="toc-link" href="#5-6-%E4%BB%BB%E5%8A%A1%E6%A0%8F%E9%94%AE%E7%9B%98%E5%BF%AB%E6%8D%B7%E9%94%AE"><span class="toc-number">5.6.</span> <span class="toc-text">5.6. 任务栏键盘快捷键</span></a></li><li class="toc-item toc-level-3"><a class="toc-link" href="#5-7-%E8%AE%BE%E7%BD%AE%E9%94%AE%E7%9B%98%E5%BF%AB%E6%8D%B7%E9%94%AE"><span class="toc-number">5.7.</span> <span class="toc-text">5.7. 设置键盘快捷键</span></a></li><li class="toc-item toc-level-3"><a class="toc-link" href="#5-8-%E8%99%9A%E6%8B%9F%E6%A1%8C%E9%9D%A2%E9%94%AE%E7%9B%98%E5%BF%AB%E6%8D%B7%E9%94%AE"><span class="toc-number">5.8.</span> <span class="toc-text">5.8. 虚拟桌面键盘快捷键</span></a></li><li class="toc-item toc-level-3"><a class="toc-link" href="#5-9-%E5%AF%B9%E8%AF%9D%E6%A1%86%E5%BF%AB%E6%8D%B7%E9%94%AE"><span class="toc-number">5.9.</span> <span class="toc-text">5.9. 对话框快捷键</span></a></li><li class="toc-item toc-level-3"><a class="toc-link" href="#5-10-%E5%91%BD%E4%BB%A4%E6%8F%90%E7%A4%BA%E7%AC%A6%E9%94%AE%E7%9B%98%E5%BF%AB%E6%8D%B7%E9%94%AE"><span class="toc-number">5.10.</span> <span class="toc-text">5.10. 命令提示符键盘快捷键</span></a></li><li class="toc-item toc-level-3"><a class="toc-link" href="#5-11-%E6%B8%B8%E6%88%8F%E6%A0%8F%E9%94%AE%E7%9B%98%E5%BF%AB%E6%8D%B7%E9%94%AE"><span class="toc-number">5.11.</span> <span class="toc-text">5.11. 游戏栏键盘快捷键</span></a></li><li class="toc-item toc-level-3"><a class="toc-link" href="#5-12-%E8%BE%85%E5%8A%A9%E5%8A%9F%E8%83%BD%E9%94%AE%E7%9B%98%E5%BF%AB%E6%8D%B7%E9%94%AE"><span class="toc-number">5.12.</span> <span class="toc-text">5.12. 辅助功能键盘快捷键</span></a></li><li class="toc-item toc-level-3"><a class="toc-link" href="#5-13-%E6%B5%8F%E8%A7%88%E5%99%A8%E5%BF%AB%E6%8D%B7%E6%96%B9%E5%BC%8F"><span class="toc-number">5.13.</span> <span class="toc-text">5.13. 浏览器快捷方式</span></a></li></ol></li></ol></div></div><div class="card-widget card-recent-post"><div class="item-headline"><i class="fas fa-history"></i><span>最新文章</span></div><div class="aside-list"><div class="aside-list-item"><a class="thumbnail" href="/posts/a318ca1f.html" title="MySQL数据库150道高频面试题"><img src="/bg/Image00018.webp" onerror="this.onerror=null;this.src='/img/404.jpg'" alt="MySQL数据库150道高频面试题"/></a><div class="content"><a class="title" href="/posts/a318ca1f.html" title="MySQL数据库150道高频面试题">MySQL数据库150道高频面试题</a><time datetime="2025-07-09T17:28:46.000Z" title="发表于 2025-07-09 17:28:46">2025-07-09</time></div></div><div class="aside-list-item"><a class="thumbnail" href="/posts/8f9b37aa.html" title="技术同学必会的MySQL设计规约"><img src="/bg/Image00014.webp" onerror="this.onerror=null;this.src='/img/404.jpg'" alt="技术同学必会的MySQL设计规约"/></a><div class="content"><a class="title" href="/posts/8f9b37aa.html" title="技术同学必会的MySQL设计规约">技术同学必会的MySQL设计规约</a><time datetime="2025-07-09T17:28:46.000Z" title="发表于 2025-07-09 17:28:46">2025-07-09</time></div></div><div class="aside-list-item"><a class="thumbnail" href="/posts/dfdfdf4.html" title="数据库概述"><img src="/bg/Image00002.webp" onerror="this.onerror=null;this.src='/img/404.jpg'" alt="数据库概述"/></a><div class="content"><a class="title" href="/posts/dfdfdf4.html" title="数据库概述">数据库概述</a><time datetime="2025-07-09T17:28:46.000Z" title="发表于 2025-07-09 17:28:46">2025-07-09</time></div></div><div class="aside-list-item"><a class="thumbnail" href="/posts/490575ab.html" title="24工厂模式俗话解释"><img src="/bg/Image00024.webp" onerror="this.onerror=null;this.src='/img/404.jpg'" alt="24工厂模式俗话解释"/></a><div class="content"><a class="title" href="/posts/490575ab.html" title="24工厂模式俗话解释">24工厂模式俗话解释</a><time datetime="2025-07-09T17:28:46.000Z" title="发表于 2025-07-09 17:28:46">2025-07-09</time></div></div><div class="aside-list-item"><a class="thumbnail" href="/posts/364ea8cc.html" title="设计模式"><img src="/bg/Image00014.webp" onerror="this.onerror=null;this.src='/img/404.jpg'" alt="设计模式"/></a><div class="content"><a class="title" href="/posts/364ea8cc.html" title="设计模式">设计模式</a><time datetime="2025-07-09T17:28:46.000Z" title="发表于 2025-07-09 17:28:46">2025-07-09</time></div></div></div></div></div></div></main><footer id="footer"><div class="footer-other"><div class="footer-copyright"><span class="copyright">&copy;2020 - 2025 By 蓝桉</span><span class="framework-info"><span>框架 </span><a target="_blank" rel="noopener" href="https://hexo.io">Hexo 7.3.0</a><span class="footer-separator">|</span><span>主题 </span><a target="_blank" rel="noopener" href="https://github.com/jerryc127/hexo-theme-butterfly">Butterfly 5.4.2</a></span></div></div></footer></div><div id="rightside"><div id="rightside-config-hide"><button id="readmode" type="button" title="阅读模式"><i class="fas fa-book-open"></i></button><button id="darkmode" type="button" title="日间和夜间模式切换"><i class="fas fa-adjust"></i></button><button id="hide-aside-btn" type="button" title="单栏和双栏切换"><i class="fas fa-arrows-alt-h"></i></button></div><div id="rightside-config-show"><button id="rightside-config" type="button" title="设置"><i class="fas fa-cog fa-spin"></i></button><button class="close" id="mobile-toc-button" type="button" title="目录"><i class="fas fa-list-ul"></i></button><button id="go-up" type="button" title="回到顶部"><span class="scroll-percent"></span><i class="fas fa-arrow-up"></i></button></div></div><div><script src="/js/utils.js"></script><script src="/js/main.js"></script><div class="js-pjax"></div><div class="aplayer no-destroy" data-id="8152976493" data-server="netease" data-type="playlist"   data-order="list" data-fixed="true" data-preload="auto" data-autoplay="false" data-mutex="true" ></div><script async src="//at.alicdn.com/t/c/font_4379924_273fk05h86zi.js"></script><link rel="stylesheet" href="https://cdn.jsdelivr.net/gh/l-lin/font-awesome-animation/dist/font-awesome-animation.min.css"  media="defer" onload="this.media='all'"><script async src="//npm.elemecdn.com/pace-js@1.2.4/pace.min.js"></script><script defer src="https://npm.elemecdn.com/jquery@latest/dist/jquery.min.js"></script><script defer data-pjax src="/js/cat/cat.js"></script><script async data-pjax src="/js/meting/music_lanan.min.js"></script><script defer type="text/javascript" src="https://cdn1.tianli0.top/npm/sweetalert2@8.19.0/dist/sweetalert2.all.js"></script><script defer src="/js/day/lunar.js"></script><script defer src="/js/day/day.js"></script><script async data-pjax src="//busuanzi.ibruce.info/busuanzi/2.3/busuanzi.pure.mini.js"></script></div><!-- hexo injector body_end start --><script data-pjax>
+  function butterfly_clock_anzhiyu_injector_config(){
+    var parent_div_git = document.getElementsByClassName('sticky_layout')[0];
+    var item_html = '<div class="card-widget card-clock"><div class="card-glass"><div class="card-background"><div class="card-content"><div id="hexo_electric_clock"><img class="entered loading" id="card-clock-loading" src="https://cdn.cbd.int/hexo-butterfly-clock-anzhiyu/lib/loading.gif" style="height: 120px; width: 100%;" data-ll-status="loading"/></div></div></div></div></div>';
+    console.log('已挂载butterfly_clock_anzhiyu')
+    if(parent_div_git) {
+      parent_div_git.insertAdjacentHTML("afterbegin",item_html)
+    }
+  }
+  var elist = 'null'.split(',');
+  var cpage = location.pathname;
+  var epage = '/';
+  var qweather_key = '10a7db1c41b6489db9c830c668a18304';
+  var gaud_map_key = '82a64bc994fb6494830f157f319f9f69';
+  var baidu_ak_key = 'undefined';
+  var flag = 0;
+  var clock_rectangle = '113.34532,23.15624';
+  var clock_default_rectangle_enable = 'false';
+
+  for (var i=0;i<elist.length;i++){
+    if (cpage.includes(elist[i])){
+      flag++;
+    }
+  }
+
+  if ((epage ==='all')&&(flag == 0)){
+    butterfly_clock_anzhiyu_injector_config();
+  }
+  else if (epage === cpage){
+    butterfly_clock_anzhiyu_injector_config();
+  }
+  </script><script src="https://widget.qweather.net/simple/static/js/he-simple-common.js?v=2.0"></script><script data-pjax src="https://cdn.cbd.int/hexo-butterfly-clock-anzhiyu/lib/clock.min.js"></script><script data-pjax>
+  function butterfly_footer_beautify_injector_config(){
+    var parent_div_git = document.getElementById('footer-wrap');
+    var item_html = '<div id="workboard"></div><p id="ghbdages"><a class="github-badge" target="_blank" href="https://hexo.io/" style="margin-inline:5px" data-title="博客框架为Hexo_v5.4.0" title=""><img src="https://img.shields.io/badge/Frame-Hexo-blue?style=flat&amp;logo=hexo" alt=""/></a><a class="github-badge" target="_blank" href="https://butterfly.js.org/" style="margin-inline:5px" data-title="主题版本Butterfly_v4.2.2" title=""><img src="https://img.shields.io/badge/Theme-Butterfly-6513df?style=flat&amp;logo=bitdefender" alt=""/></a><a class="github-badge" target="_blank" href="https://www.jsdelivr.com/" style="margin-inline:5px" data-title="本站使用JsDelivr为静态资源提供CDN加速" title=""><img src="https://img.shields.io/badge/CDN-jsDelivr-orange?style=flat&amp;logo=jsDelivr" alt=""/></a><a class="github-badge" target="_blank" href="https://github.com/" style="margin-inline:5px" data-title="本站项目由Github托管" title=""><img src="https://img.shields.io/badge/Source-Github-d021d6?style=flat&amp;logo=GitHub" alt=""/></a><a class="github-badge" target="_blank" href="http://creativecommons.org/licenses/by-nc-sa/4.0/" style="margin-inline:5px" data-title="本站采用知识共享署名-非商业性使用-相同方式共享4.0国际许可协议进行许可" title=""><img src="https://img.shields.io/badge/Copyright-BY--NC--SA%204.0-d42328?style=flat&amp;logo=Claris" alt=""/></a></p>';
+    console.log('已挂载butterfly_footer_beautify')
+    parent_div_git.insertAdjacentHTML("beforeend",item_html)
+    }
+  var elist = 'null'.split(',');
+  var cpage = location.pathname;
+  var epage = 'all';
+  var flag = 0;
+
+  for (var i=0;i<elist.length;i++){
+    if (cpage.includes(elist[i])){
+      flag++;
+    }
+  }
+
+  if ((epage ==='all')&&(flag == 0)){
+    butterfly_footer_beautify_injector_config();
+  }
+  else if (epage === cpage){
+    butterfly_footer_beautify_injector_config();
+  }
+  </script><script async src="/js/runtime/runtime.min.js"></script><script async src="/js/font/ali_font_all.js"></script><div class="js-pjax"><script async="async">var arr = document.getElementsByClassName('recent-post-item');
+for(var i = 0;i<arr.length;i++){
+    arr[i].classList.add('wow');
+    arr[i].classList.add('animate__zoomIn');
+    arr[i].setAttribute('data-wow-duration', '1.5s');
+    arr[i].setAttribute('data-wow-delay', '200ms');
+    arr[i].setAttribute('data-wow-offset', '30');
+    arr[i].setAttribute('data-wow-iteration', '1');
+  }</script><script async="async">var arr = document.getElementsByClassName('card-widget');
+for(var i = 0;i<arr.length;i++){
+    arr[i].classList.add('wow');
+    arr[i].classList.add('animate__zoomIn');
+    arr[i].setAttribute('data-wow-duration', '');
+    arr[i].setAttribute('data-wow-delay', '200ms');
+    arr[i].setAttribute('data-wow-offset', '');
+    arr[i].setAttribute('data-wow-iteration', '');
+  }</script><script async="async">var arr = document.getElementsByClassName('flink-list-card');
+for(var i = 0;i<arr.length;i++){
+    arr[i].classList.add('wow');
+    arr[i].classList.add('animate__flipInY');
+    arr[i].setAttribute('data-wow-duration', '3s');
+    arr[i].setAttribute('data-wow-delay', '');
+    arr[i].setAttribute('data-wow-offset', '');
+    arr[i].setAttribute('data-wow-iteration', '');
+  }</script><script async="async">var arr = document.getElementsByClassName('flink-list-card');
+for(var i = 0;i<arr.length;i++){
+    arr[i].classList.add('wow');
+    arr[i].classList.add('animate__animated');
+    arr[i].setAttribute('data-wow-duration', '3s');
+    arr[i].setAttribute('data-wow-delay', '');
+    arr[i].setAttribute('data-wow-offset', '');
+    arr[i].setAttribute('data-wow-iteration', '');
+  }</script><script async="async">var arr = document.getElementsByClassName('article-sort-item');
+for(var i = 0;i<arr.length;i++){
+    arr[i].classList.add('wow');
+    arr[i].classList.add('animate__slideInRight');
+    arr[i].setAttribute('data-wow-duration', '1.5s');
+    arr[i].setAttribute('data-wow-delay', '');
+    arr[i].setAttribute('data-wow-offset', '');
+    arr[i].setAttribute('data-wow-iteration', '');
+  }</script><script async="async">var arr = document.getElementsByClassName('site-card');
+for(var i = 0;i<arr.length;i++){
+    arr[i].classList.add('wow');
+    arr[i].classList.add('animate__flipInY');
+    arr[i].setAttribute('data-wow-duration', '3s');
+    arr[i].setAttribute('data-wow-delay', '');
+    arr[i].setAttribute('data-wow-offset', '');
+    arr[i].setAttribute('data-wow-iteration', '');
+  }</script><script async="async">var arr = document.getElementsByClassName('site-card');
+for(var i = 0;i<arr.length;i++){
+    arr[i].classList.add('wow');
+    arr[i].classList.add('animate__animated');
+    arr[i].setAttribute('data-wow-duration', '3s');
+    arr[i].setAttribute('data-wow-delay', '');
+    arr[i].setAttribute('data-wow-offset', '');
+    arr[i].setAttribute('data-wow-iteration', '');
+  }</script></div><script defer src="https://cdn.cbd.int/hexo-butterfly-wowjs/lib/wow.min.js"></script><script defer src="https://cdn.cbd.int/hexo-butterfly-wowjs/lib/wow_init.js"></script><!-- hexo injector body_end end --><script src="/live2dw/lib/L2Dwidget.min.js?094cbace49a39548bed64abff5988b05"></script><script>L2Dwidget.init({"pluginRootPath":"live2dw/","pluginJsPath":"lib/","pluginModelPath":"assets/","tagMode":false,"debug":false,"model":{"jsonPath":"/live2dw/assets/shizuku.model.json"},"display":{"position":"right","width":150,"height":300},"mobile":{"show":false},"log":false});</script></body></html>

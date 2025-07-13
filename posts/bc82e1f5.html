@@ -1,0 +1,509 @@
+<!DOCTYPE html><html lang="zh-CN" data-theme="light"><head><meta charset="UTF-8"><meta http-equiv="X-UA-Compatible" content="IE=edge"><meta name="viewport" content="width=device-width, initial-scale=1.0,viewport-fit=cover"><title>第9节-Redis为什么那么快？高性能epoll和IO多路复用解析 | 蓝桉`Blog</title><meta name="author" content="蓝桉,kt_zxh@163.com"><meta name="copyright" content="蓝桉"><meta name="format-detection" content="telephone=no"><meta name="theme-color" content="#ffffff"><meta name="description" content="第9节-Redis为什么那么快？高性能epoll和IO多路复用解析1、Redis单线程如何处理那么多并发客户端连接，为什么单线程，为什么快？Redis的IO多路复用 Redis利用epoll来实现IO多路复用，将连接信息和事件放到队列中，一次放到文件事件分派器，事件分派器将事件分发给事件处理器。  Redis 是跑在单线程中的，所有的操作都是按照顺序线性执行的，但是由于读写操作等待用户输入或输出都">
+<meta property="og:type" content="article">
+<meta property="og:title" content="第9节-Redis为什么那么快？高性能epoll和IO多路复用解析">
+<meta property="og:url" content="https://ktzxy.github.io/posts/bc82e1f5.html">
+<meta property="og:site_name" content="蓝桉&#96;Blog">
+<meta property="og:description" content="第9节-Redis为什么那么快？高性能epoll和IO多路复用解析1、Redis单线程如何处理那么多并发客户端连接，为什么单线程，为什么快？Redis的IO多路复用 Redis利用epoll来实现IO多路复用，将连接信息和事件放到队列中，一次放到文件事件分派器，事件分派器将事件分发给事件处理器。  Redis 是跑在单线程中的，所有的操作都是按照顺序线性执行的，但是由于读写操作等待用户输入或输出都">
+<meta property="og:locale" content="zh_CN">
+<meta property="og:image" content="https://ktzxy.github.io/bg/Image00030.webp">
+<meta property="article:published_time" content="2025-07-09T17:28:46.000Z">
+<meta property="article:modified_time" content="2025-07-13T15:45:18.456Z">
+<meta property="article:author" content="蓝桉">
+<meta property="article:tag" content="数据库">
+<meta name="twitter:card" content="summary">
+<meta name="twitter:image" content="https://ktzxy.github.io/bg/Image00030.webp"><script type="application/ld+json">{
+  "@context": "https://schema.org",
+  "@type": "BlogPosting",
+  "headline": "第9节-Redis为什么那么快？高性能epoll和IO多路复用解析",
+  "url": "https://ktzxy.github.io/posts/bc82e1f5.html",
+  "image": "https://ktzxy.github.io/bg/Image00030.webp",
+  "datePublished": "2025-07-09T17:28:46.000Z",
+  "dateModified": "2025-07-13T15:45:18.456Z",
+  "author": [
+    {
+      "@type": "Person",
+      "name": "蓝桉",
+      "url": "https://ktzxy.github.io"
+    }
+  ]
+}</script><link rel="shortcut icon" href="/img/favicon.png"><link rel="canonical" href="https://ktzxy.github.io/posts/bc82e1f5.html"><link rel="preconnect" href="//cdn.jsdelivr.net"/><link rel="preconnect" href="//busuanzi.ibruce.info"/><link rel="stylesheet" href="/css/index.css"><link rel="stylesheet" href="https://cdn.jsdelivr.net/npm/@fortawesome/fontawesome-free/css/all.min.css"><script>
+    (() => {
+      
+    const saveToLocal = {
+      set: (key, value, ttl) => {
+        if (!ttl) return
+        const expiry = Date.now() + ttl * 86400000
+        localStorage.setItem(key, JSON.stringify({ value, expiry }))
+      },
+      get: key => {
+        const itemStr = localStorage.getItem(key)
+        if (!itemStr) return undefined
+        const { value, expiry } = JSON.parse(itemStr)
+        if (Date.now() > expiry) {
+          localStorage.removeItem(key)
+          return undefined
+        }
+        return value
+      }
+    }
+
+    window.btf = {
+      saveToLocal,
+      getScript: (url, attr = {}) => new Promise((resolve, reject) => {
+        const script = document.createElement('script')
+        script.src = url
+        script.async = true
+        Object.entries(attr).forEach(([key, val]) => script.setAttribute(key, val))
+        script.onload = script.onreadystatechange = () => {
+          if (!script.readyState || /loaded|complete/.test(script.readyState)) resolve()
+        }
+        script.onerror = reject
+        document.head.appendChild(script)
+      }),
+      getCSS: (url, id) => new Promise((resolve, reject) => {
+        const link = document.createElement('link')
+        link.rel = 'stylesheet'
+        link.href = url
+        if (id) link.id = id
+        link.onload = link.onreadystatechange = () => {
+          if (!link.readyState || /loaded|complete/.test(link.readyState)) resolve()
+        }
+        link.onerror = reject
+        document.head.appendChild(link)
+      }),
+      addGlobalFn: (key, fn, name = false, parent = window) => {
+        if (!false && key.startsWith('pjax')) return
+        const globalFn = parent.globalFn || {}
+        globalFn[key] = globalFn[key] || {}
+        globalFn[key][name || Object.keys(globalFn[key]).length] = fn
+        parent.globalFn = globalFn
+      }
+    }
+  
+      
+      const activateDarkMode = () => {
+        document.documentElement.setAttribute('data-theme', 'dark')
+        if (document.querySelector('meta[name="theme-color"]') !== null) {
+          document.querySelector('meta[name="theme-color"]').setAttribute('content', '#0d0d0d')
+        }
+      }
+      const activateLightMode = () => {
+        document.documentElement.setAttribute('data-theme', 'light')
+        if (document.querySelector('meta[name="theme-color"]') !== null) {
+          document.querySelector('meta[name="theme-color"]').setAttribute('content', '#ffffff')
+        }
+      }
+
+      btf.activateDarkMode = activateDarkMode
+      btf.activateLightMode = activateLightMode
+
+      const theme = saveToLocal.get('theme')
+    
+          theme === 'dark' ? activateDarkMode() : theme === 'light' ? activateLightMode() : null
+        
+      
+      const asideStatus = saveToLocal.get('aside-status')
+      if (asideStatus !== undefined) {
+        document.documentElement.classList.toggle('hide-aside', asideStatus === 'hide')
+      }
+    
+      
+    const detectApple = () => {
+      if (/iPad|iPhone|iPod|Macintosh/.test(navigator.userAgent)) {
+        document.documentElement.classList.add('apple')
+      }
+    }
+    detectApple()
+  
+    })()
+  </script><script>const GLOBAL_CONFIG = {
+  root: '/',
+  algolia: undefined,
+  localSearch: undefined,
+  translate: undefined,
+  highlight: {"plugin":"highlight.js","highlightCopy":true,"highlightLang":true,"highlightHeightLimit":false,"highlightFullpage":false,"highlightMacStyle":false},
+  copy: {
+    success: '复制成功',
+    error: '复制失败',
+    noSupport: '浏览器不支持'
+  },
+  relativeDate: {
+    homepage: false,
+    post: false
+  },
+  runtime: '',
+  dateSuffix: {
+    just: '刚刚',
+    min: '分钟前',
+    hour: '小时前',
+    day: '天前',
+    month: '个月前'
+  },
+  copyright: undefined,
+  lightbox: 'null',
+  Snackbar: undefined,
+  infinitegrid: {
+    js: 'https://cdn.jsdelivr.net/npm/@egjs/infinitegrid/dist/infinitegrid.min.js',
+    buttonText: '加载更多'
+  },
+  isPhotoFigcaption: false,
+  islazyloadPlugin: false,
+  isAnchor: false,
+  percent: {
+    toc: true,
+    rightside: false,
+  },
+  autoDarkmode: false
+}</script><script id="config-diff">var GLOBAL_CONFIG_SITE = {
+  title: '第9节-Redis为什么那么快？高性能epoll和IO多路复用解析',
+  isHighlightShrink: false,
+  isToc: true,
+  pageType: 'post'
+}</script><link rel="stylesheet" href="/css/custom.css" media="defer" onload="this.media='all'"><link rel="stylesheet" href="//at.alicdn.com/t/c/font_4379924_273fk05h86zi.css" media="defer" onload="this.media='all'"><link rel="stylesheet" href="/css/progress_bar/progress_bar.css" media="defer" onload="this.media='all'"><link rel="stylesheet" href="/css/windmill/windmill.css"><link rel="stylesheet" href="/css/cat.css"><link rel="stylesheet" href="/css/meting/music_lanan.css"><div id="myscoll"></div><!-- hexo injector head_end start --><link rel="stylesheet" href="https://cdn.jsdelivr.net/gh/Zfour/Butterfly-double-row-display@1.00/cardlistpost.min.css"/>
+<style>#recent-posts > .recent-post-item >.recent-post-info > .article-meta-wrap > .tags:before {content:"\A";
+  white-space: pre;}#recent-posts > .recent-post-item >.recent-post-info > .article-meta-wrap > .tags > .article-meta__separator{display:none}</style>
+<link rel="stylesheet" href="https://cdn.cbd.int/hexo-butterfly-clock-anzhiyu/lib/clock.min.css" /><link rel="stylesheet" href="/css/runtime/runtime.min.css" media="print" onload="this.media='all'"><link rel="stylesheet" href="https://cdn.cbd.int/hexo-butterfly-tag-plugins-plus@latest/lib/assets/font-awesome-animation.min.css" media="defer" onload="this.media='all'"><link rel="stylesheet" href="https://npm.elemecdn.com/hexo-butterfly-tag-plugins-plus@latest/lib/tag_plugins.css" media="defer" onload="this.media='all'"><script src="https://npm.elemecdn.com/hexo-butterfly-tag-plugins-plus@latest/lib/assets/carousel-touch.js"></script><link rel="stylesheet" href="https://cdn.cbd.int/hexo-butterfly-wowjs/lib/animate.min.css" media="print" onload="this.media='screen'"><!-- hexo injector head_end end --><meta name="generator" content="Hexo 7.3.0"><link rel="alternate" href="/atom.xml" title="蓝桉`Blog" type="application/atom+xml">
+</head><body><div id="loading-box"><div class="loading-left-bg"></div><div class="loading-right-bg"></div><div class="spinner-box"><div class="configure-border-1"><div class="configure-core"></div></div><div class="configure-border-2"><div class="configure-core"></div></div><div class="loading-word">加载中...</div></div></div><script>(()=>{
+  const $loadingBox = document.getElementById('loading-box')
+  const $body = document.body
+  const preloader = {
+    endLoading: () => {
+      $body.style.overflow = ''
+      $loadingBox.classList.add('loaded')
+    },
+    initLoading: () => {
+      $body.style.overflow = 'hidden'
+      $loadingBox.classList.remove('loaded')
+    }
+  }
+
+  preloader.initLoading()
+  window.addEventListener('load', preloader.endLoading)
+
+  if (false) {
+    btf.addGlobalFn('pjaxSend', preloader.initLoading, 'preloader_init')
+    btf.addGlobalFn('pjaxComplete', preloader.endLoading, 'preloader_end')
+  }
+})()</script><div id="web_bg" style="background-image: url(/img/bg.webp);"></div><div id="an_music_bg"></div><div id="sidebar"><div id="menu-mask"></div><div id="sidebar-menus"><div class="avatar-img text-center"><img src="/img/avatar.webp" onerror="this.onerror=null;this.src='/img/friend_404.gif'" alt="avatar"/></div><div class="site-data text-center"><a href="/archives/"><div class="headline">文章</div><div class="length-num">264</div></a><a href="/tags/"><div class="headline">标签</div><div class="length-num">38</div></a><a href="/categories/"><div class="headline">分类</div><div class="length-num">37</div></a></div><div class="menus_items"><div class="menus_item"><a class="site-page faa-parent animated-hover" href="/"><i class="fa-fw icon-zhuye-"></i><svg class="icon faa-tada" aria-hidden="true"><use xlink:href="#icon-zhuye-"></use></svg><span> 首页</span></a></div><div class="menus_item"><a class="site-page faa-parent animated-hover" href="/archives/"><i class="fa-fw icon-shijianzhou"></i><svg class="icon faa-tada" aria-hidden="true"><use xlink:href="#icon-shijianzhou"></use></svg><span> 时间轴</span></a></div><div class="menus_item"><a class="site-page faa-parent animated-hover" href="/essay/"><i class="fa-fw icon-xiaoxi"></i><svg class="icon faa-tada" aria-hidden="true"><use xlink:href="#icon-xiaoxi"></use></svg><span> 闲言碎语</span></a></div><div class="menus_item"><a class="site-page faa-parent animated-hover" href="/music/"><i class="fa-fw icon-music"></i><svg class="icon faa-tada" aria-hidden="true"><use xlink:href="#icon-music"></use></svg><span> 音乐馆</span></a></div><div class="menus_item"><a class="site-page faa-parent animated-hover" href="/categories/"><i class="fa-fw icon-fenlei"></i><svg class="icon faa-tada" aria-hidden="true"><use xlink:href="#icon-fenlei"></use></svg><span> 分类</span></a></div><div class="menus_item"><a class="site-page faa-parent animated-hover" href="/fcircle/"><i class="fa-fw icon-pengyouquan"></i><svg class="icon faa-tada" aria-hidden="true"><use xlink:href="#icon-pengyouquan"></use></svg><span> 朋友圈</span></a></div><div class="menus_item"><a class="site-page faa-parent animated-hover" href="/comments/"><i class="fa-fw icon-xinfeng"></i><svg class="icon faa-tada" aria-hidden="true"><use xlink:href="#icon-xinfeng"></use></svg><span> 留言板</span></a></div><div class="menus_item"><a class="site-page faa-parent animated-hover" href="/link/"><i class="fa-fw icon-lianjie"></i><svg class="icon faa-tada" aria-hidden="true"><use xlink:href="#icon-lianjie"></use></svg><span> 友人帐</span></a></div><div class="menus_item"><a class="site-page faa-parent animated-hover" href="javascript:randomPost();"><i class="fa-fw icon-wodezhuifan"></i><svg class="icon faa-tada" aria-hidden="true"><use xlink:href="#icon-wodezhuifan"></use></svg><span> 随机访问</span></a></div><div class="menus_item"><a class="site-page faa-parent animated-hover" href="/about/"><i class="fa-fw icon-guanyuwomen2"></i><svg class="icon faa-tada" aria-hidden="true"><use xlink:href="#icon-guanyuwomen2"></use></svg><span> 关于</span></a></div></div></div></div><div class="post" id="body-wrap"><header class="post-bg" id="page-header" style="background-image: url(/bg/Image00030.webp);"><nav id="nav"><span id="blog-info"><a class="nav-site-title" href="/"><span class="site-name">蓝桉`Blog</span></a><a class="nav-page-title" href="/"><span class="site-name">第9节-Redis为什么那么快？高性能epoll和IO多路复用解析</span><span class="site-name"><i class="fa-solid fa-circle-arrow-left"></i><span>  返回首页</span></span></a></span><div id="menus"><div class="menus_items"><div class="menus_item"><a class="site-page faa-parent animated-hover" href="/"><i class="fa-fw icon-zhuye-"></i><svg class="icon faa-tada" aria-hidden="true"><use xlink:href="#icon-zhuye-"></use></svg><span> 首页</span></a></div><div class="menus_item"><a class="site-page faa-parent animated-hover" href="/archives/"><i class="fa-fw icon-shijianzhou"></i><svg class="icon faa-tada" aria-hidden="true"><use xlink:href="#icon-shijianzhou"></use></svg><span> 时间轴</span></a></div><div class="menus_item"><a class="site-page faa-parent animated-hover" href="/essay/"><i class="fa-fw icon-xiaoxi"></i><svg class="icon faa-tada" aria-hidden="true"><use xlink:href="#icon-xiaoxi"></use></svg><span> 闲言碎语</span></a></div><div class="menus_item"><a class="site-page faa-parent animated-hover" href="/music/"><i class="fa-fw icon-music"></i><svg class="icon faa-tada" aria-hidden="true"><use xlink:href="#icon-music"></use></svg><span> 音乐馆</span></a></div><div class="menus_item"><a class="site-page faa-parent animated-hover" href="/categories/"><i class="fa-fw icon-fenlei"></i><svg class="icon faa-tada" aria-hidden="true"><use xlink:href="#icon-fenlei"></use></svg><span> 分类</span></a></div><div class="menus_item"><a class="site-page faa-parent animated-hover" href="/fcircle/"><i class="fa-fw icon-pengyouquan"></i><svg class="icon faa-tada" aria-hidden="true"><use xlink:href="#icon-pengyouquan"></use></svg><span> 朋友圈</span></a></div><div class="menus_item"><a class="site-page faa-parent animated-hover" href="/comments/"><i class="fa-fw icon-xinfeng"></i><svg class="icon faa-tada" aria-hidden="true"><use xlink:href="#icon-xinfeng"></use></svg><span> 留言板</span></a></div><div class="menus_item"><a class="site-page faa-parent animated-hover" href="/link/"><i class="fa-fw icon-lianjie"></i><svg class="icon faa-tada" aria-hidden="true"><use xlink:href="#icon-lianjie"></use></svg><span> 友人帐</span></a></div><div class="menus_item"><a class="site-page faa-parent animated-hover" href="javascript:randomPost();"><i class="fa-fw icon-wodezhuifan"></i><svg class="icon faa-tada" aria-hidden="true"><use xlink:href="#icon-wodezhuifan"></use></svg><span> 随机访问</span></a></div><div class="menus_item"><a class="site-page faa-parent animated-hover" href="/about/"><i class="fa-fw icon-guanyuwomen2"></i><svg class="icon faa-tada" aria-hidden="true"><use xlink:href="#icon-guanyuwomen2"></use></svg><span> 关于</span></a></div></div><div id="toggle-menu"><span class="site-page"><i class="fas fa-bars fa-fw"></i></span></div></div></nav><div id="post-info"><h1 class="post-title">第9节-Redis为什么那么快？高性能epoll和IO多路复用解析</h1><div id="post-meta"><div class="meta-firstline"><span class="post-meta-date"><i class="far fa-calendar-alt fa-fw post-meta-icon"></i><span class="post-meta-label">发表于</span><time class="post-meta-date-created" datetime="2025-07-09T17:28:46.000Z" title="发表于 2025-07-09 17:28:46">2025-07-09</time><span class="post-meta-separator">|</span><i class="fas fa-history fa-fw post-meta-icon"></i><span class="post-meta-label">更新于</span><time class="post-meta-date-updated" datetime="2025-07-13T15:45:18.456Z" title="更新于 2025-07-13 15:45:18">2025-07-13</time></span><span class="post-meta-categories"><span class="post-meta-separator">|</span><i class="fas fa-inbox fa-fw post-meta-icon"></i><a class="post-meta-categories" href="/categories/%E6%95%B0%E6%8D%AE%E5%BA%93/">数据库</a></span></div><div class="meta-secondline"><span class="post-meta-separator">|</span><span class="post-meta-pv-cv" id="" data-flag-title=""><i class="far fa-eye fa-fw post-meta-icon"></i><span class="post-meta-label">浏览量:</span><span id="busuanzi_value_page_pv"><i class="fa-solid fa-spinner fa-spin"></i></span></span></div></div></div></header><main class="layout" id="content-inner"><div id="post"><article class="container post-content" id="article-container"><h1 id="第9节-Redis为什么那么快？高性能epoll和IO多路复用解析"><a href="#第9节-Redis为什么那么快？高性能epoll和IO多路复用解析" class="headerlink" title="第9节-Redis为什么那么快？高性能epoll和IO多路复用解析"></a>第9节-Redis为什么那么快？高性能epoll和IO多路复用解析</h1><h2 id="1、Redis单线程如何处理那么多并发客户端连接，为什么单线程，为什么快？"><a href="#1、Redis单线程如何处理那么多并发客户端连接，为什么单线程，为什么快？" class="headerlink" title="1、Redis单线程如何处理那么多并发客户端连接，为什么单线程，为什么快？"></a>1、Redis单线程如何处理那么多并发客户端连接，为什么单线程，为什么快？</h2><p>Redis的IO多路复用</p>
+<p><strong>Redis利用epoll来实现IO多路复用，将连接信息和事件放到队列中，一次放到文件事件分派器，事件分派器将事件分发给事件处理器。</strong></p>
+<p><img src="https://gitee.com/Bluetom/img2/raw/master/img20240905/202410281603940.png" alt="image-20220608161332810"></p>
+<p>Redis 是跑在单线程中的，所有的操作都是按照顺序线性执行的，<strong>但是由于读写操作等待用户输入或输出都是阻塞的</strong>，所以 I/O 操作在一般情况下往往不能直接返回，这会导致某一文件的 I/O 阻塞导致整个进程无法对其它客户提供服务，而 I/O 多路复用就是为了解决这个问题而出现</p>
+<p>所谓 I/O 多路复用机制，就是说通过一种机制，可以监视多个描述符，一旦某个描述符就绪（一般是读就绪或写就绪），能够通知程序进行相应的读写操作。这种机制的使用需要 select 、 poll 、 epoll 来配合。</p>
+<p>多个连接共用一个阻塞对象，应用程序只需要在一个阻塞对象上等待，无需阻塞等待所有连接。当某条连接有新的数据可以处理时，操作系统通知应用程序，线程从阻塞状态返回，开始进行业务处理。</p>
+<p>Redis 服务采用 Reactor 的方式来实现文件事件处理器（每一个网络连接其实都对应一个文件描述符） </p>
+<p>Redis基于Reactor模式开发了网络事件处理器，这个处理器被称为文件事件处理器。它的组成结构为4部分：</p>
+<p>多个套接字、<br>IO多路复用程序、<br>文件事件分派器、<br>事件处理器。</p>
+<p><strong>因为文件事件分派器队列的消费是单线程的，所以Redis才叫单线程模型</strong></p>
+<blockquote>
+<p>参考《Redis设计与实现》</p>
+</blockquote>
+<p><img src="https://gitee.com/Bluetom/img2/raw/master/img20240905/202410281603387.png" alt="image-20220608161615419"></p>
+<p>结论：</p>
+<p>Redis 6.0 将<strong>网络数据读写、请求协议解析</strong>通过多个IO线程的来处理 ，</p>
+<p>对于真正的命令执行来说，仍然使用主线程操作，</p>
+<p><img src="https://gitee.com/Bluetom/img2/raw/master/img20240905/202410281603198.png" alt=""></p>
+<h2 id="2、I-O多路复用模型"><a href="#2、I-O多路复用模型" class="headerlink" title="2、I/O多路复用模型"></a>2、I/O多路复用模型</h2><p>解释：</p>
+<p>I/O：网络I/O</p>
+<p>多路：多个客户端连接</p>
+<p>复用：复用一个或几个线程。也就是说一个或一组线程处理多个TCP连接，使用单进程就能够实现同时处理多个客户端得连接</p>
+<p>一句话：一个服务端进程可以同时处理多个套接字描述符。其发展可以分为select=&gt;poll=&gt;epoll三个阶段来描述</p>
+<p>重要概念：</p>
+<figure class="highlight plaintext"><table><tr><td class="gutter"><pre><span class="line">1</span><br><span class="line">2</span><br><span class="line">3</span><br><span class="line">4</span><br><span class="line">5</span><br><span class="line">6</span><br><span class="line">7</span><br><span class="line">8</span><br><span class="line">9</span><br><span class="line">10</span><br><span class="line">11</span><br><span class="line">12</span><br><span class="line">13</span><br><span class="line">14</span><br><span class="line">15</span><br><span class="line">16</span><br><span class="line">17</span><br><span class="line">18</span><br><span class="line">19</span><br><span class="line">20</span><br><span class="line">21</span><br><span class="line">22</span><br><span class="line">23</span><br><span class="line">24</span><br><span class="line">25</span><br><span class="line">26</span><br><span class="line">27</span><br><span class="line">28</span><br><span class="line">29</span><br></pre></td><td class="code"><pre><span class="line">上午开会，错过了公司食堂的饭点， 中午就和公司的首席架构师一起去楼下的米线店去吃米线。我们到了一看，果然很多人在排队。</span><br><span class="line"> </span><br><span class="line">架构师马上发话了：嚯，请求排队啊！你看这位收银点菜的，像不像nginx的反向代理？只收请求，不处理，把请求都发给后厨去处理。</span><br><span class="line">我们交了钱，拿着号离开了点餐收银台，找了个座位坐下等餐。</span><br><span class="line">架构师：你看，这就是异步处理，我们下了单就可以离开等待，米线做好了会通过小喇叭“回调”我们去取餐；</span><br><span class="line">如果同步处理，我们就得在收银台站着等餐，后面的请求无法处理，客户等不及肯定会离开了。</span><br><span class="line"> </span><br><span class="line">接下里架构师盯着手中的纸质号牌。</span><br><span class="line"> </span><br><span class="line">架构师：你看，这个纸质号牌在后厨“服务器”那里也有，这不就是表示会话的ID吗？</span><br><span class="line">有了它就可以把大家给区分开，就不会把我的排骨米线送给别人了。过了一会， 排队的人越来越多，已经有人表示不满了，可是收银员已经满头大汗，忙到极致了。</span><br><span class="line"> </span><br><span class="line">架构师：你看他这个系统缺乏弹性扩容， 现在这么多人，应该增加收银台，可以没有其他收银设备，老板再着急也没用。</span><br><span class="line">老板看到在收银这里帮不了忙，后厨的订单也累积得越来越多， 赶紧跑到后厨亲自去做米线去了。</span><br><span class="line"> </span><br><span class="line">架构师又发话了：幸亏这个系统的后台有并行处理能力，可以随意地增加资源来处理请求（做米线）。</span><br><span class="line">我说：他就这点儿资源了，除了老板没人再会做米线了。</span><br><span class="line">不知不觉，我们等了20分钟， 但是米线还没上来。</span><br><span class="line">架构师：你看，系统的处理能力达到极限，超时了吧。</span><br><span class="line">这时候收银台前排队的人已经不多了，但是还有很多人在等米线。</span><br><span class="line"> </span><br><span class="line">老板跑过来让这个打扫卫生的去收银，让收银小妹也到后厨帮忙。打扫卫生的做收银也磕磕绊绊的，没有原来的小妹灵活。</span><br><span class="line"> </span><br><span class="line">架构师：这就叫服务降级，为了保证米线的服务，把别的服务都给关闭了。</span><br><span class="line">又过了20分钟，后厨的厨师叫道：237号， 您点的排骨米线没有排骨了，能换成番茄的吗？</span><br><span class="line">架构师低声对我说：瞧瞧， 人太多， 系统异常了。然后他站了起来：不行，系统得进行补偿操作：退费。</span><br><span class="line"> </span><br><span class="line">说完，他拉着我，饿着肚子，头也不回地走了。</span><br><span class="line"></span><br></pre></td></tr></table></figure>
+<p>同步：调用者要一直等待调用结果得通知后才能进行后续得执行，现在就要，我可以等，等出结果为止。</p>
+<p>异步：指被调用方先返回应答，让调用者先回去，然后再计算调用结果，计算完最终结果后再通知并返回给调用方，异步调用要想获得结果一般通过回调。</p>
+<p>同步与异步得理解：同步、异步得讨论对象是被调用者（服务提供者），重点在于获得调用结果得消息通知方式上</p>
+<p>阻塞：调用方一直在等待而且别的事情什么都不做，当前进/线程会被 挂起，啥也不干。</p>
+<p>非阻塞：调用在发出去后，调用方先去忙别的事情，不会阻塞当前进/线程，而会立即返回</p>
+<p>阻塞与非阻塞得理解：阻塞、非阻塞讨论得对象是调用者（服务请求者），重点在于等消息时候得行为，调用者是否能干其他事情</p>
+<p>总结：</p>
+<p>​    4种组合方式：</p>
+<ul>
+<li>同步阻塞：服务员说快到你了，先别离开我后台看一眼马上通知你，客户在海底捞火锅前台干等，啥也不能干</li>
+<li>同步非阻塞：服务员说快到你了，先别离开，客户在海底捞火锅前台刷抖音，等着叫号</li>
+<li>异步阻塞：服务员说还要再等等，你先去逛逛，一会儿通知你，客户怕过号在海底捞前端拿着排号啥也不干等，等着店员通知</li>
+<li>异步非阻塞：服务员说还要再等等，你先去逛逛，一会儿通知你，客户拿着排号小票+刷着抖音，等着店员通知</li>
+</ul>
+<h2 id="3、Unix网络编程种的五种IO模型"><a href="#3、Unix网络编程种的五种IO模型" class="headerlink" title="3、Unix网络编程种的五种IO模型"></a>3、Unix网络编程种的五种IO模型</h2><p><img src="https://gitee.com/Bluetom/img2/raw/master/img20240905/202410281604239.png" alt="image-20220608165441266"></p>
+<p>使用Java验证下</p>
+<p>使用一个RedisServer + 2个client</p>
+<h4 id="1、BIO"><a href="#1、BIO" class="headerlink" title="1、BIO"></a>1、BIO</h4><p><img src="https://gitee.com/Bluetom/img2/raw/master/img20240905/202410281604947.png" alt="image-20220608175427376"></p>
+<p><img src="https://gitee.com/Bluetom/img2/raw/master/img20240905/202410281604824.png" alt="image-20220608175449798"></p>
+<p>先演示accept</p>
+<p>accept监听</p>
+<p>code案例</p>
+<p>RedisServer</p>
+<figure class="highlight java"><table><tr><td class="gutter"><pre><span class="line">1</span><br><span class="line">2</span><br><span class="line">3</span><br><span class="line">4</span><br><span class="line">5</span><br><span class="line">6</span><br><span class="line">7</span><br><span class="line">8</span><br><span class="line">9</span><br><span class="line">10</span><br><span class="line">11</span><br><span class="line">12</span><br><span class="line">13</span><br><span class="line">14</span><br><span class="line">15</span><br><span class="line">16</span><br></pre></td><td class="code"><pre><span class="line"><span class="keyword">public</span> <span class="keyword">class</span> <span class="title class_">RedisServer</span></span><br><span class="line">&#123;</span><br><span class="line">    <span class="keyword">public</span> <span class="keyword">static</span> <span class="keyword">void</span> <span class="title function_">main</span><span class="params">(String[] args)</span> <span class="keyword">throws</span> IOException</span><br><span class="line">    &#123;</span><br><span class="line">        <span class="type">byte</span>[] bytes = <span class="keyword">new</span> <span class="title class_">byte</span>[<span class="number">1024</span>];</span><br><span class="line"></span><br><span class="line">        <span class="type">ServerSocket</span> <span class="variable">serverSocket</span> <span class="operator">=</span> <span class="keyword">new</span> <span class="title class_">ServerSocket</span>(<span class="number">6379</span>);</span><br><span class="line"></span><br><span class="line">        <span class="keyword">while</span>(<span class="literal">true</span>)</span><br><span class="line">        &#123;</span><br><span class="line">            System.out.println(<span class="string">&quot;-----111 等待连接&quot;</span>);</span><br><span class="line">            <span class="type">Socket</span> <span class="variable">socket</span> <span class="operator">=</span> serverSocket.accept();</span><br><span class="line">            System.out.println(<span class="string">&quot;-----222 成功连接&quot;</span>);</span><br><span class="line">        &#125;</span><br><span class="line">    &#125;</span><br><span class="line">&#125;</span><br></pre></td></tr></table></figure>
+<p>RedisClient01</p>
+<figure class="highlight java"><table><tr><td class="gutter"><pre><span class="line">1</span><br><span class="line">2</span><br><span class="line">3</span><br><span class="line">4</span><br><span class="line">5</span><br><span class="line">6</span><br><span class="line">7</span><br><span class="line">8</span><br></pre></td><td class="code"><pre><span class="line"><span class="keyword">public</span> <span class="keyword">class</span> <span class="title class_">RedisClient01</span></span><br><span class="line">&#123;</span><br><span class="line">    <span class="keyword">public</span> <span class="keyword">static</span> <span class="keyword">void</span> <span class="title function_">main</span><span class="params">(String[] args)</span> <span class="keyword">throws</span> IOException</span><br><span class="line">    &#123;</span><br><span class="line">        System.out.println(<span class="string">&quot;------RedisClient01 start&quot;</span>);</span><br><span class="line">        <span class="type">Socket</span> <span class="variable">socket</span> <span class="operator">=</span> <span class="keyword">new</span> <span class="title class_">Socket</span>(<span class="string">&quot;127.0.0.1&quot;</span>, <span class="number">6379</span>);</span><br><span class="line">    &#125;</span><br><span class="line">&#125;</span><br></pre></td></tr></table></figure>
+<p>RedisClient02</p>
+<figure class="highlight java"><table><tr><td class="gutter"><pre><span class="line">1</span><br><span class="line">2</span><br><span class="line">3</span><br><span class="line">4</span><br><span class="line">5</span><br><span class="line">6</span><br><span class="line">7</span><br><span class="line">8</span><br></pre></td><td class="code"><pre><span class="line"><span class="keyword">public</span> <span class="keyword">class</span> <span class="title class_">RedisClient02</span></span><br><span class="line">&#123;</span><br><span class="line">    <span class="keyword">public</span> <span class="keyword">static</span> <span class="keyword">void</span> <span class="title function_">main</span><span class="params">(String[] args)</span> <span class="keyword">throws</span> IOException</span><br><span class="line">    &#123;</span><br><span class="line">        System.out.println(<span class="string">&quot;------RedisClient02 start&quot;</span>);</span><br><span class="line">        <span class="type">Socket</span> <span class="variable">socket</span> <span class="operator">=</span> <span class="keyword">new</span> <span class="title class_">Socket</span>(<span class="string">&quot;127.0.0.1&quot;</span>, <span class="number">6379</span>);</span><br><span class="line">    &#125;</span><br><span class="line">&#125;</span><br></pre></td></tr></table></figure>
+<p>再演示read</p>
+<p>read读取（BIO阻塞的地方就是read）</p>
+<p>code案例</p>
+<p>RedisServerBIO</p>
+<figure class="highlight java"><table><tr><td class="gutter"><pre><span class="line">1</span><br><span class="line">2</span><br><span class="line">3</span><br><span class="line">4</span><br><span class="line">5</span><br><span class="line">6</span><br><span class="line">7</span><br><span class="line">8</span><br><span class="line">9</span><br><span class="line">10</span><br><span class="line">11</span><br><span class="line">12</span><br><span class="line">13</span><br><span class="line">14</span><br><span class="line">15</span><br><span class="line">16</span><br><span class="line">17</span><br><span class="line">18</span><br><span class="line">19</span><br><span class="line">20</span><br><span class="line">21</span><br><span class="line">22</span><br><span class="line">23</span><br><span class="line">24</span><br><span class="line">25</span><br><span class="line">26</span><br><span class="line">27</span><br><span class="line">28</span><br></pre></td><td class="code"><pre><span class="line"><span class="keyword">public</span> <span class="keyword">class</span> <span class="title class_">RedisServerBIO</span></span><br><span class="line">&#123;</span><br><span class="line">    <span class="keyword">public</span> <span class="keyword">static</span> <span class="keyword">void</span> <span class="title function_">main</span><span class="params">(String[] args)</span> <span class="keyword">throws</span> IOException</span><br><span class="line">    &#123;</span><br><span class="line"></span><br><span class="line">        <span class="type">ServerSocket</span> <span class="variable">serverSocket</span> <span class="operator">=</span> <span class="keyword">new</span> <span class="title class_">ServerSocket</span>(<span class="number">6379</span>);</span><br><span class="line"></span><br><span class="line">        <span class="keyword">while</span>(<span class="literal">true</span>)</span><br><span class="line">        &#123;</span><br><span class="line">            System.out.println(<span class="string">&quot;-----111 等待连接&quot;</span>);</span><br><span class="line">            <span class="type">Socket</span> <span class="variable">socket</span> <span class="operator">=</span> serverSocket.accept();<span class="comment">//阻塞1 ,等待客户端连接</span></span><br><span class="line">            System.out.println(<span class="string">&quot;-----222 成功连接&quot;</span>);</span><br><span class="line"></span><br><span class="line">            <span class="type">InputStream</span> <span class="variable">inputStream</span> <span class="operator">=</span> socket.getInputStream();</span><br><span class="line">            <span class="type">int</span> <span class="variable">length</span> <span class="operator">=</span> -<span class="number">1</span>;</span><br><span class="line">            <span class="type">byte</span>[] bytes = <span class="keyword">new</span> <span class="title class_">byte</span>[<span class="number">1024</span>];</span><br><span class="line">            System.out.println(<span class="string">&quot;-----333 等待读取&quot;</span>);</span><br><span class="line">            <span class="keyword">while</span>((length = inputStream.read(bytes)) != -<span class="number">1</span>)<span class="comment">//阻塞2 ,等待客户端发送数据</span></span><br><span class="line">            &#123;</span><br><span class="line">                System.out.println(<span class="string">&quot;-----444 成功读取&quot;</span>+<span class="keyword">new</span> <span class="title class_">String</span>(bytes,<span class="number">0</span>,length));</span><br><span class="line">                System.out.println(<span class="string">&quot;====================&quot;</span>);</span><br><span class="line">                System.out.println();</span><br><span class="line">            &#125;</span><br><span class="line">            inputStream.close();</span><br><span class="line">            socket.close();</span><br><span class="line">        &#125;</span><br><span class="line">    &#125;</span><br><span class="line">&#125;</span><br></pre></td></tr></table></figure>
+<p>RedisClient01</p>
+<figure class="highlight java"><table><tr><td class="gutter"><pre><span class="line">1</span><br><span class="line">2</span><br><span class="line">3</span><br><span class="line">4</span><br><span class="line">5</span><br><span class="line">6</span><br><span class="line">7</span><br><span class="line">8</span><br><span class="line">9</span><br><span class="line">10</span><br><span class="line">11</span><br><span class="line">12</span><br><span class="line">13</span><br><span class="line">14</span><br><span class="line">15</span><br><span class="line">16</span><br><span class="line">17</span><br><span class="line">18</span><br><span class="line">19</span><br><span class="line">20</span><br><span class="line">21</span><br><span class="line">22</span><br><span class="line">23</span><br></pre></td><td class="code"><pre><span class="line"><span class="keyword">public</span> <span class="keyword">class</span> <span class="title class_">RedisClient01</span></span><br><span class="line">&#123;</span><br><span class="line">    <span class="keyword">public</span> <span class="keyword">static</span> <span class="keyword">void</span> <span class="title function_">main</span><span class="params">(String[] args)</span> <span class="keyword">throws</span> IOException</span><br><span class="line">    &#123;</span><br><span class="line">        <span class="type">Socket</span> <span class="variable">socket</span> <span class="operator">=</span> <span class="keyword">new</span> <span class="title class_">Socket</span>(<span class="string">&quot;127.0.0.1&quot;</span>,<span class="number">6379</span>);</span><br><span class="line">        <span class="type">OutputStream</span> <span class="variable">outputStream</span> <span class="operator">=</span> socket.getOutputStream();</span><br><span class="line"></span><br><span class="line">        <span class="comment">//socket.getOutputStream().write(&quot;RedisClient01&quot;.getBytes());</span></span><br><span class="line"></span><br><span class="line">        <span class="keyword">while</span>(<span class="literal">true</span>)</span><br><span class="line">        &#123;</span><br><span class="line">            <span class="type">Scanner</span> <span class="variable">scanner</span> <span class="operator">=</span> <span class="keyword">new</span> <span class="title class_">Scanner</span>(System.in);</span><br><span class="line">            <span class="type">String</span> <span class="variable">string</span> <span class="operator">=</span> scanner.next();</span><br><span class="line">            <span class="keyword">if</span> (string.equalsIgnoreCase(<span class="string">&quot;quit&quot;</span>)) &#123;</span><br><span class="line">                <span class="keyword">break</span>;</span><br><span class="line">            &#125;</span><br><span class="line">            socket.getOutputStream().write(string.getBytes());</span><br><span class="line">            System.out.println(<span class="string">&quot;------input quit keyword to finish......&quot;</span>);</span><br><span class="line">        &#125;</span><br><span class="line">        outputStream.close();</span><br><span class="line">        socket.close();</span><br><span class="line">    &#125;</span><br><span class="line">&#125;</span><br></pre></td></tr></table></figure>
+<p>RedisClient02</p>
+<figure class="highlight java"><table><tr><td class="gutter"><pre><span class="line">1</span><br><span class="line">2</span><br><span class="line">3</span><br><span class="line">4</span><br><span class="line">5</span><br><span class="line">6</span><br><span class="line">7</span><br><span class="line">8</span><br><span class="line">9</span><br><span class="line">10</span><br><span class="line">11</span><br><span class="line">12</span><br><span class="line">13</span><br><span class="line">14</span><br><span class="line">15</span><br><span class="line">16</span><br><span class="line">17</span><br><span class="line">18</span><br><span class="line">19</span><br><span class="line">20</span><br><span class="line">21</span><br><span class="line">22</span><br><span class="line">23</span><br></pre></td><td class="code"><pre><span class="line"><span class="keyword">public</span> <span class="keyword">class</span> <span class="title class_">RedisClient02</span></span><br><span class="line">&#123;</span><br><span class="line">    <span class="keyword">public</span> <span class="keyword">static</span> <span class="keyword">void</span> <span class="title function_">main</span><span class="params">(String[] args)</span> <span class="keyword">throws</span> IOException</span><br><span class="line">    &#123;</span><br><span class="line">        <span class="type">Socket</span> <span class="variable">socket</span> <span class="operator">=</span> <span class="keyword">new</span> <span class="title class_">Socket</span>(<span class="string">&quot;127.0.0.1&quot;</span>,<span class="number">6379</span>);</span><br><span class="line">        <span class="type">OutputStream</span> <span class="variable">outputStream</span> <span class="operator">=</span> socket.getOutputStream();</span><br><span class="line"></span><br><span class="line">        <span class="comment">//socket.getOutputStream().write(&quot;RedisClient01&quot;.getBytes());</span></span><br><span class="line"></span><br><span class="line">        <span class="keyword">while</span>(<span class="literal">true</span>)</span><br><span class="line">        &#123;</span><br><span class="line">            <span class="type">Scanner</span> <span class="variable">scanner</span> <span class="operator">=</span> <span class="keyword">new</span> <span class="title class_">Scanner</span>(System.in);</span><br><span class="line">            <span class="type">String</span> <span class="variable">string</span> <span class="operator">=</span> scanner.next();</span><br><span class="line">            <span class="keyword">if</span> (string.equalsIgnoreCase(<span class="string">&quot;quit&quot;</span>)) &#123;</span><br><span class="line">                <span class="keyword">break</span>;</span><br><span class="line">            &#125;</span><br><span class="line">            socket.getOutputStream().write(string.getBytes());</span><br><span class="line">            System.out.println(<span class="string">&quot;------input quit keyword to finish......&quot;</span>);</span><br><span class="line">        &#125;</span><br><span class="line">        outputStream.close();</span><br><span class="line">        socket.close();</span><br><span class="line">    &#125;</span><br><span class="line">&#125;</span><br></pre></td></tr></table></figure>
+<p>存在的问题：</p>
+<p>上面的模型存在很大的问题，如果客户端与服务端建立了连接</p>
+<p>如果这个连接的客户端迟迟不发数据，程就会一直堵塞在read()方法上，这样其他客户端也不能进行连接</p>
+<p>也就是一次只能处理一个客户端，对客户很不友好</p>
+<p>改进：使用多线程模式</p>
+<p>只要连接了一个socket，操作系统分配一个线程来处理，这样read()方法堵塞在每个具体线程上而不堵塞主线程，</p>
+<p>就能操作多个socket了，哪个线程中的socket有数据，就读哪个socket，各取所需，灵活统一。</p>
+<p>程序服务端只负责监听是否有客户端连接，使用 accept() 阻塞</p>
+<p>客户端1连接服务端，就开辟一个线程（thread1）来执行 read() 方法，程序服务端继续监听<br>客户端2连接服务端，也开辟一个线程（thread2）来执行 read() 方法，程序服务端继续监听<br>客户端3连接服务端，也开辟一个线程（thread3）来执行 read() 方法，程序服务端继续监听</p>
+<p>任何一个线程上的socket有数据发送过来，read()就能立马读到，cpu就能进行处理。</p>
+<p>RedisServerBIOMultiThread</p>
+<figure class="highlight java"><table><tr><td class="gutter"><pre><span class="line">1</span><br><span class="line">2</span><br><span class="line">3</span><br><span class="line">4</span><br><span class="line">5</span><br><span class="line">6</span><br><span class="line">7</span><br><span class="line">8</span><br><span class="line">9</span><br><span class="line">10</span><br><span class="line">11</span><br><span class="line">12</span><br><span class="line">13</span><br><span class="line">14</span><br><span class="line">15</span><br><span class="line">16</span><br><span class="line">17</span><br><span class="line">18</span><br><span class="line">19</span><br><span class="line">20</span><br><span class="line">21</span><br><span class="line">22</span><br><span class="line">23</span><br><span class="line">24</span><br><span class="line">25</span><br><span class="line">26</span><br><span class="line">27</span><br><span class="line">28</span><br><span class="line">29</span><br><span class="line">30</span><br><span class="line">31</span><br><span class="line">32</span><br><span class="line">33</span><br><span class="line">34</span><br><span class="line">35</span><br><span class="line">36</span><br></pre></td><td class="code"><pre><span class="line"><span class="keyword">public</span> <span class="keyword">class</span> <span class="title class_">RedisServerBIOMultiThread</span></span><br><span class="line">&#123;</span><br><span class="line">    <span class="keyword">public</span> <span class="keyword">static</span> <span class="keyword">void</span> <span class="title function_">main</span><span class="params">(String[] args)</span> <span class="keyword">throws</span> IOException</span><br><span class="line">    &#123;</span><br><span class="line">        <span class="type">ServerSocket</span> <span class="variable">serverSocket</span> <span class="operator">=</span> <span class="keyword">new</span> <span class="title class_">ServerSocket</span>(<span class="number">6379</span>);</span><br><span class="line"></span><br><span class="line">        <span class="keyword">while</span>(<span class="literal">true</span>)</span><br><span class="line">        &#123;</span><br><span class="line">            <span class="comment">//System.out.println(&quot;-----111 等待连接&quot;);</span></span><br><span class="line">            <span class="type">Socket</span> <span class="variable">socket</span> <span class="operator">=</span> serverSocket.accept();<span class="comment">//阻塞1 ,等待客户端连接</span></span><br><span class="line">            <span class="comment">//System.out.println(&quot;-----222 成功连接&quot;);</span></span><br><span class="line"></span><br><span class="line">            <span class="keyword">new</span> <span class="title class_">Thread</span>(() -&gt; &#123;</span><br><span class="line">                <span class="keyword">try</span> &#123;</span><br><span class="line">                    <span class="type">InputStream</span> <span class="variable">inputStream</span> <span class="operator">=</span> socket.getInputStream();</span><br><span class="line">                    <span class="type">int</span> <span class="variable">length</span> <span class="operator">=</span> -<span class="number">1</span>;</span><br><span class="line">                    <span class="type">byte</span>[] bytes = <span class="keyword">new</span> <span class="title class_">byte</span>[<span class="number">1024</span>];</span><br><span class="line">                    System.out.println(<span class="string">&quot;-----333 等待读取&quot;</span>);</span><br><span class="line">                    <span class="keyword">while</span>((length = inputStream.read(bytes)) != -<span class="number">1</span>)<span class="comment">//阻塞2 ,等待客户端发送数据</span></span><br><span class="line">                    &#123;</span><br><span class="line">                        System.out.println(<span class="string">&quot;-----444 成功读取&quot;</span>+<span class="keyword">new</span> <span class="title class_">String</span>(bytes,<span class="number">0</span>,length));</span><br><span class="line">                        System.out.println(<span class="string">&quot;====================&quot;</span>);</span><br><span class="line">                        System.out.println();</span><br><span class="line">                    &#125;</span><br><span class="line">                    inputStream.close();</span><br><span class="line">                    socket.close();</span><br><span class="line">                &#125; <span class="keyword">catch</span> (IOException e) &#123;</span><br><span class="line">                    e.printStackTrace();</span><br><span class="line">                &#125;</span><br><span class="line">            &#125;,Thread.currentThread().getName()).start();</span><br><span class="line"></span><br><span class="line">            System.out.println(Thread.currentThread().getName());</span><br><span class="line"></span><br><span class="line">        &#125;</span><br><span class="line">    &#125;</span><br><span class="line">&#125;</span><br></pre></td></tr></table></figure>
+<p>RedisClient01</p>
+<figure class="highlight java"><table><tr><td class="gutter"><pre><span class="line">1</span><br><span class="line">2</span><br><span class="line">3</span><br><span class="line">4</span><br><span class="line">5</span><br><span class="line">6</span><br><span class="line">7</span><br><span class="line">8</span><br><span class="line">9</span><br><span class="line">10</span><br><span class="line">11</span><br><span class="line">12</span><br><span class="line">13</span><br><span class="line">14</span><br><span class="line">15</span><br><span class="line">16</span><br><span class="line">17</span><br><span class="line">18</span><br><span class="line">19</span><br><span class="line">20</span><br><span class="line">21</span><br><span class="line">22</span><br><span class="line">23</span><br></pre></td><td class="code"><pre><span class="line"><span class="keyword">public</span> <span class="keyword">class</span> <span class="title class_">RedisClient01</span></span><br><span class="line">&#123;</span><br><span class="line">    <span class="keyword">public</span> <span class="keyword">static</span> <span class="keyword">void</span> <span class="title function_">main</span><span class="params">(String[] args)</span> <span class="keyword">throws</span> IOException</span><br><span class="line">    &#123;</span><br><span class="line">        <span class="type">Socket</span> <span class="variable">socket</span> <span class="operator">=</span> <span class="keyword">new</span> <span class="title class_">Socket</span>(<span class="string">&quot;127.0.0.1&quot;</span>,<span class="number">6379</span>);</span><br><span class="line">        <span class="type">OutputStream</span> <span class="variable">outputStream</span> <span class="operator">=</span> socket.getOutputStream();</span><br><span class="line"></span><br><span class="line">        <span class="comment">//socket.getOutputStream().write(&quot;RedisClient01&quot;.getBytes());</span></span><br><span class="line"></span><br><span class="line">        <span class="keyword">while</span>(<span class="literal">true</span>)</span><br><span class="line">        &#123;</span><br><span class="line">            <span class="type">Scanner</span> <span class="variable">scanner</span> <span class="operator">=</span> <span class="keyword">new</span> <span class="title class_">Scanner</span>(System.in);</span><br><span class="line">            <span class="type">String</span> <span class="variable">string</span> <span class="operator">=</span> scanner.next();</span><br><span class="line">            <span class="keyword">if</span> (string.equalsIgnoreCase(<span class="string">&quot;quit&quot;</span>)) &#123;</span><br><span class="line">                <span class="keyword">break</span>;</span><br><span class="line">            &#125;</span><br><span class="line">            socket.getOutputStream().write(string.getBytes());</span><br><span class="line">            System.out.println(<span class="string">&quot;------input quit keyword to finish......&quot;</span>);</span><br><span class="line">        &#125;</span><br><span class="line">        outputStream.close();</span><br><span class="line">        socket.close();</span><br><span class="line">    &#125;</span><br><span class="line">&#125;</span><br></pre></td></tr></table></figure>
+<p>RedisClient02</p>
+<figure class="highlight java"><table><tr><td class="gutter"><pre><span class="line">1</span><br><span class="line">2</span><br><span class="line">3</span><br><span class="line">4</span><br><span class="line">5</span><br><span class="line">6</span><br><span class="line">7</span><br><span class="line">8</span><br><span class="line">9</span><br><span class="line">10</span><br><span class="line">11</span><br><span class="line">12</span><br><span class="line">13</span><br><span class="line">14</span><br><span class="line">15</span><br><span class="line">16</span><br><span class="line">17</span><br><span class="line">18</span><br><span class="line">19</span><br><span class="line">20</span><br><span class="line">21</span><br><span class="line">22</span><br><span class="line">23</span><br></pre></td><td class="code"><pre><span class="line"><span class="keyword">public</span> <span class="keyword">class</span> <span class="title class_">RedisClient02</span></span><br><span class="line">&#123;</span><br><span class="line">    <span class="keyword">public</span> <span class="keyword">static</span> <span class="keyword">void</span> <span class="title function_">main</span><span class="params">(String[] args)</span> <span class="keyword">throws</span> IOException</span><br><span class="line">    &#123;</span><br><span class="line">        <span class="type">Socket</span> <span class="variable">socket</span> <span class="operator">=</span> <span class="keyword">new</span> <span class="title class_">Socket</span>(<span class="string">&quot;127.0.0.1&quot;</span>,<span class="number">6379</span>);</span><br><span class="line">        <span class="type">OutputStream</span> <span class="variable">outputStream</span> <span class="operator">=</span> socket.getOutputStream();</span><br><span class="line"></span><br><span class="line">        <span class="comment">//socket.getOutputStream().write(&quot;RedisClient01&quot;.getBytes());</span></span><br><span class="line"></span><br><span class="line">        <span class="keyword">while</span>(<span class="literal">true</span>)</span><br><span class="line">        &#123;</span><br><span class="line">            <span class="type">Scanner</span> <span class="variable">scanner</span> <span class="operator">=</span> <span class="keyword">new</span> <span class="title class_">Scanner</span>(System.in);</span><br><span class="line">            <span class="type">String</span> <span class="variable">string</span> <span class="operator">=</span> scanner.next();</span><br><span class="line">            <span class="keyword">if</span> (string.equalsIgnoreCase(<span class="string">&quot;quit&quot;</span>)) &#123;</span><br><span class="line">                <span class="keyword">break</span>;</span><br><span class="line">            &#125;</span><br><span class="line">            socket.getOutputStream().write(string.getBytes());</span><br><span class="line">            System.out.println(<span class="string">&quot;------input quit keyword to finish......&quot;</span>);</span><br><span class="line">        &#125;</span><br><span class="line">        outputStream.close();</span><br><span class="line">        socket.close();</span><br><span class="line">    &#125;</span><br><span class="line">&#125;</span><br></pre></td></tr></table></figure>
+<p>存在的问题</p>
+<p>多线程模型</p>
+<p>每来一个客户端，就要开辟一个线程，如果来1万个客户端，那就要开辟1万个线程。</p>
+<p>在操作系统中用户态不能直接开辟线程，需要调用内核来创建的一个线程，</p>
+<p>这其中还涉及到用户状态的切换（上下文的切换），十分耗资源。</p>
+<p>解决方案：</p>
+<p>第一个办法：使用线程池</p>
+<p>这个在客户端连接少的情况下可以使用，但是用户量大的情况下，你不知道线程池要多大，太大了内存可能不够，也不可行。</p>
+<p>第二个办法：NIO（非阻塞式IO）方式</p>
+<p>因为read()方法堵塞了，所有要开辟多个线程，如果什么方法能使read()方法不堵塞，这样就不用开辟多个线程了，这就用到了另一个IO模型，NIO（非阻塞式IO）</p>
+<p>目前我们的两个痛点：</p>
+<p> accept、read</p>
+<p>在阻塞式IO模型中，应用程序在从调用recvfrom，开始到它返回有数据报准备好这段时间式阻塞的，recvfrom返回成功后，应用进程开始准备处理数据报。</p>
+<p>思考：</p>
+<p>每个线程分配一个连接，必然会产生多个，既然是多个socket连接必然需要放入进容器，纳入统一管理</p>
+<h4 id="2、NIO"><a href="#2、NIO" class="headerlink" title="2、NIO"></a>2、NIO</h4><p><img src="https://gitee.com/Bluetom/img2/raw/master/img20240905/202410281604640.png" alt="image-20220608175533567"></p>
+<p>面试总结回答：</p>
+<p>在NIO模式中，一切都是非阻塞的：</p>
+<p>accept()方法是非阻塞的，如果没有客户端连接，就返回error</p>
+<p>read()方法是非阻塞的，如果read()方法读取不到数据就返回error，如果读取到数据时只阻塞read()方法读数据的时间</p>
+<p>在NIO模式中，只有一个线程：</p>
+<p>当一个客户端与服务端进行连接，这个socket就会加入到一个数组中，隔一段时间遍历一次，</p>
+<p>看这个socket的read()方法能否读到数据，这样一个线程就能处理多个客户端的连接和读取了</p>
+<p>code案例</p>
+<p>使用ServerSocketChannel</p>
+<p>RedisServerNIO</p>
+<figure class="highlight java"><table><tr><td class="gutter"><pre><span class="line">1</span><br><span class="line">2</span><br><span class="line">3</span><br><span class="line">4</span><br><span class="line">5</span><br><span class="line">6</span><br><span class="line">7</span><br><span class="line">8</span><br><span class="line">9</span><br><span class="line">10</span><br><span class="line">11</span><br><span class="line">12</span><br><span class="line">13</span><br><span class="line">14</span><br><span class="line">15</span><br><span class="line">16</span><br><span class="line">17</span><br><span class="line">18</span><br><span class="line">19</span><br><span class="line">20</span><br><span class="line">21</span><br><span class="line">22</span><br><span class="line">23</span><br><span class="line">24</span><br><span class="line">25</span><br><span class="line">26</span><br><span class="line">27</span><br><span class="line">28</span><br><span class="line">29</span><br><span class="line">30</span><br><span class="line">31</span><br><span class="line">32</span><br><span class="line">33</span><br><span class="line">34</span><br><span class="line">35</span><br><span class="line">36</span><br><span class="line">37</span><br><span class="line">38</span><br><span class="line">39</span><br></pre></td><td class="code"><pre><span class="line"><span class="keyword">public</span> <span class="keyword">class</span> <span class="title class_">RedisServerNIO</span></span><br><span class="line">&#123;</span><br><span class="line">    <span class="keyword">static</span> ArrayList&lt;SocketChannel&gt; socketList = <span class="keyword">new</span> <span class="title class_">ArrayList</span>&lt;&gt;();</span><br><span class="line">    <span class="keyword">static</span> <span class="type">ByteBuffer</span> <span class="variable">byteBuffer</span> <span class="operator">=</span> ByteBuffer.allocate(<span class="number">1024</span>);</span><br><span class="line"></span><br><span class="line">    <span class="keyword">public</span> <span class="keyword">static</span> <span class="keyword">void</span> <span class="title function_">main</span><span class="params">(String[] args)</span> <span class="keyword">throws</span> IOException</span><br><span class="line">    &#123;</span><br><span class="line">        System.out.println(<span class="string">&quot;---------RedisServerNIO 启动等待中......&quot;</span>);</span><br><span class="line">        <span class="type">ServerSocketChannel</span> <span class="variable">serverSocket</span> <span class="operator">=</span> ServerSocketChannel.open();</span><br><span class="line">        serverSocket.bind(<span class="keyword">new</span> <span class="title class_">InetSocketAddress</span>(<span class="string">&quot;127.0.0.1&quot;</span>,<span class="number">6379</span>));</span><br><span class="line">        serverSocket.configureBlocking(<span class="literal">false</span>);<span class="comment">//设置为非阻塞模式</span></span><br><span class="line"></span><br><span class="line">        <span class="keyword">while</span> (<span class="literal">true</span>)</span><br><span class="line">        &#123;</span><br><span class="line">            <span class="keyword">for</span> (SocketChannel element : socketList)</span><br><span class="line">            &#123;</span><br><span class="line">                <span class="type">int</span> <span class="variable">read</span> <span class="operator">=</span> element.read(byteBuffer);</span><br><span class="line">                <span class="keyword">if</span>(read &gt; <span class="number">0</span>)</span><br><span class="line">                &#123;</span><br><span class="line">                    System.out.println(<span class="string">&quot;-----读取数据: &quot;</span>+read);</span><br><span class="line">                    byteBuffer.flip();</span><br><span class="line">                    <span class="type">byte</span>[] bytes = <span class="keyword">new</span> <span class="title class_">byte</span>[read];</span><br><span class="line">                    byteBuffer.get(bytes);</span><br><span class="line">                    System.out.println(<span class="keyword">new</span> <span class="title class_">String</span>(bytes));</span><br><span class="line">                    byteBuffer.clear();</span><br><span class="line">                &#125;</span><br><span class="line">            &#125;</span><br><span class="line"></span><br><span class="line">            <span class="type">SocketChannel</span> <span class="variable">socketChannel</span> <span class="operator">=</span> serverSocket.accept();</span><br><span class="line">            <span class="keyword">if</span>(socketChannel != <span class="literal">null</span>)</span><br><span class="line">            &#123;</span><br><span class="line">                System.out.println(<span class="string">&quot;-----成功连接: &quot;</span>);</span><br><span class="line">                socketChannel.configureBlocking(<span class="literal">false</span>);<span class="comment">//设置为非阻塞模式</span></span><br><span class="line">                socketList.add(socketChannel);</span><br><span class="line">                System.out.println(<span class="string">&quot;-----socketList size: &quot;</span>+socketList.size());</span><br><span class="line">            &#125;</span><br><span class="line">        &#125;</span><br><span class="line">    &#125;</span><br><span class="line">&#125;</span><br></pre></td></tr></table></figure>
+<p>RedisClient01</p>
+<figure class="highlight java"><table><tr><td class="gutter"><pre><span class="line">1</span><br><span class="line">2</span><br><span class="line">3</span><br><span class="line">4</span><br><span class="line">5</span><br><span class="line">6</span><br><span class="line">7</span><br><span class="line">8</span><br><span class="line">9</span><br><span class="line">10</span><br><span class="line">11</span><br><span class="line">12</span><br><span class="line">13</span><br><span class="line">14</span><br><span class="line">15</span><br><span class="line">16</span><br><span class="line">17</span><br><span class="line">18</span><br><span class="line">19</span><br><span class="line">20</span><br><span class="line">21</span><br></pre></td><td class="code"><pre><span class="line"><span class="keyword">public</span> <span class="keyword">class</span> <span class="title class_">RedisClient01</span></span><br><span class="line">&#123;</span><br><span class="line">    <span class="keyword">public</span> <span class="keyword">static</span> <span class="keyword">void</span> <span class="title function_">main</span><span class="params">(String[] args)</span> <span class="keyword">throws</span> IOException</span><br><span class="line">    &#123;</span><br><span class="line">        System.out.println(<span class="string">&quot;------RedisClient01 start&quot;</span>);</span><br><span class="line">        <span class="type">Socket</span> <span class="variable">socket</span> <span class="operator">=</span> <span class="keyword">new</span> <span class="title class_">Socket</span>(<span class="string">&quot;127.0.0.1&quot;</span>,<span class="number">6379</span>);</span><br><span class="line">        <span class="type">OutputStream</span> <span class="variable">outputStream</span> <span class="operator">=</span> socket.getOutputStream();</span><br><span class="line">        <span class="keyword">while</span>(<span class="literal">true</span>)</span><br><span class="line">        &#123;</span><br><span class="line">            <span class="type">Scanner</span> <span class="variable">scanner</span> <span class="operator">=</span> <span class="keyword">new</span> <span class="title class_">Scanner</span>(System.in);</span><br><span class="line">            <span class="type">String</span> <span class="variable">string</span> <span class="operator">=</span> scanner.next();</span><br><span class="line">            <span class="keyword">if</span> (string.equalsIgnoreCase(<span class="string">&quot;quit&quot;</span>)) &#123;</span><br><span class="line">                <span class="keyword">break</span>;</span><br><span class="line">            &#125;</span><br><span class="line">            socket.getOutputStream().write(string.getBytes());</span><br><span class="line">            System.out.println(<span class="string">&quot;------input quit keyword to finish......&quot;</span>);</span><br><span class="line">        &#125;</span><br><span class="line">        outputStream.close();</span><br><span class="line">        socket.close();</span><br><span class="line">    &#125;</span><br><span class="line">&#125;</span><br></pre></td></tr></table></figure>
+<p>RedisClient02</p>
+<figure class="highlight java"><table><tr><td class="gutter"><pre><span class="line">1</span><br><span class="line">2</span><br><span class="line">3</span><br><span class="line">4</span><br><span class="line">5</span><br><span class="line">6</span><br><span class="line">7</span><br><span class="line">8</span><br><span class="line">9</span><br><span class="line">10</span><br><span class="line">11</span><br><span class="line">12</span><br><span class="line">13</span><br><span class="line">14</span><br><span class="line">15</span><br><span class="line">16</span><br><span class="line">17</span><br><span class="line">18</span><br><span class="line">19</span><br><span class="line">20</span><br><span class="line">21</span><br></pre></td><td class="code"><pre><span class="line"><span class="keyword">public</span> <span class="keyword">class</span> <span class="title class_">RedisClient02</span></span><br><span class="line">&#123;</span><br><span class="line">    <span class="keyword">public</span> <span class="keyword">static</span> <span class="keyword">void</span> <span class="title function_">main</span><span class="params">(String[] args)</span> <span class="keyword">throws</span> IOException</span><br><span class="line">    &#123;</span><br><span class="line">        System.out.println(<span class="string">&quot;------RedisClient01 start&quot;</span>);</span><br><span class="line">        <span class="type">Socket</span> <span class="variable">socket</span> <span class="operator">=</span> <span class="keyword">new</span> <span class="title class_">Socket</span>(<span class="string">&quot;127.0.0.1&quot;</span>,<span class="number">6379</span>);</span><br><span class="line">        <span class="type">OutputStream</span> <span class="variable">outputStream</span> <span class="operator">=</span> socket.getOutputStream();</span><br><span class="line">        <span class="keyword">while</span>(<span class="literal">true</span>)</span><br><span class="line">        &#123;</span><br><span class="line">            <span class="type">Scanner</span> <span class="variable">scanner</span> <span class="operator">=</span> <span class="keyword">new</span> <span class="title class_">Scanner</span>(System.in);</span><br><span class="line">            <span class="type">String</span> <span class="variable">string</span> <span class="operator">=</span> scanner.next();</span><br><span class="line">            <span class="keyword">if</span> (string.equalsIgnoreCase(<span class="string">&quot;quit&quot;</span>)) &#123;</span><br><span class="line">                <span class="keyword">break</span>;</span><br><span class="line">            &#125;</span><br><span class="line">            socket.getOutputStream().write(string.getBytes());</span><br><span class="line">            System.out.println(<span class="string">&quot;------input quit keyword to finish......&quot;</span>);</span><br><span class="line">        &#125;</span><br><span class="line">        outputStream.close();</span><br><span class="line">        socket.close();</span><br><span class="line">    &#125;</span><br><span class="line">&#125;</span><br></pre></td></tr></table></figure>
+<p>存在的有点和缺点</p>
+<p>NIO成功的解决了BIO需要开启多线程的问题，NIO中一个线程就能解决多个socket，但是还存在2个问题。</p>
+<p>问题一：</p>
+<p>这个模型在客户端少的时候十分好用，但是客户端如果很多，</p>
+<p>比如有1万个客户端进行连接，那么每次循环就要遍历1万个socket，如果一万个socket中只有10个socket有数据，也会遍历一万个socket，就会做很多无用功，</p>
+<p>每次遍历遇到 read 返回 -1 时仍然是一次浪费资源的系统调用。</p>
+<p>问题二：<br>而且这个遍历过程是在用户态进行的，用户态判断socket是否有数据还是调用内核的read()方法实现的，这就涉及到用户态和内核态的切换，每遍历一个就要切换一次，开销很大因为这些问题的存在。</p>
+<p>优点：不会阻塞在内核的等待数据过程，每次发起的 I/O 请求可以立即返回，不用阻塞等待，实时性较好。</p>
+<p>缺点：轮询将会不断地询问内核，这将占用大量的 CPU 时间，系统资源利用率较低，所以一般 Web 服务器不使用这种 I/O 模型。</p>
+<p>结论：让Linux内核搞定上述需求，我们将一批文件描述符通过一次系统调用传给内核由内核层去遍历，才能真正解决这个问题。IO多路复用应运而生，也即将上述工作直接放进Linux内核，不再两态转换而是直接从内核获得结果，因为内核是非阻塞的。</p>
+<p>问题升级：如何用单线程处理大量得到链接？</p>
+<h4 id="3、IO多路复用"><a href="#3、IO多路复用" class="headerlink" title="3、IO多路复用"></a>3、IO多路复用</h4><p><img src="https://gitee.com/Bluetom/img2/raw/master/img20240905/202410281604167.png" alt="image-20220608175624003"></p>
+<blockquote>
+<p>是什么？</p>
+</blockquote>
+<p>词牌解释：</p>
+<p><img src="https://gitee.com/Bluetom/img2/raw/master/img20240905/202410281604315.png" alt="image-20220608175741151"></p>
+<p>模型：</p>
+<p>I/O多路复用在英文中其实叫 I/O multiplexing </p>
+<p><img src="https://gitee.com/Bluetom/img2/raw/master/img20240905/202410281604913.png" alt="image-20220608175806379"></p>
+<p>I/O multiplexing 这里面的 multiplexing 指的其实是在单个线程通过记录跟踪每一个Sock(I/O流)的状态来同时管理多个I/O流. 目的是尽量多的提高服务器的吞吐能力。</p>
+<p><img src="https://gitee.com/Bluetom/img2/raw/master/img20240905/202410281604303.png" alt="image-20220608175818088"></p>
+<p>大家都用过nginx，nginx使用epoll接收请求，ngnix会有很多链接进来， epoll会把他们都监视起来，然后像拨开关一样，谁有数据就拨向谁，然后调用相应的代码处理。redis类似同理</p>
+<p>File descriptor：</p>
+<p>文件描述符（File descriptor）是计算机科学中的一个术语，是一个用于表述指向文件的引用的抽象化概念。文件描述符在形式上是一个非负整数。实际上，它是一个索引值，指向内核为每一个进程所维护的该进程打开文件的记录表。当程序打开一个现有文件或者创建一个新文件时，内核向进程返回一个文件描述符。在程序设计中，一些涉及底层的程序编写往往会围绕着文件描述符展开。但是文件描述符这一概念往往只适用于UNIX、Linux这样的操作系统。</p>
+<p><img src="https://gitee.com/Bluetom/img2/raw/master/img20240905/202410281604189.png" alt="image-20220608175849852"></p>
+<p>模拟一个tcp服务器处理30个客户socket。</p>
+<p>假设你是一个监考老师，让30个学生解答一道竞赛考题，然后负责验收学生答卷，你有下面几个选择：</p>
+<p>第一种选择：按顺序逐个验收，先验收A，然后是B，之后是C、D。。。这中间如果有一个学生卡住，全班都会被耽误,你用循环挨个处理socket，根本不具有并发能力。</p>
+<p>第二种选择：你创建30个分身线程，每个分身线程检查一个学生的答案是否正确。 这种类似于为每一个用户创建一个进程或者线程处理连接。</p>
+<p>第三种选择，你站在讲台上等，谁解答完谁举手。这时C、D举手，表示他们解答问题完毕，你下去依次检查C、D的答案，然后继续回到讲台上等。此时E、A又举手，然后去处理E和A。。。这种就是IO复用模型。Linux下的select、poll和epoll就是干这个的。</p>
+<p>将用户socket对应的fd注册进epoll，然后epoll帮你监听哪些socket上有消息到达，这样就避免了大量的无用操作。此时的socket应该采用非阻塞模式。这样，整个过程只在调用select、poll、epoll这些调用的时候才会阻塞，收发客户消息是不会阻塞的，整个进程或者线程就被充分利用起来，这就是事件驱动，所谓的reactor反应模式。</p>
+<blockquote>
+<p>Reactor设计模式</p>
+</blockquote>
+<p>基于 I/O 复用模型：多个连接共用一个阻塞对象，应用程序只需要在一个阻塞对象上等待，无需阻塞等待所有连接。当某条连接有新的数据可以处理时，操作系统通知应用程序，线程从阻塞状态返回，开始进行业务处理。</p>
+<p>Reactor 模式，是指通过一个或多个输入同时传递给服务处理器的服务请求的事件驱动处理模式。服务端程序处理传入多路请求，并将它们同步分派给请求对应的处理线程，Reactor 模式也叫 Dispatcher 模式。即 I/O 多了复用统一监听事件，收到事件后分发(Dispatch 给某进程)，是编写高性能网络服务器的必备技术。</p>
+<p><img src="https://gitee.com/Bluetom/img2/raw/master/img20240905/202410281604311.png" alt="image-20220608180952942"></p>
+<p>Reactor 模式中有 2 个关键组成：</p>
+<p>1）Reactor：Reactor 在一个单独的线程中运行，负责监听和分发事件，分发给适当的处理程序来对 IO 事件做出反应。 它就像公司的电话接线员，它接听来自客户的电话并将线路转移到适当的联系人；</p>
+<p>2）Handlers：处理程序执行 I/O 事件要完成的实际事件，类似于客户想要与之交谈的公司中的实际办理人。Reactor 通过调度适当的处理程序来响应 I/O 事件，处理程序执行非阻塞操作。</p>
+<p><img src="https://gitee.com/Bluetom/img2/raw/master/img20240905/202410281604164.png" alt="image-20220608181043688"></p>
+<p>Redis 服务采用 Reactor 的方式来实现文件事件处理器（每一个网络连接其实都对应一个文件描述符）</p>
+<p>Redis基于Reactor模式开发了网络事件处理器，这个处理器被称为文件事件处理器。<br>它的组成结构为4部分：<br>多个套接字、<br>IO多路复用程序、<br>文件事件分派器、<br>事件处理器。因为文件事件分派器队列的消费是单线程的，所以Redis才叫单线程模型</p>
+<blockquote>
+<p>select、poll、epoll都是I/O多路复用的具体实现</p>
+</blockquote>
+<p>所谓 I/O 多路复用机制指内核一旦发现进程指定的一个或者多个IO条件准备读取，它就通知该进程，就是说通过一种机制，可以监视多个描述符，一旦某个描述符就绪（一般是读就绪或写就绪），能够通知程序进行相应的读写操作。这种机制的使用需要 select 、 poll 、 epoll 来配合。</p>
+<p>多个连接共用一个阻塞对象，应用程序只需要在一个阻塞对象上等待，无需阻塞等待所有连接。</p>
+<p>当某条连接有新的数据可以处理时，操作系统通知应用程序，线程从阻塞状态返回，开始进行业务处理。</p>
+<p>select方法</p>
+<p><img src="https://gitee.com/Bluetom/img2/raw/master/img20240905/202410281605087.png" alt="image-20220608181502960"></p>
+<p><img src="https://gitee.com/Bluetom/img2/raw/master/img20240905/202410281605659.png" alt="image-20220608181514089"></p>
+<p><img src="https://gitee.com/Bluetom/img2/raw/master/img20240905/202410281605251.png" alt="image-20220608181524477"></p>
+<p>select 其实就是把NIO中用户态要遍历的fd数组(我们的每一个socket链接，安装进ArrayList里面的那个)拷贝到了内核态，让内核态来遍历，因为用户态判断socket是否有数据还是要调用内核态的，所有拷贝到内核态后，这样遍历判断的时候就不用一直用户态和内核态频繁切换了</p>
+<p>从代码中可以看出，select系统调用后，返回了一个置位后的&amp;rset，这样用户态只需进行很简单的二进制比较，就能很快知道哪些socket需要read数据，有效提高了效率</p>
+<p><img src="https://gitee.com/Bluetom/img2/raw/master/img20240905/202410281605142.png" alt="image-20220608181755660"></p>
+<p>1、bitmap最大1024位，一个进程最多只能处理1024个客户端</p>
+<p>2、&amp;rset不可重用，每次socket有数据就相应的位会被置位</p>
+<p>3、文件描述符数组拷贝到了内核态(只不过无系统调用切换上下文的开销。（内核层可优化为异步事件通知）)，仍然有开销。select 调用需要传入 fd 数组，需要拷贝一份到内核，高并发场景下这样的拷贝消耗的资源是惊人的。（可优化为不复制）</p>
+<p>4、select并没有通知用户态哪一个socket有数据，仍然需要O(n)的遍历。select 仅仅返回可读文件描述符的个数，具体哪个可读还是要用户自己遍历。（可优化为只返回给用户就绪的文件描述符，无需用户做无效的遍历）</p>
+<p>我们自己模拟写的是，RedisServerNIO.java,只不过将它内核化了。</p>
+<p>select方式，既做到了一个线程处理多个客户端连接（文件描述符），又减少了系统调用的开销（多个文件描述符只有一次 select 的系统调用 + N次就绪状态的文件描述符的 read 系统调用</p>
+<p>poll方法</p>
+<p><img src="https://gitee.com/Bluetom/img2/raw/master/img20240905/202410281605885.png" alt="image-20220608182402784"></p>
+<p><img src="https://gitee.com/Bluetom/img2/raw/master/img20240905/202410281605126.png" alt="image-20220608182408841"></p>
+<p>1、poll使用pollfd数组来代替select中的bitmap，数组没有1024的限制，可以一次管理更多的client。它和 select 的主要区别就是，去掉了 select 只能监听 1024 个文件描述符的限制。</p>
+<p>2、当pollfds数组中有事件发生，相应的revents置位为1，遍历的时候又置位回零，实现了pollfd数组的重用</p>
+<p>poll 解决了select缺点中的前两条，其本质原理还是select的方法，还存在select中原来的问题</p>
+<p>1、pollfds数组拷贝到了内核态，仍然有开销</p>
+<p>2、poll并没有通知用户态哪一个socket有数据，仍然需要O(n)的遍历</p>
+<blockquote>
+<p>epoll</p>
+</blockquote>
+<p>三步调用</p>
+<p>epoll_create 创建一个epoll句柄</p>
+<p><img src="https://gitee.com/Bluetom/img2/raw/master/img20240905/202410281605099.png" alt="image-20220608182901538"></p>
+<p>epoll_ctl，向内核添加、修改或删除要监控的文件描述符</p>
+<p><img src="https://gitee.com/Bluetom/img2/raw/master/img20240905/202410281605935.png" alt="image-20220608183038545"></p>
+<p>epoll_wait，类似发起了select()调用</p>
+<p><img src="https://gitee.com/Bluetom/img2/raw/master/img20240905/202410281605496.png" alt="image-20220608183104399"></p>
+<p><img src="https://gitee.com/Bluetom/img2/raw/master/img20240905/202410281605805.png" alt="image-20220608183114898"></p>
+<p><img src="https://gitee.com/Bluetom/img2/raw/master/img20240905/202410281605835.png" alt="image-20220608183126159"></p>
+<p>事件通知机制</p>
+<p>1、当有网卡上有数据到达了，首先会放到DMA（内存中的一个buffer，网卡可以直接访问这个数据区域）中</p>
+<p>2、网卡向cpu发起中断，让cpu先处理网卡的事</p>
+<p>3、中断号在内存中会绑定一个回调，哪个socket中有数据，回调函数就把哪个socket放入就绪链表中</p>
+<p>IO多路复用总结：</p>
+<p>多路复用快的原因在于，操作系统提供了这样的系统调用，使得原来的 while 循环里多次系统调用，</p>
+<p>变成了一次系统调用 + 内核层遍历这些文件描述符。</p>
+<p>epoll是现在最先进的IO多路复用器，Redis、Nginx，linux中的Java NIO都使用的是epoll。这里“多路”指的是多个网络连接，“复用”指的是复用同一个线程。</p>
+<p>1、一个socket的生命周期中只有一次从用户态拷贝到内核态的过程，开销小</p>
+<p>2、使用event事件通知机制，每次socket中有数据会主动通知内核，并加入到就绪链表中，不需要遍历所有的socket</p>
+<figure class="highlight plaintext"><table><tr><td class="gutter"><pre><span class="line">1</span><br></pre></td><td class="code"><pre><span class="line">在多路复用IO模型中，会有一个内核线程不断地去轮询多个 socket 的状态，只有当真正读写事件发送时，才真正调用实际的IO读写操作。因为在多路复用IO模型中，只需要使用一个线程就可以管理多个socket，系统不需要建立新的进程或者线程，也不必维护这些线程和进程，并且只有真正有读写事件进行时，才会使用IO资源，所以它大大减少来资源占用。多路I/O复用模型是利用 select、poll、epoll 可以同时监察多个流的 I/O 事件的能力，在空闲的时候，会把当前线程阻塞掉，当有一个或多个流有 I/O 事件时，就从阻塞态中唤醒，于是程序就会轮询一遍所有的流（epoll 是只轮询那些真正发出了事件的流），并且只依次顺序的处理就绪的流，这种做法就避免了大量的无用操作。 采用多路 I/O 复用技术可以让单个线程高效的处理多个连接请求（尽量减少网络 IO 的时间消耗），且 Redis 在内存中操作数据的速度非常快，也就是说内存内的操作不会成为影响Redis性能的瓶颈</span><br></pre></td></tr></table></figure>
+<p>4、三个方法对比</p>
+<p><img src="https://gitee.com/Bluetom/img2/raw/master/img20240905/202410281606026.png" alt="image-20220608183516539"></p>
+<h4 id="4、5种IO模型总结"><a href="#4、5种IO模型总结" class="headerlink" title="4、5种IO模型总结"></a>4、5种IO模型总结</h4><p>多路复用快的原因在于，操作系统提供了这样的系统调用，使得原来的 while 循环里多次系统调用，<br><strong>变成了一次系统调用 + 内核层遍历这些文件描述符。</strong> </p>
+<p>所谓 I/O 多路复用机制，就是说通过一种机制，可以监视多个描述符，一旦某个描述符就绪（一般是读就绪或写就绪），能够通知程序进行相应的读写操作。</p>
+<p>这种机制的使用需要 select 、 poll 、 epoll 来配合。多个连接共用一个阻塞对象，应用程序只需要在一个阻塞对象上等待，无需阻塞等待所有连接。</p>
+<p>当某条连接有新的数据可以处理时，操作系统通知应用程序，线程从阻塞状态返回，开始进行业务处理；</p>
+<p><img src="https://gitee.com/Bluetom/img2/raw/master/img20240905/202410281606141.png" alt="image-20220608183750962"></p>
+<p><img src="https://gitee.com/Bluetom/img2/raw/master/img20240905/202410281606225.png" alt="image-20220608183918497"></p>
+</article><div class="post-copyright"><div class="post-copyright__author"><span class="post-copyright-meta"><i class="fas fa-circle-user fa-fw"></i>文章作者: </span><span class="post-copyright-info"><a href="https://ktzxy.github.io">蓝桉</a></span></div><div class="post-copyright__type"><span class="post-copyright-meta"><i class="fas fa-square-arrow-up-right fa-fw"></i>文章链接: </span><span class="post-copyright-info"><a href="https://ktzxy.github.io/posts/bc82e1f5.html">https://ktzxy.github.io/posts/bc82e1f5.html</a></span></div><div class="post-copyright__notice"><span class="post-copyright-meta"><i class="fas fa-circle-exclamation fa-fw"></i>版权声明: </span><span class="post-copyright-info">本博客所有文章除特别声明外，均采用 <a href="https://creativecommons.org/licenses/by-nc-sa/4.0/" target="_blank">CC BY-NC-SA 4.0</a> 许可协议。转载请注明来源 <a href="https://ktzxy.github.io" target="_blank">蓝桉`Blog</a>！</span></div></div><div class="tag_share"><div class="post-meta__tag-list"><a class="post-meta__tags" href="/tags/%E6%95%B0%E6%8D%AE%E5%BA%93/">数据库</a></div><div class="post-share"><div class="social-share" data-image="/bg/Image00030.webp" data-sites="facebook,twitter,wechat,weibo,qq"></div><link rel="stylesheet" href="https://cdn.jsdelivr.net/npm/butterfly-extsrc/sharejs/dist/css/share.min.css" media="print" onload="this.media='all'"><script src="https://cdn.jsdelivr.net/npm/butterfly-extsrc/sharejs/dist/js/social-share.min.js" defer></script></div></div><link rel="stylesheet" href="/css/coin/coin.css" media="defer" onload="this.media='all'"/><div class="post-reward"><button class="tip-button reward-button"><span class="tip-button__text">不给糖果就捣蛋</span><div class="coin-wrapper"><div class="coin"><div class="coin__middle"></div><div class="coin__back"></div><div class="coin__front"></div></div></div><div class="reward-main"><ul class="reward-all"><li class="reward-item"><a href="/img/wechat.webp" target="_blank"><img class="post-qr-code-img" src="/img/wechat.webp" alt="wechat"/></a><div class="post-qr-code-desc">wechat</div></li><li class="reward-item"><a href="/img/alipay.webp" target="_blank"><img class="post-qr-code-img" src="/img/alipay.webp" alt="alipay"/></a><div class="post-qr-code-desc">alipay</div></li></ul></div></button></div><audio id="coinAudio" src="https://cdn.cbd.int/akilar-candyassets@1.0.36/audio/aowu.m4a"></audio><script defer="defer" src="/js/coin/coin.js"></script><nav class="pagination-post" id="pagination"><a class="pagination-related" href="/posts/ff67c7c8.html" title="缓存穿透、缓存击穿和缓存雪崩"><img class="cover" src="/bg/Image00015.webp" onerror="onerror=null;src='/img/404.jpg'" alt="cover of previous post"><div class="info"><div class="info-1"><div class="info-item-1">上一篇</div><div class="info-item-2">缓存穿透、缓存击穿和缓存雪崩</div></div><div class="info-2"><div class="info-item-1">缓存穿透、缓存击穿和缓存雪崩前言对于从事后端开发的同学来说，缓存已经变成的项目中必不可少的技术之一。 没错，缓存能给我们系统显著的提升性能。但如果你使用不好，或者缺乏相关经验，它也会带来很多意想不到的问题。 今天我们一起聊聊如果在项目中引入了缓存，可能会给我们带来的下面这三大问题。看看你中招了没？ 1、缓存穿透问题大部分情况下，加缓存的目的是：为了减轻数据库的压力，提升系统的性能。 1.1 我们是如何使用缓存的？一般情况下，如果有用户请求进来，先查缓存，如果缓存中存在数据，则直接返回。如果缓存中不存在，则再查数据库，如果数据库中存在，则将数据放入缓存，然后返回。如果数据库里也不存在，则直接返回失败。 流程图如下：  大部分缓存都是这样用的。 1.2 什么是缓存穿透？但如果出现以下这两种特殊情况，比如： 1、用户请求的id在缓存中不存在 2、恶意用户伪造不存在的id发起请求 这样的用户请求导致的结果就是：每次从缓存中请求都查不到数据，必须去查询数据库，同时数据库里面也查不到数据，也无法放入缓存。也就是说，每次这个用户请求过来的时候，都要查询一次数据库。  图中标红的箭头表示每次走的...</div></div></div></a><a class="pagination-related" href="/posts/7f032ec0.html" title="第8节-Mysql与Redis双写一致性以及更新探讨"><img class="cover" src="/bg/Image00029.webp" onerror="onerror=null;src='/img/404.jpg'" alt="cover of next post"><div class="info text-right"><div class="info-1"><div class="info-item-1">下一篇</div><div class="info-item-2">第8节-Mysql与Redis双写一致性以及更新探讨</div></div><div class="info-2"><div class="info-item-1">第8节-Mysql与Redis双写一致性以及更新探讨面试题：  使用缓存就会涉及到缓存与数据库的双写，这种情况你们的一致性怎么保证的？ 双写一致性你是先动缓存还是先动数据库，为什么这样做？  1、Canal 是什么？  canal [kə’næl]，中文翻译为 水道/管道/沟渠/运河，主要用途是用于 MySQL 数据库增量日志数据的订阅、消费和解析，是阿里巴巴开发并开源的，采用Java语言开发； 历史背景是早期阿里巴巴因为杭州和美国双机房部署，存在跨机房数据同步的业务需求，实现方式主要是基于业务 trigger（触发器） 获取增量变更。从2010年开始，阿里巴巴逐步尝试采用解析数据库日志获取增量变更进行同步，由此衍生出了canal项目； 一句话：Canal是基于 Mysql变更日志增量订阅和消费的组件  能干嘛？   数据库镜像 数据库实时备份 索引构建和实时维护（拆分异构索引，倒排索引等） 业务cache刷新 带业务逻辑的增量数据处理  2、工作原理，面试回答 传统Mysql主从复制工作原理   MySQL的主从复制将经过如下步骤： 1、当 master 主服务器上的数据发生改...</div></div></div></a></nav><div class="relatedPosts"><div class="headline"><i class="fas fa-thumbs-up fa-fw"></i><span>相关推荐</span></div><div class="relatedPosts-list"><a class="pagination-related" href="/posts/a318ca1f.html" title="MySQL数据库150道高频面试题"><img class="cover" src="/bg/Image00018.webp" alt="cover"><div class="info text-center"><div class="info-1"><div class="info-item-1"><i class="far fa-calendar-alt fa-fw"></i> 2025-07-09</div><div class="info-item-2">MySQL数据库150道高频面试题</div></div><div class="info-2"><div class="info-item-1">[toc] 1. Mysql 索引1.1. Mysql如何实现的索引机制？MySQL中索引分三类：B+树索引、Hash索引、全文索引 1.1.1. InnoDB索引与MyISAM索引实现的区别是什么？ MyISAM的索引方式都是非聚簇的，与InnoDB包含1个聚簇索引是不同的。 在InnoDB存储引擎中，我们只需要根据主键值对聚簇索引进行一次查找就能找到对应的记录，而在MyISAM中却需要进行一次回表操作，意味着MyISAM中建立的索引相当于全部都是二级索引。 InnoDB的数据文件本身就是索引文件，而MyISAM索引文件和数据文件是分离的 ，索引文件仅保存数据记录的地址。 MyISAM的表在磁盘上存储在以下文件中：  *.sdi（描述表结构）、*.MYD（数据），*.MYI（索引） InnoDB的表在磁盘上存储在以下文件中： .ibd（表结构、索引和数据都存在一起）   InnoDB的非聚簇索引data域存储相应记录主键的值 ，而MyISAM索引记录的是地址 。换句话说，InnoDB的所有非聚簇索引都引用主键作为data域。 MyISAM的回表操作是十分快速的，因为是拿着地址偏...</div></div></div></a><a class="pagination-related" href="/posts/8f9b37aa.html" title="技术同学必会的MySQL设计规约"><img class="cover" src="/bg/Image00014.webp" alt="cover"><div class="info text-center"><div class="info-1"><div class="info-item-1"><i class="far fa-calendar-alt fa-fw"></i> 2025-07-09</div><div class="info-item-2">技术同学必会的MySQL设计规约</div></div><div class="info-2"><div class="info-item-1">在我们对数据库技术方案设计的时候，我们是否有自己的设计理念或者原则，还是更多的依据自己的直觉去设计，是否曾经懊悔线上发生过的一次低级故障，可能稍微注意点就可以避免，是否想过怎么才能很好的避免，下面规范的价值正是我们工作的检查清单，需要我们不断从错误中积累有效经验来指导未来的工作。以下规范在大型互联网公司经过了充分的验证，尤其适用于并发量大、数据量大的业务场景。先介绍的是安全规范，因为安全无小事，很多公司都曾经因为自己的数据泄露导致用户的惨痛损失，所以将安全规范放到了第一位。﻿ 一、安全规范1.【强制】禁止在数据库中存储明文密码，需把密码加密后存储 说明：对于加密操作建议由公司的中间件团队基于如mybatis的扩展，提供统一的加密算法及密钥管理，避免每个业务线单独开发一套，同时也与具体的业务进行了解耦 2.【强制】禁止在数据库中明文存储用户敏感信息，如手机号等 说明：对于手机号建议公司搭建统一的手机号查询服务，避免在每个业务线单独存储 3.【强制】禁止开发直接给业务同学导出或者查询涉及到用户敏感信息的数据，如需要需上级领导审批 4.【强制】涉及到导出数据功能的操作，如包含敏感字段都...</div></div></div></a><a class="pagination-related" href="/posts/dfdfdf4.html" title="数据库概述"><img class="cover" src="/bg/Image00002.webp" alt="cover"><div class="info text-center"><div class="info-1"><div class="info-item-1"><i class="far fa-calendar-alt fa-fw"></i> 2025-07-09</div><div class="info-item-2">数据库概述</div></div><div class="info-2"><div class="info-item-1">1. 数据库技术1.1. 概述数据库（DB）是一个以某种组织方式存储在磁盘上的数据的集合。简单理解就是用来存储数据的仓库。  数据库 DataBase（DB）：存储数据的仓库，数据是有组织的进行存储。 数据库管理系统 DataBase Management System (DBMS)：操纵和管理数据库的大型软件。  1.2. 数据库的分类  1.3. 不同的数据存储方式数据存储在集合（内存）中  优点：读写速度快 缺点：不能永久存储  数据存储在文件中  优点：可以永久存储 缺点：频繁的IO操作效率低，查询数据很不方便。  数据存储在数据库中  优点：可以永久存储。查询速度快，查询数据很方便 缺点：要使用 SQL 语言执行增删改查操作  2. 关系型数据库 关系型数据库 - 百度百科  2.1. 概念关系型数据库，是指采用了关系模型来组织数据的数据库，其以行和列的形式存储数据，以便于用户理解，关系型数据库这一系列的行和列被称为表，一组表组成了数据库。用户通过查询来检索数据库中的数据，而查询是一个用于限定数据库中某些区域的执行代码。关系模型可以简单理解为二维表格模型，而一个关系型数...</div></div></div></a><a class="pagination-related" href="/posts/75522c08.html" title="第4节-布隆过滤器"><img class="cover" src="/bg/Image00003.webp" alt="cover"><div class="info text-center"><div class="info-1"><div class="info-item-1"><i class="far fa-calendar-alt fa-fw"></i> 2025-07-09</div><div class="info-item-2">第4节-布隆过滤器</div></div><div class="info-2"><div class="info-item-1">第4节-布隆过滤器BloomFilter面试题： 现有50亿个电话号码，选定其中10w个电话号码，如何要快速准确的判断这些号码是否已经存在？ 思路：  1、通过数据库查询———-实现快速有点难。  2、数据预放到内存集合中：50亿*8字节大约40G，内存太大了。 1、布隆过滤器是什么？它实际上==是一个很长的二进制数组+一系列随机hash算法映射函数，主要用于判断一个元素是否在集合中==。 通常我们会遇到很多要判断一个元素是否在某个集合中的业务场景，一般想到的是将集合中所有元素保存起来，然后通过比较确定。 链表、树、散列表（又叫哈希表，Hash table）等等数据结构都是这种思路。 但是随着集合中元素的增加，我们需要的存储空间也会呈现线性增长，最终达到瓶颈。 同时检索速度也越来越慢，上述三种结构的检索时间复杂度分别为O(n),O(logn),O(1)。这个时候，布隆过滤器（Bloom Filter）就应运而生  一句话概述：由一个初值为零的bit数组和多个哈希函数构成，用来快速判断某个数据是否存在。 本质就是判断具体元素存不存在一个大的集合中。 布隆过滤器是一种类似set的数据...</div></div></div></a><a class="pagination-related" href="/posts/e4cd3c5b.html" title="第5节-缓存预热+缓存雪崩+缓存击穿+缓存穿透"><img class="cover" src="/bg/Image00008.webp" alt="cover"><div class="info text-center"><div class="info-1"><div class="info-item-1"><i class="far fa-calendar-alt fa-fw"></i> 2025-07-09</div><div class="info-item-2">第5节-缓存预热+缓存雪崩+缓存击穿+缓存穿透</div></div><div class="info-2"><div class="info-item-1">第5节-缓存预热+缓存雪崩+缓存击穿+缓存穿透1、缓存雪崩发生情况： ​    redis主机挂了，redis全盘崩溃，比如缓存中有大量数据同时过期。 解决方案：  redis缓存集群实现高可用，主从+哨兵|| redis cluster ehcache本地缓存 + hystrix 或者 阿里sentinel限流&amp;降级 开启Redis持久化机制/aof+rdb，尽快恢复缓存集群 2、缓存穿透 什么是缓存穿透  请求去查询一条记录，先redis后mysql发现，都查不到该条记录，但是每次请求都会打到数据库上面去，导致后台数据库压力暴增，这种现象我们称为缓存穿透，redis成为了一个摆设。 简单说就是，本来无一物，即不再redis中，也不在mysql中。  危害  数据库可能会被打崩。导致服务不可用。 第一次来查询后，一般我们会有回写redis机制， 第二次来查询的时候redis就有了，偶尔出现穿透现象一般情况无关紧要。  解决方案   1、返回空对象缓存或者缺省值 一般OK  但是存在黑客和恶意攻击情况 黑客会对你的系统进行攻击，拿到一个不存在的id，去查询数据，会产生大量...</div></div></div></a><a class="pagination-related" href="/posts/41ae0132.html" title="MongoDB-基础"><img class="cover" src="/bg/Image00026.webp" alt="cover"><div class="info text-center"><div class="info-1"><div class="info-item-1"><i class="far fa-calendar-alt fa-fw"></i> 2025-07-09</div><div class="info-item-2">MongoDB-基础</div></div><div class="info-2"><div class="info-item-1">1. MongoDb 概述MongoDB 是一个跨平台的，面向文档的数据库，是当前 NoSQL 数据库产品中最热门的一种。它介于关系数据库和非关系数据库之间，是非关系数据库当中功能最丰富，最像关系数据库的产品。它支持的数据结构非常松散，是类似 JSON 的 BSON 格式，因此可以存储比较复杂的数据类型。 1.1. MongoDB 特点MongoDB 最大的特点是他支持的查询语言非常强大，其语法有点类似于面向对象的查询语言，几乎可以实现类似关系数据库单表查询的绝大部分功能，而且还支持对数据建立索引。它是一个面向集合的，模式自由的文档型数据库，具体特点总结如下：  面向集合存储，易于存储对象类型的数据 模式自由 支持动态查询 支持完全索引，包含内部对象 支持复制和故障恢复 使用高效的二进制数据存储，包括大型对象（如视频等） 自动处理碎片，以支持云计算层次的扩展性 支持 Python，PHP，Ruby，Java，C，C#，Javascript，Perl 及 C++语言的驱动程序，社区中也提供了对 Erlang 及.NET 等平台的驱动程序 文件存储格式为 BSON（一种 JSON 的...</div></div></div></a></div></div></div><div class="aside-content" id="aside-content"><div class="card-widget card-info text-center"><div class="avatar-img"><img src="/img/avatar.webp" onerror="this.onerror=null;this.src='/img/friend_404.gif'" alt="avatar"/></div><div class="author-info-name">蓝桉</div><div class="author-info-description"><div style="line-height:1.38;margin:0.6rem 0;text-align:justify;color:rgba(255, 255, 255, 0.8);">这有关于<b style="color:#fff">生活、学习、技术</b>相关的问题和看法，还有<b style="color:#fff">文章教程</b>和<b style="color:#fff">分享</b>。</div><div style="line-height:1.38;margin:0.6rem 0;text-align:justify;color:rgba(255, 255, 255, 0.8);">相信你可以在这里找到对你有用的<b style="color:#fff">知识</b>和<b style="color:#fff">教程</b>。</div></div><div class="site-data"><a href="/archives/"><div class="headline">文章</div><div class="length-num">264</div></a><a href="/tags/"><div class="headline">标签</div><div class="length-num">38</div></a><a href="/categories/"><div class="headline">分类</div><div class="length-num">37</div></a></div><a id="card-info-btn" target="_blank" rel="noopener" href="https://github.com/ktzxy"><i class="fab fa-github"></i><span>Follow Me</span></a><div class="card-info-social-icons"><a class="social-icon faa-parent animated-hover" href="https://github.com/ktzxy" target="_blank" title="Github"><svg class="social_icon faa-tada" aria-hidden="true"><use xlink:href="#icon-github"></use></svg></a><a class="social-icon faa-parent animated-hover" href="https://mail.qq.com/cgi-bin/qm_share?t=qm_mailme&amp;email=2251511764@qq.com" target="_blank" title="Email"><svg class="social_icon faa-tada" aria-hidden="true"><use xlink:href="#icon-youxiang"></use></svg></a><a class="social-icon faa-parent animated-hover" href="/atom.xml" target="_blank" title="RSS"><svg class="social_icon faa-tada" aria-hidden="true"><use xlink:href="#icon-RSS"></use></svg></a><a class="social-icon faa-parent animated-hover" href="https://space.bilibili.com/496148176" target="_blank" title="BiliBili"><svg class="social_icon faa-tada" aria-hidden="true"><use xlink:href="#icon-QX-BILIBILI"></use></svg></a><a class="social-icon faa-parent animated-hover" href="tencent://Message/?Uin=2251511764&amp;amp;websiteName=local.edu.com:8888=&amp;amp;Menu=yes" target="_blank" title="QQ"><svg class="social_icon faa-tada" aria-hidden="true"><use xlink:href="#icon-QQ"></use></svg></a></div></div><div class="card-widget card-announcement"><div class="item-headline"><i class="fas fa-bullhorn fa-shake"></i><span>公告</span></div><div class="announcement_content">This is my Blog</div></div><div class="sticky_layout"><div class="card-widget" id="card-toc"><div class="item-headline"><i class="fas fa-stream"></i><span>目录</span><span class="toc-percentage"></span></div><div class="toc-content"><ol class="toc"><li class="toc-item toc-level-1"><a class="toc-link" href="#%E7%AC%AC9%E8%8A%82-Redis%E4%B8%BA%E4%BB%80%E4%B9%88%E9%82%A3%E4%B9%88%E5%BF%AB%EF%BC%9F%E9%AB%98%E6%80%A7%E8%83%BDepoll%E5%92%8CIO%E5%A4%9A%E8%B7%AF%E5%A4%8D%E7%94%A8%E8%A7%A3%E6%9E%90"><span class="toc-number">1.</span> <span class="toc-text">第9节-Redis为什么那么快？高性能epoll和IO多路复用解析</span></a><ol class="toc-child"><li class="toc-item toc-level-2"><a class="toc-link" href="#1%E3%80%81Redis%E5%8D%95%E7%BA%BF%E7%A8%8B%E5%A6%82%E4%BD%95%E5%A4%84%E7%90%86%E9%82%A3%E4%B9%88%E5%A4%9A%E5%B9%B6%E5%8F%91%E5%AE%A2%E6%88%B7%E7%AB%AF%E8%BF%9E%E6%8E%A5%EF%BC%8C%E4%B8%BA%E4%BB%80%E4%B9%88%E5%8D%95%E7%BA%BF%E7%A8%8B%EF%BC%8C%E4%B8%BA%E4%BB%80%E4%B9%88%E5%BF%AB%EF%BC%9F"><span class="toc-number">1.1.</span> <span class="toc-text">1、Redis单线程如何处理那么多并发客户端连接，为什么单线程，为什么快？</span></a></li><li class="toc-item toc-level-2"><a class="toc-link" href="#2%E3%80%81I-O%E5%A4%9A%E8%B7%AF%E5%A4%8D%E7%94%A8%E6%A8%A1%E5%9E%8B"><span class="toc-number">1.2.</span> <span class="toc-text">2、I&#x2F;O多路复用模型</span></a></li><li class="toc-item toc-level-2"><a class="toc-link" href="#3%E3%80%81Unix%E7%BD%91%E7%BB%9C%E7%BC%96%E7%A8%8B%E7%A7%8D%E7%9A%84%E4%BA%94%E7%A7%8DIO%E6%A8%A1%E5%9E%8B"><span class="toc-number">1.3.</span> <span class="toc-text">3、Unix网络编程种的五种IO模型</span></a><ol class="toc-child"><li class="toc-item toc-level-4"><a class="toc-link" href="#1%E3%80%81BIO"><span class="toc-number">1.3.0.1.</span> <span class="toc-text">1、BIO</span></a></li><li class="toc-item toc-level-4"><a class="toc-link" href="#2%E3%80%81NIO"><span class="toc-number">1.3.0.2.</span> <span class="toc-text">2、NIO</span></a></li><li class="toc-item toc-level-4"><a class="toc-link" href="#3%E3%80%81IO%E5%A4%9A%E8%B7%AF%E5%A4%8D%E7%94%A8"><span class="toc-number">1.3.0.3.</span> <span class="toc-text">3、IO多路复用</span></a></li><li class="toc-item toc-level-4"><a class="toc-link" href="#4%E3%80%815%E7%A7%8DIO%E6%A8%A1%E5%9E%8B%E6%80%BB%E7%BB%93"><span class="toc-number">1.3.0.4.</span> <span class="toc-text">4、5种IO模型总结</span></a></li></ol></li></ol></li></ol></li></ol></div></div><div class="card-widget card-recent-post"><div class="item-headline"><i class="fas fa-history"></i><span>最新文章</span></div><div class="aside-list"><div class="aside-list-item"><a class="thumbnail" href="/posts/a318ca1f.html" title="MySQL数据库150道高频面试题"><img src="/bg/Image00018.webp" onerror="this.onerror=null;this.src='/img/404.jpg'" alt="MySQL数据库150道高频面试题"/></a><div class="content"><a class="title" href="/posts/a318ca1f.html" title="MySQL数据库150道高频面试题">MySQL数据库150道高频面试题</a><time datetime="2025-07-09T17:28:46.000Z" title="发表于 2025-07-09 17:28:46">2025-07-09</time></div></div><div class="aside-list-item"><a class="thumbnail" href="/posts/8f9b37aa.html" title="技术同学必会的MySQL设计规约"><img src="/bg/Image00014.webp" onerror="this.onerror=null;this.src='/img/404.jpg'" alt="技术同学必会的MySQL设计规约"/></a><div class="content"><a class="title" href="/posts/8f9b37aa.html" title="技术同学必会的MySQL设计规约">技术同学必会的MySQL设计规约</a><time datetime="2025-07-09T17:28:46.000Z" title="发表于 2025-07-09 17:28:46">2025-07-09</time></div></div><div class="aside-list-item"><a class="thumbnail" href="/posts/dfdfdf4.html" title="数据库概述"><img src="/bg/Image00002.webp" onerror="this.onerror=null;this.src='/img/404.jpg'" alt="数据库概述"/></a><div class="content"><a class="title" href="/posts/dfdfdf4.html" title="数据库概述">数据库概述</a><time datetime="2025-07-09T17:28:46.000Z" title="发表于 2025-07-09 17:28:46">2025-07-09</time></div></div><div class="aside-list-item"><a class="thumbnail" href="/posts/490575ab.html" title="24工厂模式俗话解释"><img src="/bg/Image00024.webp" onerror="this.onerror=null;this.src='/img/404.jpg'" alt="24工厂模式俗话解释"/></a><div class="content"><a class="title" href="/posts/490575ab.html" title="24工厂模式俗话解释">24工厂模式俗话解释</a><time datetime="2025-07-09T17:28:46.000Z" title="发表于 2025-07-09 17:28:46">2025-07-09</time></div></div><div class="aside-list-item"><a class="thumbnail" href="/posts/364ea8cc.html" title="设计模式"><img src="/bg/Image00014.webp" onerror="this.onerror=null;this.src='/img/404.jpg'" alt="设计模式"/></a><div class="content"><a class="title" href="/posts/364ea8cc.html" title="设计模式">设计模式</a><time datetime="2025-07-09T17:28:46.000Z" title="发表于 2025-07-09 17:28:46">2025-07-09</time></div></div></div></div></div></div></main><footer id="footer"><div class="footer-other"><div class="footer-copyright"><span class="copyright">&copy;2020 - 2025 By 蓝桉</span><span class="framework-info"><span>框架 </span><a target="_blank" rel="noopener" href="https://hexo.io">Hexo 7.3.0</a><span class="footer-separator">|</span><span>主题 </span><a target="_blank" rel="noopener" href="https://github.com/jerryc127/hexo-theme-butterfly">Butterfly 5.4.2</a></span></div></div></footer></div><div id="rightside"><div id="rightside-config-hide"><button id="readmode" type="button" title="阅读模式"><i class="fas fa-book-open"></i></button><button id="darkmode" type="button" title="日间和夜间模式切换"><i class="fas fa-adjust"></i></button><button id="hide-aside-btn" type="button" title="单栏和双栏切换"><i class="fas fa-arrows-alt-h"></i></button></div><div id="rightside-config-show"><button id="rightside-config" type="button" title="设置"><i class="fas fa-cog fa-spin"></i></button><button class="close" id="mobile-toc-button" type="button" title="目录"><i class="fas fa-list-ul"></i></button><button id="go-up" type="button" title="回到顶部"><span class="scroll-percent"></span><i class="fas fa-arrow-up"></i></button></div></div><div><script src="/js/utils.js"></script><script src="/js/main.js"></script><div class="js-pjax"></div><div class="aplayer no-destroy" data-id="8152976493" data-server="netease" data-type="playlist"   data-order="list" data-fixed="true" data-preload="auto" data-autoplay="false" data-mutex="true" ></div><script async src="//at.alicdn.com/t/c/font_4379924_273fk05h86zi.js"></script><link rel="stylesheet" href="https://cdn.jsdelivr.net/gh/l-lin/font-awesome-animation/dist/font-awesome-animation.min.css"  media="defer" onload="this.media='all'"><script async src="//npm.elemecdn.com/pace-js@1.2.4/pace.min.js"></script><script defer src="https://npm.elemecdn.com/jquery@latest/dist/jquery.min.js"></script><script defer data-pjax src="/js/cat/cat.js"></script><script async data-pjax src="/js/meting/music_lanan.min.js"></script><script defer type="text/javascript" src="https://cdn1.tianli0.top/npm/sweetalert2@8.19.0/dist/sweetalert2.all.js"></script><script defer src="/js/day/lunar.js"></script><script defer src="/js/day/day.js"></script><script async data-pjax src="//busuanzi.ibruce.info/busuanzi/2.3/busuanzi.pure.mini.js"></script></div><!-- hexo injector body_end start --><script data-pjax>
+  function butterfly_clock_anzhiyu_injector_config(){
+    var parent_div_git = document.getElementsByClassName('sticky_layout')[0];
+    var item_html = '<div class="card-widget card-clock"><div class="card-glass"><div class="card-background"><div class="card-content"><div id="hexo_electric_clock"><img class="entered loading" id="card-clock-loading" src="https://cdn.cbd.int/hexo-butterfly-clock-anzhiyu/lib/loading.gif" style="height: 120px; width: 100%;" data-ll-status="loading"/></div></div></div></div></div>';
+    console.log('已挂载butterfly_clock_anzhiyu')
+    if(parent_div_git) {
+      parent_div_git.insertAdjacentHTML("afterbegin",item_html)
+    }
+  }
+  var elist = 'null'.split(',');
+  var cpage = location.pathname;
+  var epage = '/';
+  var qweather_key = '10a7db1c41b6489db9c830c668a18304';
+  var gaud_map_key = '82a64bc994fb6494830f157f319f9f69';
+  var baidu_ak_key = 'undefined';
+  var flag = 0;
+  var clock_rectangle = '113.34532,23.15624';
+  var clock_default_rectangle_enable = 'false';
+
+  for (var i=0;i<elist.length;i++){
+    if (cpage.includes(elist[i])){
+      flag++;
+    }
+  }
+
+  if ((epage ==='all')&&(flag == 0)){
+    butterfly_clock_anzhiyu_injector_config();
+  }
+  else if (epage === cpage){
+    butterfly_clock_anzhiyu_injector_config();
+  }
+  </script><script src="https://widget.qweather.net/simple/static/js/he-simple-common.js?v=2.0"></script><script data-pjax src="https://cdn.cbd.int/hexo-butterfly-clock-anzhiyu/lib/clock.min.js"></script><script data-pjax>
+  function butterfly_footer_beautify_injector_config(){
+    var parent_div_git = document.getElementById('footer-wrap');
+    var item_html = '<div id="workboard"></div><p id="ghbdages"><a class="github-badge" target="_blank" href="https://hexo.io/" style="margin-inline:5px" data-title="博客框架为Hexo_v5.4.0" title=""><img src="https://img.shields.io/badge/Frame-Hexo-blue?style=flat&amp;logo=hexo" alt=""/></a><a class="github-badge" target="_blank" href="https://butterfly.js.org/" style="margin-inline:5px" data-title="主题版本Butterfly_v4.2.2" title=""><img src="https://img.shields.io/badge/Theme-Butterfly-6513df?style=flat&amp;logo=bitdefender" alt=""/></a><a class="github-badge" target="_blank" href="https://www.jsdelivr.com/" style="margin-inline:5px" data-title="本站使用JsDelivr为静态资源提供CDN加速" title=""><img src="https://img.shields.io/badge/CDN-jsDelivr-orange?style=flat&amp;logo=jsDelivr" alt=""/></a><a class="github-badge" target="_blank" href="https://github.com/" style="margin-inline:5px" data-title="本站项目由Github托管" title=""><img src="https://img.shields.io/badge/Source-Github-d021d6?style=flat&amp;logo=GitHub" alt=""/></a><a class="github-badge" target="_blank" href="http://creativecommons.org/licenses/by-nc-sa/4.0/" style="margin-inline:5px" data-title="本站采用知识共享署名-非商业性使用-相同方式共享4.0国际许可协议进行许可" title=""><img src="https://img.shields.io/badge/Copyright-BY--NC--SA%204.0-d42328?style=flat&amp;logo=Claris" alt=""/></a></p>';
+    console.log('已挂载butterfly_footer_beautify')
+    parent_div_git.insertAdjacentHTML("beforeend",item_html)
+    }
+  var elist = 'null'.split(',');
+  var cpage = location.pathname;
+  var epage = 'all';
+  var flag = 0;
+
+  for (var i=0;i<elist.length;i++){
+    if (cpage.includes(elist[i])){
+      flag++;
+    }
+  }
+
+  if ((epage ==='all')&&(flag == 0)){
+    butterfly_footer_beautify_injector_config();
+  }
+  else if (epage === cpage){
+    butterfly_footer_beautify_injector_config();
+  }
+  </script><script async src="/js/runtime/runtime.min.js"></script><script async src="/js/font/ali_font_all.js"></script><div class="js-pjax"><script async="async">var arr = document.getElementsByClassName('recent-post-item');
+for(var i = 0;i<arr.length;i++){
+    arr[i].classList.add('wow');
+    arr[i].classList.add('animate__zoomIn');
+    arr[i].setAttribute('data-wow-duration', '1.5s');
+    arr[i].setAttribute('data-wow-delay', '200ms');
+    arr[i].setAttribute('data-wow-offset', '30');
+    arr[i].setAttribute('data-wow-iteration', '1');
+  }</script><script async="async">var arr = document.getElementsByClassName('card-widget');
+for(var i = 0;i<arr.length;i++){
+    arr[i].classList.add('wow');
+    arr[i].classList.add('animate__zoomIn');
+    arr[i].setAttribute('data-wow-duration', '');
+    arr[i].setAttribute('data-wow-delay', '200ms');
+    arr[i].setAttribute('data-wow-offset', '');
+    arr[i].setAttribute('data-wow-iteration', '');
+  }</script><script async="async">var arr = document.getElementsByClassName('flink-list-card');
+for(var i = 0;i<arr.length;i++){
+    arr[i].classList.add('wow');
+    arr[i].classList.add('animate__flipInY');
+    arr[i].setAttribute('data-wow-duration', '3s');
+    arr[i].setAttribute('data-wow-delay', '');
+    arr[i].setAttribute('data-wow-offset', '');
+    arr[i].setAttribute('data-wow-iteration', '');
+  }</script><script async="async">var arr = document.getElementsByClassName('flink-list-card');
+for(var i = 0;i<arr.length;i++){
+    arr[i].classList.add('wow');
+    arr[i].classList.add('animate__animated');
+    arr[i].setAttribute('data-wow-duration', '3s');
+    arr[i].setAttribute('data-wow-delay', '');
+    arr[i].setAttribute('data-wow-offset', '');
+    arr[i].setAttribute('data-wow-iteration', '');
+  }</script><script async="async">var arr = document.getElementsByClassName('article-sort-item');
+for(var i = 0;i<arr.length;i++){
+    arr[i].classList.add('wow');
+    arr[i].classList.add('animate__slideInRight');
+    arr[i].setAttribute('data-wow-duration', '1.5s');
+    arr[i].setAttribute('data-wow-delay', '');
+    arr[i].setAttribute('data-wow-offset', '');
+    arr[i].setAttribute('data-wow-iteration', '');
+  }</script><script async="async">var arr = document.getElementsByClassName('site-card');
+for(var i = 0;i<arr.length;i++){
+    arr[i].classList.add('wow');
+    arr[i].classList.add('animate__flipInY');
+    arr[i].setAttribute('data-wow-duration', '3s');
+    arr[i].setAttribute('data-wow-delay', '');
+    arr[i].setAttribute('data-wow-offset', '');
+    arr[i].setAttribute('data-wow-iteration', '');
+  }</script><script async="async">var arr = document.getElementsByClassName('site-card');
+for(var i = 0;i<arr.length;i++){
+    arr[i].classList.add('wow');
+    arr[i].classList.add('animate__animated');
+    arr[i].setAttribute('data-wow-duration', '3s');
+    arr[i].setAttribute('data-wow-delay', '');
+    arr[i].setAttribute('data-wow-offset', '');
+    arr[i].setAttribute('data-wow-iteration', '');
+  }</script></div><script defer src="https://cdn.cbd.int/hexo-butterfly-wowjs/lib/wow.min.js"></script><script defer src="https://cdn.cbd.int/hexo-butterfly-wowjs/lib/wow_init.js"></script><!-- hexo injector body_end end --><script src="/live2dw/lib/L2Dwidget.min.js?094cbace49a39548bed64abff5988b05"></script><script>L2Dwidget.init({"pluginRootPath":"live2dw/","pluginJsPath":"lib/","pluginModelPath":"assets/","tagMode":false,"debug":false,"model":{"jsonPath":"/live2dw/assets/shizuku.model.json"},"display":{"position":"right","width":150,"height":300},"mobile":{"show":false},"log":false});</script></body></html>

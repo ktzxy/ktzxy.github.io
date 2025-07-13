@@ -1,0 +1,522 @@
+<!DOCTYPE html><html lang="zh-CN" data-theme="light"><head><meta charset="UTF-8"><meta http-equiv="X-UA-Compatible" content="IE=edge"><meta name="viewport" content="width=device-width, initial-scale=1.0,viewport-fit=cover"><title>Day-10-Junit&amp;注解&amp;枚举 | 蓝桉`Blog</title><meta name="author" content="蓝桉,kt_zxh@163.com"><meta name="copyright" content="蓝桉"><meta name="format-detection" content="telephone=no"><meta name="theme-color" content="#ffffff"><meta name="description" content="# Day-09-Junit&amp;注解&amp;枚举 【1】软件测试的目的:软件测试的目的是在规定的条件下对程序进行操作,以发现程序错误,衡量软件质量,并对其是否能满足设计要求进行评估的过程 【2】测试分类:    (1)黑盒测试:软件的黑盒测试意味着测试要在软件的接口处进行。这种方法是把测试对象看做一个黑盒子,测试人员完全不考虑程序内部的逻辑结构和内部特性只依据程序的需求规格说明书,检查程">
+<meta property="og:type" content="article">
+<meta property="og:title" content="Day-10-Junit&amp;注解&amp;枚举">
+<meta property="og:url" content="https://ktzxy.github.io/posts/e364fb8.html">
+<meta property="og:site_name" content="蓝桉&#96;Blog">
+<meta property="og:description" content="# Day-09-Junit&amp;注解&amp;枚举 【1】软件测试的目的:软件测试的目的是在规定的条件下对程序进行操作,以发现程序错误,衡量软件质量,并对其是否能满足设计要求进行评估的过程 【2】测试分类:    (1)黑盒测试:软件的黑盒测试意味着测试要在软件的接口处进行。这种方法是把测试对象看做一个黑盒子,测试人员完全不考虑程序内部的逻辑结构和内部特性只依据程序的需求规格说明书,检查程">
+<meta property="og:locale" content="zh_CN">
+<meta property="og:image" content="https://ktzxy.github.io/bg/Image00009.webp">
+<meta property="article:published_time" content="2025-07-09T17:28:45.000Z">
+<meta property="article:modified_time" content="2025-07-13T15:45:18.459Z">
+<meta property="article:author" content="蓝桉">
+<meta property="article:tag" content="Java">
+<meta name="twitter:card" content="summary">
+<meta name="twitter:image" content="https://ktzxy.github.io/bg/Image00009.webp"><script type="application/ld+json">{
+  "@context": "https://schema.org",
+  "@type": "BlogPosting",
+  "headline": "Day-10-Junit&注解&枚举",
+  "url": "https://ktzxy.github.io/posts/e364fb8.html",
+  "image": "https://ktzxy.github.io/bg/Image00009.webp",
+  "datePublished": "2025-07-09T17:28:45.000Z",
+  "dateModified": "2025-07-13T15:45:18.459Z",
+  "author": [
+    {
+      "@type": "Person",
+      "name": "蓝桉",
+      "url": "https://ktzxy.github.io"
+    }
+  ]
+}</script><link rel="shortcut icon" href="/img/favicon.png"><link rel="canonical" href="https://ktzxy.github.io/posts/e364fb8.html"><link rel="preconnect" href="//cdn.jsdelivr.net"/><link rel="preconnect" href="//busuanzi.ibruce.info"/><link rel="stylesheet" href="/css/index.css"><link rel="stylesheet" href="https://cdn.jsdelivr.net/npm/@fortawesome/fontawesome-free/css/all.min.css"><script>
+    (() => {
+      
+    const saveToLocal = {
+      set: (key, value, ttl) => {
+        if (!ttl) return
+        const expiry = Date.now() + ttl * 86400000
+        localStorage.setItem(key, JSON.stringify({ value, expiry }))
+      },
+      get: key => {
+        const itemStr = localStorage.getItem(key)
+        if (!itemStr) return undefined
+        const { value, expiry } = JSON.parse(itemStr)
+        if (Date.now() > expiry) {
+          localStorage.removeItem(key)
+          return undefined
+        }
+        return value
+      }
+    }
+
+    window.btf = {
+      saveToLocal,
+      getScript: (url, attr = {}) => new Promise((resolve, reject) => {
+        const script = document.createElement('script')
+        script.src = url
+        script.async = true
+        Object.entries(attr).forEach(([key, val]) => script.setAttribute(key, val))
+        script.onload = script.onreadystatechange = () => {
+          if (!script.readyState || /loaded|complete/.test(script.readyState)) resolve()
+        }
+        script.onerror = reject
+        document.head.appendChild(script)
+      }),
+      getCSS: (url, id) => new Promise((resolve, reject) => {
+        const link = document.createElement('link')
+        link.rel = 'stylesheet'
+        link.href = url
+        if (id) link.id = id
+        link.onload = link.onreadystatechange = () => {
+          if (!link.readyState || /loaded|complete/.test(link.readyState)) resolve()
+        }
+        link.onerror = reject
+        document.head.appendChild(link)
+      }),
+      addGlobalFn: (key, fn, name = false, parent = window) => {
+        if (!false && key.startsWith('pjax')) return
+        const globalFn = parent.globalFn || {}
+        globalFn[key] = globalFn[key] || {}
+        globalFn[key][name || Object.keys(globalFn[key]).length] = fn
+        parent.globalFn = globalFn
+      }
+    }
+  
+      
+      const activateDarkMode = () => {
+        document.documentElement.setAttribute('data-theme', 'dark')
+        if (document.querySelector('meta[name="theme-color"]') !== null) {
+          document.querySelector('meta[name="theme-color"]').setAttribute('content', '#0d0d0d')
+        }
+      }
+      const activateLightMode = () => {
+        document.documentElement.setAttribute('data-theme', 'light')
+        if (document.querySelector('meta[name="theme-color"]') !== null) {
+          document.querySelector('meta[name="theme-color"]').setAttribute('content', '#ffffff')
+        }
+      }
+
+      btf.activateDarkMode = activateDarkMode
+      btf.activateLightMode = activateLightMode
+
+      const theme = saveToLocal.get('theme')
+    
+          theme === 'dark' ? activateDarkMode() : theme === 'light' ? activateLightMode() : null
+        
+      
+      const asideStatus = saveToLocal.get('aside-status')
+      if (asideStatus !== undefined) {
+        document.documentElement.classList.toggle('hide-aside', asideStatus === 'hide')
+      }
+    
+      
+    const detectApple = () => {
+      if (/iPad|iPhone|iPod|Macintosh/.test(navigator.userAgent)) {
+        document.documentElement.classList.add('apple')
+      }
+    }
+    detectApple()
+  
+    })()
+  </script><script>const GLOBAL_CONFIG = {
+  root: '/',
+  algolia: undefined,
+  localSearch: undefined,
+  translate: undefined,
+  highlight: {"plugin":"highlight.js","highlightCopy":true,"highlightLang":true,"highlightHeightLimit":false,"highlightFullpage":false,"highlightMacStyle":false},
+  copy: {
+    success: '复制成功',
+    error: '复制失败',
+    noSupport: '浏览器不支持'
+  },
+  relativeDate: {
+    homepage: false,
+    post: false
+  },
+  runtime: '',
+  dateSuffix: {
+    just: '刚刚',
+    min: '分钟前',
+    hour: '小时前',
+    day: '天前',
+    month: '个月前'
+  },
+  copyright: undefined,
+  lightbox: 'null',
+  Snackbar: undefined,
+  infinitegrid: {
+    js: 'https://cdn.jsdelivr.net/npm/@egjs/infinitegrid/dist/infinitegrid.min.js',
+    buttonText: '加载更多'
+  },
+  isPhotoFigcaption: false,
+  islazyloadPlugin: false,
+  isAnchor: false,
+  percent: {
+    toc: true,
+    rightside: false,
+  },
+  autoDarkmode: false
+}</script><script id="config-diff">var GLOBAL_CONFIG_SITE = {
+  title: 'Day-10-Junit&注解&枚举',
+  isHighlightShrink: false,
+  isToc: true,
+  pageType: 'post'
+}</script><link rel="stylesheet" href="/css/custom.css" media="defer" onload="this.media='all'"><link rel="stylesheet" href="//at.alicdn.com/t/c/font_4379924_273fk05h86zi.css" media="defer" onload="this.media='all'"><link rel="stylesheet" href="/css/progress_bar/progress_bar.css" media="defer" onload="this.media='all'"><link rel="stylesheet" href="/css/windmill/windmill.css"><link rel="stylesheet" href="/css/cat.css"><link rel="stylesheet" href="/css/meting/music_lanan.css"><div id="myscoll"></div><!-- hexo injector head_end start --><link rel="stylesheet" href="https://cdn.jsdelivr.net/gh/Zfour/Butterfly-double-row-display@1.00/cardlistpost.min.css"/>
+<style>#recent-posts > .recent-post-item >.recent-post-info > .article-meta-wrap > .tags:before {content:"\A";
+  white-space: pre;}#recent-posts > .recent-post-item >.recent-post-info > .article-meta-wrap > .tags > .article-meta__separator{display:none}</style>
+<link rel="stylesheet" href="https://cdn.cbd.int/hexo-butterfly-clock-anzhiyu/lib/clock.min.css" /><link rel="stylesheet" href="/css/runtime/runtime.min.css" media="print" onload="this.media='all'"><link rel="stylesheet" href="https://cdn.cbd.int/hexo-butterfly-tag-plugins-plus@latest/lib/assets/font-awesome-animation.min.css" media="defer" onload="this.media='all'"><link rel="stylesheet" href="https://npm.elemecdn.com/hexo-butterfly-tag-plugins-plus@latest/lib/tag_plugins.css" media="defer" onload="this.media='all'"><script src="https://npm.elemecdn.com/hexo-butterfly-tag-plugins-plus@latest/lib/assets/carousel-touch.js"></script><link rel="stylesheet" href="https://cdn.cbd.int/hexo-butterfly-wowjs/lib/animate.min.css" media="print" onload="this.media='screen'"><!-- hexo injector head_end end --><meta name="generator" content="Hexo 7.3.0"><link rel="alternate" href="/atom.xml" title="蓝桉`Blog" type="application/atom+xml">
+</head><body><div id="loading-box"><div class="loading-left-bg"></div><div class="loading-right-bg"></div><div class="spinner-box"><div class="configure-border-1"><div class="configure-core"></div></div><div class="configure-border-2"><div class="configure-core"></div></div><div class="loading-word">加载中...</div></div></div><script>(()=>{
+  const $loadingBox = document.getElementById('loading-box')
+  const $body = document.body
+  const preloader = {
+    endLoading: () => {
+      $body.style.overflow = ''
+      $loadingBox.classList.add('loaded')
+    },
+    initLoading: () => {
+      $body.style.overflow = 'hidden'
+      $loadingBox.classList.remove('loaded')
+    }
+  }
+
+  preloader.initLoading()
+  window.addEventListener('load', preloader.endLoading)
+
+  if (false) {
+    btf.addGlobalFn('pjaxSend', preloader.initLoading, 'preloader_init')
+    btf.addGlobalFn('pjaxComplete', preloader.endLoading, 'preloader_end')
+  }
+})()</script><div id="web_bg" style="background-image: url(/img/bg.webp);"></div><div id="an_music_bg"></div><div id="sidebar"><div id="menu-mask"></div><div id="sidebar-menus"><div class="avatar-img text-center"><img src="/img/avatar.webp" onerror="this.onerror=null;this.src='/img/friend_404.gif'" alt="avatar"/></div><div class="site-data text-center"><a href="/archives/"><div class="headline">文章</div><div class="length-num">264</div></a><a href="/tags/"><div class="headline">标签</div><div class="length-num">38</div></a><a href="/categories/"><div class="headline">分类</div><div class="length-num">37</div></a></div><div class="menus_items"><div class="menus_item"><a class="site-page faa-parent animated-hover" href="/"><i class="fa-fw icon-zhuye-"></i><svg class="icon faa-tada" aria-hidden="true"><use xlink:href="#icon-zhuye-"></use></svg><span> 首页</span></a></div><div class="menus_item"><a class="site-page faa-parent animated-hover" href="/archives/"><i class="fa-fw icon-shijianzhou"></i><svg class="icon faa-tada" aria-hidden="true"><use xlink:href="#icon-shijianzhou"></use></svg><span> 时间轴</span></a></div><div class="menus_item"><a class="site-page faa-parent animated-hover" href="/essay/"><i class="fa-fw icon-xiaoxi"></i><svg class="icon faa-tada" aria-hidden="true"><use xlink:href="#icon-xiaoxi"></use></svg><span> 闲言碎语</span></a></div><div class="menus_item"><a class="site-page faa-parent animated-hover" href="/music/"><i class="fa-fw icon-music"></i><svg class="icon faa-tada" aria-hidden="true"><use xlink:href="#icon-music"></use></svg><span> 音乐馆</span></a></div><div class="menus_item"><a class="site-page faa-parent animated-hover" href="/categories/"><i class="fa-fw icon-fenlei"></i><svg class="icon faa-tada" aria-hidden="true"><use xlink:href="#icon-fenlei"></use></svg><span> 分类</span></a></div><div class="menus_item"><a class="site-page faa-parent animated-hover" href="/fcircle/"><i class="fa-fw icon-pengyouquan"></i><svg class="icon faa-tada" aria-hidden="true"><use xlink:href="#icon-pengyouquan"></use></svg><span> 朋友圈</span></a></div><div class="menus_item"><a class="site-page faa-parent animated-hover" href="/comments/"><i class="fa-fw icon-xinfeng"></i><svg class="icon faa-tada" aria-hidden="true"><use xlink:href="#icon-xinfeng"></use></svg><span> 留言板</span></a></div><div class="menus_item"><a class="site-page faa-parent animated-hover" href="/link/"><i class="fa-fw icon-lianjie"></i><svg class="icon faa-tada" aria-hidden="true"><use xlink:href="#icon-lianjie"></use></svg><span> 友人帐</span></a></div><div class="menus_item"><a class="site-page faa-parent animated-hover" href="javascript:randomPost();"><i class="fa-fw icon-wodezhuifan"></i><svg class="icon faa-tada" aria-hidden="true"><use xlink:href="#icon-wodezhuifan"></use></svg><span> 随机访问</span></a></div><div class="menus_item"><a class="site-page faa-parent animated-hover" href="/about/"><i class="fa-fw icon-guanyuwomen2"></i><svg class="icon faa-tada" aria-hidden="true"><use xlink:href="#icon-guanyuwomen2"></use></svg><span> 关于</span></a></div></div></div></div><div class="post" id="body-wrap"><header class="post-bg" id="page-header" style="background-image: url(/bg/Image00009.webp);"><nav id="nav"><span id="blog-info"><a class="nav-site-title" href="/"><span class="site-name">蓝桉`Blog</span></a><a class="nav-page-title" href="/"><span class="site-name">Day-10-Junit&amp;注解&amp;枚举</span><span class="site-name"><i class="fa-solid fa-circle-arrow-left"></i><span>  返回首页</span></span></a></span><div id="menus"><div class="menus_items"><div class="menus_item"><a class="site-page faa-parent animated-hover" href="/"><i class="fa-fw icon-zhuye-"></i><svg class="icon faa-tada" aria-hidden="true"><use xlink:href="#icon-zhuye-"></use></svg><span> 首页</span></a></div><div class="menus_item"><a class="site-page faa-parent animated-hover" href="/archives/"><i class="fa-fw icon-shijianzhou"></i><svg class="icon faa-tada" aria-hidden="true"><use xlink:href="#icon-shijianzhou"></use></svg><span> 时间轴</span></a></div><div class="menus_item"><a class="site-page faa-parent animated-hover" href="/essay/"><i class="fa-fw icon-xiaoxi"></i><svg class="icon faa-tada" aria-hidden="true"><use xlink:href="#icon-xiaoxi"></use></svg><span> 闲言碎语</span></a></div><div class="menus_item"><a class="site-page faa-parent animated-hover" href="/music/"><i class="fa-fw icon-music"></i><svg class="icon faa-tada" aria-hidden="true"><use xlink:href="#icon-music"></use></svg><span> 音乐馆</span></a></div><div class="menus_item"><a class="site-page faa-parent animated-hover" href="/categories/"><i class="fa-fw icon-fenlei"></i><svg class="icon faa-tada" aria-hidden="true"><use xlink:href="#icon-fenlei"></use></svg><span> 分类</span></a></div><div class="menus_item"><a class="site-page faa-parent animated-hover" href="/fcircle/"><i class="fa-fw icon-pengyouquan"></i><svg class="icon faa-tada" aria-hidden="true"><use xlink:href="#icon-pengyouquan"></use></svg><span> 朋友圈</span></a></div><div class="menus_item"><a class="site-page faa-parent animated-hover" href="/comments/"><i class="fa-fw icon-xinfeng"></i><svg class="icon faa-tada" aria-hidden="true"><use xlink:href="#icon-xinfeng"></use></svg><span> 留言板</span></a></div><div class="menus_item"><a class="site-page faa-parent animated-hover" href="/link/"><i class="fa-fw icon-lianjie"></i><svg class="icon faa-tada" aria-hidden="true"><use xlink:href="#icon-lianjie"></use></svg><span> 友人帐</span></a></div><div class="menus_item"><a class="site-page faa-parent animated-hover" href="javascript:randomPost();"><i class="fa-fw icon-wodezhuifan"></i><svg class="icon faa-tada" aria-hidden="true"><use xlink:href="#icon-wodezhuifan"></use></svg><span> 随机访问</span></a></div><div class="menus_item"><a class="site-page faa-parent animated-hover" href="/about/"><i class="fa-fw icon-guanyuwomen2"></i><svg class="icon faa-tada" aria-hidden="true"><use xlink:href="#icon-guanyuwomen2"></use></svg><span> 关于</span></a></div></div><div id="toggle-menu"><span class="site-page"><i class="fas fa-bars fa-fw"></i></span></div></div></nav><div id="post-info"><h1 class="post-title">Day-10-Junit&amp;注解&amp;枚举</h1><div id="post-meta"><div class="meta-firstline"><span class="post-meta-date"><i class="far fa-calendar-alt fa-fw post-meta-icon"></i><span class="post-meta-label">发表于</span><time class="post-meta-date-created" datetime="2025-07-09T17:28:45.000Z" title="发表于 2025-07-09 17:28:45">2025-07-09</time><span class="post-meta-separator">|</span><i class="fas fa-history fa-fw post-meta-icon"></i><span class="post-meta-label">更新于</span><time class="post-meta-date-updated" datetime="2025-07-13T15:45:18.459Z" title="更新于 2025-07-13 15:45:18">2025-07-13</time></span><span class="post-meta-categories"><span class="post-meta-separator">|</span><i class="fas fa-inbox fa-fw post-meta-icon"></i><a class="post-meta-categories" href="/categories/Java/">Java</a></span></div><div class="meta-secondline"><span class="post-meta-separator">|</span><span class="post-meta-pv-cv" id="" data-flag-title=""><i class="far fa-eye fa-fw post-meta-icon"></i><span class="post-meta-label">浏览量:</span><span id="busuanzi_value_page_pv"><i class="fa-solid fa-spinner fa-spin"></i></span></span></div></div></div></header><main class="layout" id="content-inner"><div id="post"><article class="container post-content" id="article-container"><p>﻿# Day-09-Junit&amp;注解&amp;枚举</p>
+<p>【1】软件测试的目的:<br>软件测试的目的是在规定的条件下对程序进行操作,以发现程序错误,衡量软件质量,并对其是否能满足设计要求进行评估的过程</p>
+<p>【2】测试分类:<br>    (1)黑盒测试:<br>软件的黑盒测试意味着测试要在软件的接口处进行。这种方法是把测试对象看做一个黑盒子,测试人员完全不考虑程序内部的逻辑结构和内部特性只依据程序的需求规格说明书,检查程序的功能是否符合它的功能说明。因此黑盒测试又叫功能测试。<br>    (2)白盒测试:<br>软件的白盒测试是对软件的过程性细节做细致的检查。这种方法是把测试对象看做一个打开的盒子,它允许测试人员利用程序内部的逻辑结构及有关信息设计或选择测试用例对程序的所有逻辑路径进行测试、通过在不同点检查程序状态.确定实际状态是否与预期的状态一致。因此白盒测试又称为结构测试。</p>
+<p><img src="https://gitee.com/Bluetom/img2/raw/master/img20230403/202310241631119.png" alt="image-20210220215302010"></p>
+<p>在没有使用Junit的时候，缺点:</p>
+<p>​    (1）测试一定走main方法，是程序的入口，main方法的格式必须不能写错。</p>
+<p>​    (2）要是在同一个main方法中测试的话，那么不需要测试的东西必须注释掉。</p>
+<p>​    (3)测试逻辑如果分开的话，需要定义多个测试类，麻烦。</p>
+<p>​    (4)业务逻辑和测试代码，都混淆了。</p>
+<h3 id="Junit的使用"><a href="#Junit的使用" class="headerlink" title="Junit的使用"></a>Junit的使用</h3><p>【1】一般测试和业务做一个分离，分离为不同的包：</p>
+<p>【2】测试类的名字：XXXTest</p>
+<p>【3】测试方法的定义 —》这个方法可以独立运行，不依托于main方法</p>
+<p>建议：</p>
+<p>​    参数：无参</p>
+<p>​    返回值：void</p>
+<p>【4】测试方法定义完以后，不能直接就独立运行了，必须要在方法前加入一个注解：@Test</p>
+<p>【5】导入Junit依赖的环境：</p>
+<p><img src="https://gitee.com/Bluetom/img2/raw/master/img20230403/202310241631071.png" alt="image-20210221101624630"></p>
+<p>【6】代码：</p>
+<figure class="highlight java"><table><tr><td class="gutter"><pre><span class="line">1</span><br><span class="line">2</span><br><span class="line">3</span><br><span class="line">4</span><br><span class="line">5</span><br><span class="line">6</span><br><span class="line">7</span><br><span class="line">8</span><br><span class="line">9</span><br><span class="line">10</span><br><span class="line">11</span><br><span class="line">12</span><br><span class="line">13</span><br><span class="line">14</span><br><span class="line">15</span><br><span class="line">16</span><br><span class="line">17</span><br><span class="line">18</span><br><span class="line">19</span><br><span class="line">20</span><br><span class="line">21</span><br><span class="line">22</span><br><span class="line">23</span><br><span class="line">24</span><br><span class="line">25</span><br><span class="line">26</span><br><span class="line">27</span><br><span class="line">28</span><br><span class="line">29</span><br></pre></td><td class="code"><pre><span class="line"><span class="keyword">package</span> com.zy.test1;</span><br><span class="line"></span><br><span class="line"></span><br><span class="line"><span class="keyword">import</span> com.zy.calculator.Calculator;</span><br><span class="line"><span class="keyword">import</span> org.junit.Test;</span><br><span class="line"></span><br><span class="line"><span class="comment">/**</span></span><br><span class="line"><span class="comment"> * <span class="doctag">@Auther</span>: 赵羽</span></span><br><span class="line"><span class="comment"> * <span class="doctag">@Description</span>: com.zy.test1</span></span><br><span class="line"><span class="comment"> * <span class="doctag">@version</span>: 1.0</span></span><br><span class="line"><span class="comment"> */</span></span><br><span class="line"><span class="keyword">public</span> <span class="keyword">class</span> <span class="title class_">CalculatorTest</span> &#123;</span><br><span class="line">    <span class="comment">//测试add方法</span></span><br><span class="line">   <span class="meta">@Test</span></span><br><span class="line">    <span class="keyword">public</span> <span class="keyword">void</span> <span class="title function_">testAdd</span><span class="params">()</span>&#123;</span><br><span class="line">       System.out.println(<span class="string">&quot;测试Add方法&quot;</span>);</span><br><span class="line">       <span class="type">Calculator</span> <span class="variable">cal</span> <span class="operator">=</span> <span class="keyword">new</span> <span class="title class_">Calculator</span>();</span><br><span class="line">       <span class="type">int</span> <span class="variable">add</span> <span class="operator">=</span> cal.add(<span class="number">10</span>, <span class="number">20</span>);</span><br><span class="line">       System.out.println(add);</span><br><span class="line">   &#125;</span><br><span class="line">    <span class="comment">//测试sub方法</span></span><br><span class="line">   <span class="meta">@Test</span></span><br><span class="line">    <span class="keyword">public</span> <span class="keyword">void</span> <span class="title function_">testSub</span><span class="params">()</span>&#123;</span><br><span class="line">        System.out.println(<span class="string">&quot;测试sub方法&quot;</span>);</span><br><span class="line">       <span class="type">Calculator</span> <span class="variable">cal</span> <span class="operator">=</span> <span class="keyword">new</span> <span class="title class_">Calculator</span>();</span><br><span class="line">       <span class="type">int</span> <span class="variable">sub</span> <span class="operator">=</span> cal.sub(<span class="number">20</span>, <span class="number">30</span>);</span><br><span class="line">       System.out.println(sub);</span><br><span class="line">   &#125;</span><br><span class="line">&#125;</span><br></pre></td></tr></table></figure>
+<p>【7】判定结果：</p>
+<p>绿色：正常结果</p>
+<p>红色：出现异常</p>
+<p>即使出现绿色效果，也有可能会发生代码中逻辑出现问题，则需要加入断言</p>
+<figure class="highlight java"><table><tr><td class="gutter"><pre><span class="line">1</span><br><span class="line">2</span><br></pre></td><td class="code"><pre><span class="line"><span class="comment">//加入断言：预测结果与实际结果进行匹对</span></span><br><span class="line">Assert.assertEquals(<span class="number">30</span>,add); <span class="comment">//第一个参数为预测结果 第二个结果为实际结果</span></span><br></pre></td></tr></table></figure>
+<p><img src="https://gitee.com/Bluetom/img2/raw/master/img20230403/202310241631822.png" alt="image-20210221102817187"></p>
+<p>【8】@Before&amp;@After</p>
+<p>@Before：某一个方法中，加入了@Before注解以后，那么这个方法中的功能会在测试方法执行前先执行。</p>
+<p>​    一般会在@Before修饰的那个方法中加入：加入一些申请资源的代码：申请数据库资源，申请IO资源，申请网络资源。。</p>
+<p>@After：某一个方法中，加入了@After注解以后，那么这个方法中的功能会在测试方法执行后先执行。</p>
+<p>​    一般会在@After修饰的那个方法中加入：加入一些释放资源的代码：释放数据库资源，释放IO资源，释放网络资源。。</p>
+<figure class="highlight java"><table><tr><td class="gutter"><pre><span class="line">1</span><br><span class="line">2</span><br><span class="line">3</span><br><span class="line">4</span><br><span class="line">5</span><br><span class="line">6</span><br><span class="line">7</span><br><span class="line">8</span><br></pre></td><td class="code"><pre><span class="line"><span class="meta">@Before</span></span><br><span class="line"><span class="keyword">public</span> <span class="keyword">void</span> <span class="title function_">init</span><span class="params">()</span>&#123;</span><br><span class="line">    System.out.println(<span class="string">&quot;测试开始了&quot;</span>);</span><br><span class="line">&#125;</span><br><span class="line"><span class="meta">@After</span></span><br><span class="line"><span class="keyword">public</span> <span class="keyword">void</span> <span class="title function_">close</span><span class="params">()</span>&#123;</span><br><span class="line">    System.out.println(<span class="string">&quot;测试结束了&quot;</span>);</span><br><span class="line">&#125;</span><br></pre></td></tr></table></figure>
+<h3 id="注解"><a href="#注解" class="headerlink" title="注解"></a>注解</h3><h5 id="注解初识"><a href="#注解初识" class="headerlink" title="注解初识"></a>注解初识</h5><p>JDK5.0新增—-注解(Annotation),也叫元数据</p>
+<p>注解其实就是代码里的==特殊标记==，这些标记可以在编译,类加载运行时被读取.并执行相应的处理。==通过使用注解程序员可以在不改变原有逻辑的情况下，在源文件中嵌入一些补充信息。==代码分析工具、开发工具和部署工具可以通过这些补充信息进行验证或者进行部署。<br>使用注解时要在其前面增加@符号;并把该注解当成一个修饰符使用。用于修饰它支持的程序元素。</p>
+<p>Annotation可以像修饰符一样被使用，可用于修饰包，类，构造器,方法，成员变量,参数，局部变量的声明，这些信息被保存在Annotation的”name=value”对中。在JavaSE中，注解的使用目的比较简单，例如标记过时的功能，忽略警告等。在JavaEE/Arldroid中注解占据了更重要的角色，例如用来配置应用程序的任何切面，==代替JavaE旧版中所遗留的繁冗代码和XML配置等。==未来的开发模式都是基于注解<br>的，JPA(java的持久化API)是基于注解的，Spring2.5以.E都是基于注解的，Hibernate3.x以后也是基于注解的，现在的Struts2有一部分也是基于注解的了，注解是一种趋势，一定程度上可以说︰==框架=注解+反射+设计模式==。</p>
+<h5 id="文档相关注解"><a href="#文档相关注解" class="headerlink" title="文档相关注解"></a>文档相关注解</h5><p>说明注释允许你在程序中嵌入关于程序的信息。你可以使用javadoc 工具软件来生成信息，并输出到HTML文件中。</p>
+<p>说明注释，使你更加方便的记录你的程序信息。<br>文档注解我们一般使用在文档注释中，配合javadoc工具javadoc工具软件识别以下标签:</p>
+<div class="table-container">
+<table>
+<thead>
+<tr>
+<th style="text-align:left">标签</th>
+<th style="text-align:left">描述</th>
+<th style="text-align:center">示例</th>
+</tr>
+</thead>
+<tbody>
+<tr>
+<td style="text-align:left">@author</td>
+<td style="text-align:left">标识一个类的作者</td>
+<td style="text-align:center">@author description</td>
+</tr>
+<tr>
+<td style="text-align:left">@deprecated</td>
+<td style="text-align:left">指名一个过期的类或成员</td>
+<td style="text-align:center">@deprecated description</td>
+</tr>
+<tr>
+<td style="text-align:left">{@docRoot}</td>
+<td style="text-align:left">指明当前文档根目录的路径</td>
+<td style="text-align:center">Directory Path</td>
+</tr>
+<tr>
+<td style="text-align:left">@exception</td>
+<td style="text-align:left">标志一个类抛出的异常</td>
+<td style="text-align:center">@exception exception-name explanation</td>
+</tr>
+<tr>
+<td style="text-align:left">{@inheritDoc}</td>
+<td style="text-align:left">从直接父类继承的注释</td>
+<td style="text-align:center">Inherits a comment from the immediate surperclass.</td>
+</tr>
+<tr>
+<td style="text-align:left">{@link}</td>
+<td style="text-align:left">插入一个到另一个主题的链接</td>
+<td style="text-align:center">{@link name text}</td>
+</tr>
+<tr>
+<td style="text-align:left">{@linkplain}</td>
+<td style="text-align:left">插入一个到另一个主题的链接，但是该链接显示纯文本字体</td>
+<td style="text-align:center">Inserts an in-line link to another topic.</td>
+</tr>
+<tr>
+<td style="text-align:left">@param</td>
+<td style="text-align:left">说明一个方法的参数</td>
+<td style="text-align:center">@param parameter-name explanation</td>
+</tr>
+<tr>
+<td style="text-align:left">@return</td>
+<td style="text-align:left">说明返回值类型</td>
+<td style="text-align:center">@return explanation</td>
+</tr>
+<tr>
+<td style="text-align:left">@see</td>
+<td style="text-align:left">指定一个到另一个主题的链接</td>
+<td style="text-align:center">@see anchor</td>
+</tr>
+<tr>
+<td style="text-align:left">@serial</td>
+<td style="text-align:left">说明一个序列化属性</td>
+<td style="text-align:center">@serial description</td>
+</tr>
+<tr>
+<td style="text-align:left">@serialData</td>
+<td style="text-align:left">说明通过writeObject( ) 和 writeExternal( )方法写的数据</td>
+<td style="text-align:center">@serialData description</td>
+</tr>
+<tr>
+<td style="text-align:left">@serialField</td>
+<td style="text-align:left">说明一个ObjectStreamField组件</td>
+<td style="text-align:center">@serialField name type description</td>
+</tr>
+<tr>
+<td style="text-align:left">@since</td>
+<td style="text-align:left">标记当引入一个特定的变化时</td>
+<td style="text-align:center">@since release</td>
+</tr>
+<tr>
+<td style="text-align:left">@throws</td>
+<td style="text-align:left">和 @exception标签一样.</td>
+<td style="text-align:center">The @throws tag has the same meaning as the @exception tag.</td>
+</tr>
+<tr>
+<td style="text-align:left">{@value}</td>
+<td style="text-align:left">显示常量的值，该常量必须是static属性。</td>
+<td style="text-align:center">Displays the value of a constant, which must be a static field.</td>
+</tr>
+<tr>
+<td style="text-align:left">@version</td>
+<td style="text-align:left">指定类的版本</td>
+<td style="text-align:center">@version info</td>
+</tr>
+</tbody>
+</table>
+</div>
+<p><strong>需要注意这些标记的使用是有位置限制的：</strong></p>
+<ul>
+<li>可以出现在类或者接口文档注释中的标记有：@see、@deprecated、@author、@version等。</li>
+<li>可以出现在方法或者构造器文档注释中的标记有：@see、@deprecated、@param、@return、@throws、@exception等。</li>
+<li>可以出现在文档注释中的标记有：@see、@deprecated等。</li>
+</ul>
+<p>其中注意:</p>
+<p>@param @return和@exception这三个标记都是只用于方法的。</p>
+<p>@param的格式要求:@param形参名形参类型形参说明</p>
+<p>@return的格式要求:@return返回值类型返回值说明，如果方法的返回值类型是void就不能写</p>
+<p>@exception的格式要求:@exception异常类型异常说明</p>
+<p>@param和@exception可以并列多个</p>
+<p>IDEA中javadoc使用：</p>
+<p><img src="https://gitee.com/Bluetom/img2/raw/master/img20230403/202310241631025.png" alt="image-20210221105600043"></p>
+<p><img src="https://gitee.com/Bluetom/img2/raw/master/img20230403/202310241631753.png" alt="image-20210221110133326"></p>
+<h5 id="JDK内置的三个注解"><a href="#JDK内置的三个注解" class="headerlink" title="JDK内置的三个注解"></a>JDK内置的三个注解</h5><p>@Override:限定重写父类方法，该注解只能用于方法</p>
+<p>@Deprecated;用于表示所修饰的元素(类方法，构造器，属性等)已过时。通常是因为所修饰的结构危险或存在更好的选择</p>
+<p>@SuppressWarnings:抑制编译器警告</p>
+<h5 id="自定义注解"><a href="#自定义注解" class="headerlink" title="自定义注解"></a>自定义注解</h5><p><img src="https://gitee.com/Bluetom/img2/raw/master/img20230403/202310241631459.png" alt="image-20210221111144408"></p>
+<p>注解内部：看上去是无参数方法，实际上理解为一个成员变量，一个属性无参数方法名字—》成员变量的名字<br>无参数方法的返回值—》成员变量的类型</p>
+<p>这个参数叫做 配置参数</p>
+<p>无参数方法的类型:基本数据类型（八种)，String，枚举，注解类型，还可以是以上类型对应的数组。</p>
+<p>PS:注意:如果只有一个成员变量的话，名字尽量叫value。</p>
+<p><strong>使用注解：</strong></p>
+<p>（1）使用注解的话，如果你定义了配置参数，就必须给赋值操作:</p>
+<figure class="highlight java"><table><tr><td class="gutter"><pre><span class="line">1</span><br><span class="line">2</span><br><span class="line">3</span><br></pre></td><td class="code"><pre><span class="line"><span class="meta">@MyAnnotation(value = &#123;&quot;abc&quot;,&quot;def&quot;&#125;)</span></span><br><span class="line"><span class="keyword">public</span> <span class="keyword">class</span> <span class="title class_">Person</span> &#123;</span><br><span class="line">&#125;</span><br></pre></td></tr></table></figure>
+<p>（2）如果只有一个参数，并且这个参数的名字为value的话，那么value=可以省略不写。</p>
+<figure class="highlight java"><table><tr><td class="gutter"><pre><span class="line">1</span><br><span class="line">2</span><br><span class="line">3</span><br></pre></td><td class="code"><pre><span class="line"><span class="meta">@MyAnnotation(&#123;&quot;abc&quot;,&quot;def&quot;&#125;)</span></span><br><span class="line"><span class="keyword">public</span> <span class="keyword">class</span> <span class="title class_">Person</span> &#123;</span><br><span class="line">&#125;</span><br></pre></td></tr></table></figure>
+<p>（3）如果配置参数已经设置默认的值，那么使用的时候可以无需传值:</p>
+<figure class="highlight java"><table><tr><td class="gutter"><pre><span class="line">1</span><br><span class="line">2</span><br><span class="line">3</span><br></pre></td><td class="code"><pre><span class="line"><span class="keyword">public</span> <span class="meta">@interface</span> MyAnnotation &#123;</span><br><span class="line">    String  <span class="title function_">value</span><span class="params">()</span> <span class="keyword">default</span> <span class="string">&quot;abc&quot;</span>;</span><br><span class="line">&#125;</span><br></pre></td></tr></table></figure>
+<figure class="highlight java"><table><tr><td class="gutter"><pre><span class="line">1</span><br><span class="line">2</span><br><span class="line">3</span><br></pre></td><td class="code"><pre><span class="line"><span class="meta">@MyAnnotation</span></span><br><span class="line"><span class="keyword">public</span> <span class="keyword">class</span> <span class="title class_">Person</span> &#123;</span><br><span class="line">&#125;</span><br></pre></td></tr></table></figure>
+<p>（4）一个注解的内部是可以不定义配置参数的:</p>
+<figure class="highlight java"><table><tr><td class="gutter"><pre><span class="line">1</span><br><span class="line">2</span><br></pre></td><td class="code"><pre><span class="line"><span class="keyword">public</span> <span class="meta">@interface</span> MyAnnotation &#123;</span><br><span class="line">&#125;</span><br></pre></td></tr></table></figure>
+<p>内部没有定义配置参数的注解—》可以叫做标记</p>
+<p>内部定义配置参数的注解—》元数据</p>
+<h5 id="元注解"><a href="#元注解" class="headerlink" title="元注解"></a>元注解</h5><p>元注解是用于修饰其它注解的注解。</p>
+<p>JDK5.0提供了四种元注解: Retention,Target,Documented, Inherited</p>
+<p>【1】Retention</p>
+<p>@Retention:用于修饰注解，用于指定修饰的那个注解的生命周期，@Rentention包含一个RetentionPolicy枚举类型的成员变量使用@Rentention时必须为该value成员变量指定值:</p>
+<blockquote>
+<p>RetentionPolicy.SOURCE:在源文件中有效(即源文件保留)编译器直接丢弃这种策略的注释，在.class文件中不会保留注解信息<br>RetenlionPolicy.CLASS:在class文件中有效(即class保留)，保留在.class文件中，但是当运行Java程序时，他就不会继续加载了，不会保留在内存中，JVM不会保留注解。==如果注释没有加Retention元注解，那么相当于默认的注解就是这种状态。==<br>RetentionPolicy.RUNTIME.在运行时有效(即运行时保留)当运行.Java程序时，JVM会保留注释，加载在内存中了，那么程序可以通过反射获取该注释。</p>
+</blockquote>
+<p>【2】Target</p>
+<p>用于修饰注解的注解，用于指定被修饰的注解能用于修饰哪些程序元素。@Target也包含一个名为value的成员变量。</p>
+<figure class="highlight java"><table><tr><td class="gutter"><pre><span class="line">1</span><br><span class="line">2</span><br><span class="line">3</span><br><span class="line">4</span><br><span class="line">5</span><br><span class="line">6</span><br><span class="line">7</span><br><span class="line">8</span><br><span class="line">9</span><br><span class="line">10</span><br><span class="line">11</span><br><span class="line">12</span><br><span class="line">13</span><br><span class="line">14</span><br></pre></td><td class="code"><pre><span class="line"><span class="keyword">package</span> com.zy.anno;</span><br><span class="line"></span><br><span class="line"><span class="keyword">import</span> java.lang.annotation.Target;</span><br><span class="line"></span><br><span class="line"><span class="keyword">import</span> <span class="keyword">static</span> java.lang.annotation.ElementType.*;</span><br><span class="line"></span><br><span class="line"><span class="comment">/**</span></span><br><span class="line"><span class="comment"> * <span class="doctag">@Auther</span>: 赵羽</span></span><br><span class="line"><span class="comment"> * <span class="doctag">@Description</span>: com.zy.anno</span></span><br><span class="line"><span class="comment"> * <span class="doctag">@version</span>: 1.0</span></span><br><span class="line"><span class="comment"> */</span></span><br><span class="line"><span class="meta">@Target(&#123;TYPE,CONSTRUCTOR,METHOD&#125;)</span></span><br><span class="line"><span class="keyword">public</span> <span class="meta">@interface</span> MyAnnotation2 &#123;</span><br><span class="line">&#125;</span><br></pre></td></tr></table></figure>
+<p><img src="https://gitee.com/Bluetom/img2/raw/master/img20230403/202310241631090.png" alt="image-20210221114909481"></p>
+<p>【3】Documented</p>
+<p>用于指定被该元注解修饰的注解类将被javadoc工具提取成文档。默认情况下，javadoc是不包括注解的，但是加上了这个注解生成的文档中就会带着注解了。</p>
+<p>案例：</p>
+<p>如果:Documented注解修饰了Deprecated注解，</p>
+<p><img src="https://gitee.com/Bluetom/img2/raw/master/img20230403/202310241631068.png" alt="image-20210221115415872"></p>
+<p>那么Deprecated注解就会在javadoc提取的时候，提取到API中:</p>
+<p><img src="https://gitee.com/Bluetom/img2/raw/master/img20230403/202310241632128.png" alt="image-20210221115437142"></p>
+<p>【4】Inherited</p>
+<p>被它修饰的Annotation将具有继承性。如果某个类使用了被Inherited修饰的Annotation,则其子类将自动具有该注解。</p>
+<p>案例：</p>
+<p>如果MyAnnotation2注解使用了@Inherited之后，就具备了继承性，那么相当于子类Student也使用了这个MyAnnotation2</p>
+<figure class="highlight java"><table><tr><td class="gutter"><pre><span class="line">1</span><br><span class="line">2</span><br><span class="line">3</span><br><span class="line">4</span><br><span class="line">5</span><br><span class="line">6</span><br><span class="line">7</span><br></pre></td><td class="code"><pre><span class="line"><span class="keyword">package</span> com.zy.anno;</span><br><span class="line"></span><br><span class="line"><span class="keyword">import</span> java.lang.annotation.Inherited;</span><br><span class="line"></span><br><span class="line"><span class="meta">@Inherited</span></span><br><span class="line"><span class="keyword">public</span> <span class="meta">@interface</span> MyAnnotation2 &#123;</span><br><span class="line">&#125;</span><br></pre></td></tr></table></figure>
+<p>父类：</p>
+<figure class="highlight java"><table><tr><td class="gutter"><pre><span class="line">1</span><br><span class="line">2</span><br><span class="line">3</span><br><span class="line">4</span><br><span class="line">5</span><br><span class="line">6</span><br><span class="line">7</span><br></pre></td><td class="code"><pre><span class="line"><span class="keyword">package</span> com.zy.anno;</span><br><span class="line"></span><br><span class="line"><span class="keyword">import</span> com.zy.anno2.MyAnnotation;</span><br><span class="line"></span><br><span class="line"><span class="meta">@MyAnnotation</span></span><br><span class="line"><span class="keyword">public</span> <span class="keyword">class</span> <span class="title class_">Person</span> &#123;</span><br><span class="line">&#125;</span><br></pre></td></tr></table></figure>
+<p>子类：</p>
+<figure class="highlight java"><table><tr><td class="gutter"><pre><span class="line">1</span><br><span class="line">2</span><br><span class="line">3</span><br><span class="line">4</span><br></pre></td><td class="code"><pre><span class="line"><span class="keyword">package</span> com.zy.anno;</span><br><span class="line"></span><br><span class="line"><span class="keyword">public</span> <span class="keyword">class</span> <span class="title class_">Student</span> <span class="keyword">extends</span> <span class="title class_">Person</span> &#123;</span><br><span class="line">&#125;</span><br></pre></td></tr></table></figure>
+<h3 id="枚举"><a href="#枚举" class="headerlink" title="枚举"></a>枚举</h3><p>【1】在java中，类的对象是有限个，确定的。这个类我们可以定义为枚举类。</p>
+<p>【2】自定义枚举类：</p>
+<figure class="highlight java"><table><tr><td class="gutter"><pre><span class="line">1</span><br><span class="line">2</span><br><span class="line">3</span><br><span class="line">4</span><br><span class="line">5</span><br><span class="line">6</span><br><span class="line">7</span><br><span class="line">8</span><br><span class="line">9</span><br><span class="line">10</span><br><span class="line">11</span><br><span class="line">12</span><br><span class="line">13</span><br><span class="line">14</span><br><span class="line">15</span><br><span class="line">16</span><br><span class="line">17</span><br><span class="line">18</span><br><span class="line">19</span><br><span class="line">20</span><br><span class="line">21</span><br><span class="line">22</span><br><span class="line">23</span><br><span class="line">24</span><br><span class="line">25</span><br><span class="line">26</span><br><span class="line">27</span><br><span class="line">28</span><br><span class="line">29</span><br><span class="line">30</span><br><span class="line">31</span><br><span class="line">32</span><br><span class="line">33</span><br><span class="line">34</span><br><span class="line">35</span><br><span class="line">36</span><br><span class="line">37</span><br><span class="line">38</span><br><span class="line">39</span><br><span class="line">40</span><br><span class="line">41</span><br><span class="line">42</span><br><span class="line">43</span><br><span class="line">44</span><br><span class="line">45</span><br><span class="line">46</span><br></pre></td><td class="code"><pre><span class="line"><span class="keyword">package</span> com.zy.enum01;</span><br><span class="line"></span><br><span class="line"><span class="comment">/**</span></span><br><span class="line"><span class="comment"> * <span class="doctag">@Auther</span>: 赵羽</span></span><br><span class="line"><span class="comment"> * <span class="doctag">@Description</span>: com.zy.enum01</span></span><br><span class="line"><span class="comment"> * <span class="doctag">@version</span>: 1.0</span></span><br><span class="line"><span class="comment"> * 定义枚举类：季节</span></span><br><span class="line"><span class="comment"> */</span></span><br><span class="line"><span class="keyword">public</span> <span class="keyword">class</span> <span class="title class_">Season</span> &#123;</span><br><span class="line">    <span class="comment">//属性：</span></span><br><span class="line">    <span class="keyword">private</span> <span class="keyword">final</span> String seasonName; <span class="comment">//季节名字</span></span><br><span class="line">    <span class="keyword">private</span> <span class="keyword">final</span> String seasonDesc; <span class="comment">//季节描述</span></span><br><span class="line"></span><br><span class="line">    <span class="comment">//利用构造器对属性进行赋值操作：</span></span><br><span class="line">    <span class="comment">//构造器私有化，外界不能调用这个构造器，只能Season内部自己使用</span></span><br><span class="line">    <span class="keyword">private</span> <span class="title function_">Season</span><span class="params">(String seasonName,String seasonDesc)</span>&#123;</span><br><span class="line">        <span class="built_in">this</span>.seasonName = seasonName;</span><br><span class="line">        <span class="built_in">this</span>.seasonDesc = seasonDesc;</span><br><span class="line">    &#125;</span><br><span class="line"></span><br><span class="line">    <span class="comment">//提供枚举类的有限的 确定的对象：</span></span><br><span class="line">    <span class="keyword">public</span> <span class="keyword">static</span> <span class="keyword">final</span> <span class="type">Season</span> <span class="variable">SPRING</span> <span class="operator">=</span> <span class="keyword">new</span> <span class="title class_">Season</span>(<span class="string">&quot;春天&quot;</span>,<span class="string">&quot;春暖花开&quot;</span>);</span><br><span class="line">    <span class="keyword">public</span> <span class="keyword">static</span> <span class="keyword">final</span> <span class="type">Season</span> <span class="variable">SUMMER</span> <span class="operator">=</span> <span class="keyword">new</span> <span class="title class_">Season</span>(<span class="string">&quot;夏天&quot;</span>,<span class="string">&quot;烈日炎炎&quot;</span>);</span><br><span class="line">    <span class="keyword">public</span> <span class="keyword">static</span> <span class="keyword">final</span> <span class="type">Season</span> <span class="variable">AUTUMN</span> <span class="operator">=</span> <span class="keyword">new</span> <span class="title class_">Season</span>(<span class="string">&quot;秋天&quot;</span>,<span class="string">&quot;硕果累累&quot;</span>);</span><br><span class="line">    <span class="keyword">public</span> <span class="keyword">static</span> <span class="keyword">final</span> <span class="type">Season</span> <span class="variable">WINTER</span> <span class="operator">=</span> <span class="keyword">new</span> <span class="title class_">Season</span>(<span class="string">&quot;冬天&quot;</span>,<span class="string">&quot;冰天雪地&quot;</span>);</span><br><span class="line"></span><br><span class="line">    <span class="comment">//额外因素：</span></span><br><span class="line"></span><br><span class="line">    <span class="keyword">public</span> String <span class="title function_">getSeasonName</span><span class="params">()</span> &#123;</span><br><span class="line">        <span class="keyword">return</span> seasonName;</span><br><span class="line">    &#125;</span><br><span class="line"></span><br><span class="line">    <span class="keyword">public</span> String <span class="title function_">getSeasonDesc</span><span class="params">()</span> &#123;</span><br><span class="line">        <span class="keyword">return</span> seasonDesc;</span><br><span class="line">    &#125;</span><br><span class="line"></span><br><span class="line">    <span class="comment">//toString():</span></span><br><span class="line"></span><br><span class="line">    <span class="meta">@Override</span></span><br><span class="line">    <span class="keyword">public</span> String <span class="title function_">toString</span><span class="params">()</span> &#123;</span><br><span class="line">        <span class="keyword">return</span> <span class="string">&quot;Season&#123;&quot;</span> +</span><br><span class="line">                <span class="string">&quot;seasonName=&#x27;&quot;</span> + seasonName + <span class="string">&#x27;\&#x27;&#x27;</span> +</span><br><span class="line">                <span class="string">&quot;, seasonDesc=&#x27;&quot;</span> + seasonDesc + <span class="string">&#x27;\&#x27;&#x27;</span> +</span><br><span class="line">                <span class="string">&#x27;&#125;&#x27;</span>;</span><br><span class="line">    &#125;</span><br><span class="line">&#125;</span><br></pre></td></tr></table></figure>
+<p>测试类：</p>
+<figure class="highlight java"><table><tr><td class="gutter"><pre><span class="line">1</span><br><span class="line">2</span><br><span class="line">3</span><br><span class="line">4</span><br><span class="line">5</span><br><span class="line">6</span><br><span class="line">7</span><br></pre></td><td class="code"><pre><span class="line"><span class="keyword">public</span> <span class="keyword">class</span> <span class="title class_">TestSeason</span> &#123;</span><br><span class="line">    <span class="keyword">public</span> <span class="keyword">static</span> <span class="keyword">void</span> <span class="title function_">main</span><span class="params">(String[] args)</span> &#123;</span><br><span class="line">        <span class="type">Season</span> <span class="variable">autumn</span> <span class="operator">=</span> Season.AUTUMN;</span><br><span class="line">        System.out.println(autumn);</span><br><span class="line">        System.out.println(autumn.getSeasonName());</span><br><span class="line">    &#125;</span><br><span class="line">&#125;</span><br></pre></td></tr></table></figure>
+<p>【3】JDK1.5后使用enum关键字定义枚举类：</p>
+<figure class="highlight java"><table><tr><td class="gutter"><pre><span class="line">1</span><br><span class="line">2</span><br><span class="line">3</span><br><span class="line">4</span><br><span class="line">5</span><br><span class="line">6</span><br><span class="line">7</span><br><span class="line">8</span><br><span class="line">9</span><br><span class="line">10</span><br><span class="line">11</span><br><span class="line">12</span><br><span class="line">13</span><br><span class="line">14</span><br><span class="line">15</span><br><span class="line">16</span><br><span class="line">17</span><br><span class="line">18</span><br><span class="line">19</span><br><span class="line">20</span><br><span class="line">21</span><br><span class="line">22</span><br><span class="line">23</span><br><span class="line">24</span><br><span class="line">25</span><br><span class="line">26</span><br><span class="line">27</span><br><span class="line">28</span><br><span class="line">29</span><br><span class="line">30</span><br><span class="line">31</span><br><span class="line">32</span><br><span class="line">33</span><br><span class="line">34</span><br><span class="line">35</span><br><span class="line">36</span><br><span class="line">37</span><br><span class="line">38</span><br><span class="line">39</span><br><span class="line">40</span><br><span class="line">41</span><br><span class="line">42</span><br><span class="line">43</span><br><span class="line">44</span><br><span class="line">45</span><br><span class="line">46</span><br><span class="line">47</span><br><span class="line">48</span><br><span class="line">49</span><br></pre></td><td class="code"><pre><span class="line"><span class="keyword">package</span> com.zy.enum02;</span><br><span class="line"></span><br><span class="line"></span><br><span class="line"><span class="comment">/**</span></span><br><span class="line"><span class="comment"> * <span class="doctag">@Auther</span>: 赵羽</span></span><br><span class="line"><span class="comment"> * <span class="doctag">@Description</span>: com.zy.enum01</span></span><br><span class="line"><span class="comment"> * <span class="doctag">@version</span>: 1.0</span></span><br><span class="line"><span class="comment"> * 定义枚举类：季节</span></span><br><span class="line"><span class="comment"> */</span></span><br><span class="line"><span class="keyword">public</span> <span class="keyword">enum</span>  <span class="title class_">Season</span> &#123;</span><br><span class="line">    <span class="comment">//提供枚举类的有限的 确定的对象： ---&gt;enum枚举要求对象（常量）必须放在最开始位置</span></span><br><span class="line">    <span class="comment">//多个对象之间用,进行连接，最后一个对象后面用;结束</span></span><br><span class="line">    SPRING (<span class="string">&quot;春天&quot;</span>,<span class="string">&quot;春暖花开&quot;</span>),</span><br><span class="line">    SUMMER (<span class="string">&quot;夏天&quot;</span>,<span class="string">&quot;烈日炎炎&quot;</span>),</span><br><span class="line">    AUTUMN(<span class="string">&quot;秋天&quot;</span>,<span class="string">&quot;硕果累累&quot;</span>),</span><br><span class="line">    WINTER(<span class="string">&quot;冬天&quot;</span>,<span class="string">&quot;冰天雪地&quot;</span>);</span><br><span class="line">    <span class="comment">//属性：</span></span><br><span class="line">    <span class="keyword">private</span> <span class="keyword">final</span> String seasonName; <span class="comment">//季节名字</span></span><br><span class="line">    <span class="keyword">private</span> <span class="keyword">final</span> String seasonDesc; <span class="comment">//季节描述</span></span><br><span class="line"></span><br><span class="line">    <span class="comment">//利用构造器对属性进行赋值操作：</span></span><br><span class="line">    <span class="comment">//构造器私有化，外界不能调用这个构造器，只能Season内部自己使用</span></span><br><span class="line">    <span class="keyword">private</span> <span class="title function_">Season</span><span class="params">(String seasonName, String seasonDesc)</span>&#123;</span><br><span class="line">        <span class="built_in">this</span>.seasonName = seasonName;</span><br><span class="line">        <span class="built_in">this</span>.seasonDesc = seasonDesc;</span><br><span class="line">    &#125;</span><br><span class="line"></span><br><span class="line"></span><br><span class="line"></span><br><span class="line">    <span class="comment">//额外因素：</span></span><br><span class="line"></span><br><span class="line">    <span class="keyword">public</span> String <span class="title function_">getSeasonName</span><span class="params">()</span> &#123;</span><br><span class="line">        <span class="keyword">return</span> seasonName;</span><br><span class="line">    &#125;</span><br><span class="line"></span><br><span class="line">    <span class="keyword">public</span> String <span class="title function_">getSeasonDesc</span><span class="params">()</span> &#123;</span><br><span class="line">        <span class="keyword">return</span> seasonDesc;</span><br><span class="line">    &#125;</span><br><span class="line"></span><br><span class="line">    <span class="comment">//toString():</span></span><br><span class="line"></span><br><span class="line">    <span class="meta">@Override</span></span><br><span class="line">    <span class="keyword">public</span> String <span class="title function_">toString</span><span class="params">()</span> &#123;</span><br><span class="line">        <span class="keyword">return</span> <span class="string">&quot;Season&#123;&quot;</span> +</span><br><span class="line">                <span class="string">&quot;seasonName=&#x27;&quot;</span> + seasonName + <span class="string">&#x27;\&#x27;&#x27;</span> +</span><br><span class="line">                <span class="string">&quot;, seasonDesc=&#x27;&quot;</span> + seasonDesc + <span class="string">&#x27;\&#x27;&#x27;</span> +</span><br><span class="line">                <span class="string">&#x27;&#125;&#x27;</span>;</span><br><span class="line">    &#125;</span><br><span class="line">&#125;</span><br></pre></td></tr></table></figure>
+<p>使用枚举类：</p>
+<figure class="highlight java"><table><tr><td class="gutter"><pre><span class="line">1</span><br><span class="line">2</span><br><span class="line">3</span><br><span class="line">4</span><br><span class="line">5</span><br><span class="line">6</span><br><span class="line">7</span><br><span class="line">8</span><br><span class="line">9</span><br></pre></td><td class="code"><pre><span class="line"><span class="keyword">public</span> <span class="keyword">class</span> <span class="title class_">Test</span> &#123;</span><br><span class="line">    <span class="keyword">public</span> <span class="keyword">static</span> <span class="keyword">void</span> <span class="title function_">main</span><span class="params">(String[] args)</span> &#123;</span><br><span class="line">        <span class="type">Season</span> <span class="variable">autumn</span> <span class="operator">=</span> Season.AUTUMN;</span><br><span class="line">        System.out.println(autumn);</span><br><span class="line">        <span class="comment">//enum关键字对应的枚举类的上层父类是: java.lang.Enum</span></span><br><span class="line">        <span class="comment">//但是我们自定义的枚举类的上层父类:Object</span></span><br><span class="line">        System.out.println(Season.class.getSuperclass().getName()); <span class="comment">//java.lang.Enum</span></span><br><span class="line">    &#125;</span><br><span class="line">&#125;</span><br></pre></td></tr></table></figure>
+<p>源码中也有人这样写枚举类：</p>
+<figure class="highlight java"><table><tr><td class="gutter"><pre><span class="line">1</span><br><span class="line">2</span><br><span class="line">3</span><br><span class="line">4</span><br><span class="line">5</span><br><span class="line">6</span><br></pre></td><td class="code"><pre><span class="line"><span class="keyword">public</span> <span class="keyword">enum</span>  <span class="title class_">Season</span> &#123;</span><br><span class="line">    SPRING,</span><br><span class="line">    SUMMER,</span><br><span class="line">    AUTUMN,</span><br><span class="line">    WINTER;</span><br><span class="line">&#125;</span><br></pre></td></tr></table></figure>
+<p>这个枚举类底层没有属性，属性，构造器，toString, get方法都删掉不写<br>看到的形态就剩:常量名(对象名)</p>
+<p>【4】enum类常用方法：</p>
+<figure class="highlight java"><table><tr><td class="gutter"><pre><span class="line">1</span><br><span class="line">2</span><br><span class="line">3</span><br><span class="line">4</span><br><span class="line">5</span><br><span class="line">6</span><br><span class="line">7</span><br><span class="line">8</span><br><span class="line">9</span><br><span class="line">10</span><br><span class="line">11</span><br><span class="line">12</span><br><span class="line">13</span><br><span class="line">14</span><br><span class="line">15</span><br></pre></td><td class="code"><pre><span class="line"><span class="comment">//用enum关键字创建的Season枚举类上面的父类是: java.Lang.Enum,常用方法子类Season可以直接拿过来使用</span></span><br><span class="line"><span class="comment">//toString();---&gt;获取对象的名字</span></span><br><span class="line"><span class="type">Season</span> <span class="variable">autumn</span> <span class="operator">=</span> Season.AUTUMN;</span><br><span class="line">System.out.println(autumn); <span class="comment">//AUTUMN</span></span><br><span class="line"></span><br><span class="line"><span class="comment">//values:返回枚举类对象的数组</span></span><br><span class="line">Season[] values = Season.values();</span><br><span class="line"><span class="keyword">for</span> (Season s:values)&#123;</span><br><span class="line">    System.out.println(s);</span><br><span class="line">&#125;</span><br><span class="line"></span><br><span class="line"><span class="comment">//valueOf:通过对象名字获取这个枚举对象</span></span><br><span class="line"><span class="comment">//注意：对象的名字必须传正确</span></span><br><span class="line"><span class="type">Season</span> <span class="variable">autumn1</span> <span class="operator">=</span> Season.valueOf(<span class="string">&quot;AUTUMN&quot;</span>);</span><br><span class="line">System.out.println(autumn1);</span><br></pre></td></tr></table></figure>
+<p>【5】枚举类实现接口：</p>
+<figure class="highlight java"><table><tr><td class="gutter"><pre><span class="line">1</span><br><span class="line">2</span><br><span class="line">3</span><br><span class="line">4</span><br><span class="line">5</span><br><span class="line">6</span><br><span class="line">7</span><br><span class="line">8</span><br><span class="line">9</span><br><span class="line">10</span><br><span class="line">11</span><br><span class="line">12</span><br><span class="line">13</span><br><span class="line">14</span><br><span class="line">15</span><br><span class="line">16</span><br><span class="line">17</span><br><span class="line">18</span><br></pre></td><td class="code"><pre><span class="line"><span class="keyword">package</span> com.zy.enum04;</span><br><span class="line"></span><br><span class="line"><span class="comment">/**</span></span><br><span class="line"><span class="comment"> * <span class="doctag">@Auther</span>: 赵羽</span></span><br><span class="line"><span class="comment"> * <span class="doctag">@Description</span>: com.zy.enum03</span></span><br><span class="line"><span class="comment"> * <span class="doctag">@version</span>: 1.0</span></span><br><span class="line"><span class="comment"> */</span></span><br><span class="line"><span class="keyword">public</span> <span class="keyword">enum</span> <span class="title class_">Season</span> <span class="keyword">implements</span> <span class="title class_">TestInterface</span> &#123;</span><br><span class="line">    SPRING,</span><br><span class="line">    SUMMER,</span><br><span class="line">    AUTUMN,</span><br><span class="line">    WINTER;</span><br><span class="line"></span><br><span class="line">    <span class="meta">@Override</span></span><br><span class="line">    <span class="keyword">public</span> <span class="keyword">void</span> <span class="title function_">show</span><span class="params">()</span> &#123;</span><br><span class="line">        System.out.println(<span class="string">&quot;你好&quot;</span>);</span><br><span class="line">    &#125;</span><br><span class="line">&#125;</span><br></pre></td></tr></table></figure>
+<figure class="highlight java"><table><tr><td class="gutter"><pre><span class="line">1</span><br><span class="line">2</span><br><span class="line">3</span><br><span class="line">4</span><br><span class="line">5</span><br><span class="line">6</span><br><span class="line">7</span><br><span class="line">8</span><br><span class="line">9</span><br><span class="line">10</span><br></pre></td><td class="code"><pre><span class="line"><span class="keyword">package</span> com.zy.enum04;</span><br><span class="line"></span><br><span class="line"><span class="comment">/**</span></span><br><span class="line"><span class="comment"> * <span class="doctag">@Auther</span>: 赵羽</span></span><br><span class="line"><span class="comment"> * <span class="doctag">@Description</span>: com.zy.enum04</span></span><br><span class="line"><span class="comment"> * <span class="doctag">@version</span>: 1.0</span></span><br><span class="line"><span class="comment"> */</span></span><br><span class="line"><span class="keyword">public</span> <span class="keyword">interface</span> <span class="title class_">TestInterface</span> &#123;</span><br><span class="line">    <span class="keyword">void</span> <span class="title function_">show</span><span class="params">()</span>;</span><br><span class="line">&#125;</span><br></pre></td></tr></table></figure>
+<figure class="highlight java"><table><tr><td class="gutter"><pre><span class="line">1</span><br><span class="line">2</span><br><span class="line">3</span><br><span class="line">4</span><br><span class="line">5</span><br><span class="line">6</span><br><span class="line">7</span><br><span class="line">8</span><br><span class="line">9</span><br><span class="line">10</span><br><span class="line">11</span><br><span class="line">12</span><br><span class="line">13</span><br><span class="line">14</span><br><span class="line">15</span><br></pre></td><td class="code"><pre><span class="line"><span class="keyword">package</span> com.zy.enum04;</span><br><span class="line"></span><br><span class="line"><span class="comment">/**</span></span><br><span class="line"><span class="comment"> * <span class="doctag">@Auther</span>: 赵羽</span></span><br><span class="line"><span class="comment"> * <span class="doctag">@Description</span>: com.zy.enum04</span></span><br><span class="line"><span class="comment"> * <span class="doctag">@version</span>: 1.0</span></span><br><span class="line"><span class="comment"> */</span></span><br><span class="line"><span class="keyword">public</span> <span class="keyword">class</span> <span class="title class_">Test</span> &#123;</span><br><span class="line">    <span class="keyword">public</span> <span class="keyword">static</span> <span class="keyword">void</span> <span class="title function_">main</span><span class="params">(String[] args)</span> &#123;</span><br><span class="line">        <span class="type">Season</span> <span class="variable">autumn</span> <span class="operator">=</span> Season.AUTUMN;</span><br><span class="line">        autumn.show(); <span class="comment">//你好</span></span><br><span class="line">        <span class="type">Season</span> <span class="variable">spring</span> <span class="operator">=</span> Season.SPRING;</span><br><span class="line">        spring.show(); <span class="comment">//你好</span></span><br><span class="line">    &#125;</span><br><span class="line">&#125;</span><br></pre></td></tr></table></figure>
+<p>==上面发现所有的枚举对象，调用这个show方法的时候走的都是同一个方法，结果都一样。==</p>
+<p><strong>实现：不同的对象调用的show方法也不同。</strong></p>
+<figure class="highlight java"><table><tr><td class="gutter"><pre><span class="line">1</span><br><span class="line">2</span><br><span class="line">3</span><br><span class="line">4</span><br><span class="line">5</span><br><span class="line">6</span><br><span class="line">7</span><br><span class="line">8</span><br><span class="line">9</span><br><span class="line">10</span><br><span class="line">11</span><br><span class="line">12</span><br><span class="line">13</span><br><span class="line">14</span><br><span class="line">15</span><br><span class="line">16</span><br><span class="line">17</span><br><span class="line">18</span><br><span class="line">19</span><br><span class="line">20</span><br><span class="line">21</span><br><span class="line">22</span><br><span class="line">23</span><br><span class="line">24</span><br><span class="line">25</span><br><span class="line">26</span><br><span class="line">27</span><br><span class="line">28</span><br><span class="line">29</span><br><span class="line">30</span><br><span class="line">31</span><br><span class="line">32</span><br><span class="line">33</span><br></pre></td><td class="code"><pre><span class="line"><span class="keyword">package</span> com.zy.enum04;</span><br><span class="line"></span><br><span class="line"><span class="comment">/**</span></span><br><span class="line"><span class="comment"> * <span class="doctag">@Auther</span>: 赵羽</span></span><br><span class="line"><span class="comment"> * <span class="doctag">@Description</span>: com.zy.enum03</span></span><br><span class="line"><span class="comment"> * <span class="doctag">@version</span>: 1.0</span></span><br><span class="line"><span class="comment"> */</span></span><br><span class="line"><span class="keyword">public</span> <span class="keyword">enum</span> <span class="title class_">Season</span> <span class="keyword">implements</span> <span class="title class_">TestInterface</span> &#123;</span><br><span class="line">    SPRING&#123;</span><br><span class="line">        <span class="meta">@Override</span></span><br><span class="line">        <span class="keyword">public</span> <span class="keyword">void</span> <span class="title function_">show</span><span class="params">()</span> &#123;</span><br><span class="line">            System.out.println(<span class="string">&quot;这是春天。。&quot;</span>);</span><br><span class="line">        &#125;</span><br><span class="line">    &#125;,</span><br><span class="line">    SUMMER&#123;</span><br><span class="line">        <span class="meta">@Override</span></span><br><span class="line">        <span class="keyword">public</span> <span class="keyword">void</span> <span class="title function_">show</span><span class="params">()</span> &#123;</span><br><span class="line">            System.out.println(<span class="string">&quot;这是夏天。。&quot;</span>);</span><br><span class="line">        &#125;</span><br><span class="line">    &#125;,</span><br><span class="line">    AUTUMN&#123;</span><br><span class="line">        <span class="meta">@Override</span></span><br><span class="line">        <span class="keyword">public</span> <span class="keyword">void</span> <span class="title function_">show</span><span class="params">()</span> &#123;</span><br><span class="line">            System.out.println(<span class="string">&quot;这是秋天。。&quot;</span>);</span><br><span class="line">        &#125;</span><br><span class="line">    &#125;,</span><br><span class="line">    WINTER&#123;</span><br><span class="line">        <span class="meta">@Override</span></span><br><span class="line">        <span class="keyword">public</span> <span class="keyword">void</span> <span class="title function_">show</span><span class="params">()</span> &#123;</span><br><span class="line">            System.out.println(<span class="string">&quot;这是冬天。。&quot;</span>);</span><br><span class="line">        &#125;</span><br><span class="line">    &#125;;</span><br><span class="line">&#125;</span><br></pre></td></tr></table></figure>
+<p>【6】枚举的应用：</p>
+<figure class="highlight java"><table><tr><td class="gutter"><pre><span class="line">1</span><br><span class="line">2</span><br><span class="line">3</span><br><span class="line">4</span><br><span class="line">5</span><br><span class="line">6</span><br><span class="line">7</span><br><span class="line">8</span><br><span class="line">9</span><br><span class="line">10</span><br><span class="line">11</span><br><span class="line">12</span><br><span class="line">13</span><br><span class="line">14</span><br><span class="line">15</span><br><span class="line">16</span><br><span class="line">17</span><br><span class="line">18</span><br><span class="line">19</span><br><span class="line">20</span><br><span class="line">21</span><br><span class="line">22</span><br><span class="line">23</span><br><span class="line">24</span><br><span class="line">25</span><br><span class="line">26</span><br><span class="line">27</span><br><span class="line">28</span><br><span class="line">29</span><br><span class="line">30</span><br><span class="line">31</span><br><span class="line">32</span><br><span class="line">33</span><br><span class="line">34</span><br><span class="line">35</span><br><span class="line">36</span><br><span class="line">37</span><br><span class="line">38</span><br><span class="line">39</span><br><span class="line">40</span><br><span class="line">41</span><br><span class="line">42</span><br><span class="line">43</span><br><span class="line">44</span><br><span class="line">45</span><br><span class="line">46</span><br></pre></td><td class="code"><pre><span class="line"><span class="keyword">package</span> com.zy.enum05;</span><br><span class="line"></span><br><span class="line"><span class="comment">/**</span></span><br><span class="line"><span class="comment"> * <span class="doctag">@Auther</span>: 赵羽</span></span><br><span class="line"><span class="comment"> * <span class="doctag">@Description</span>: com.zy.enum05</span></span><br><span class="line"><span class="comment"> * <span class="doctag">@version</span>: 1.0</span></span><br><span class="line"><span class="comment"> */</span></span><br><span class="line"><span class="keyword">public</span> <span class="keyword">class</span> <span class="title class_">Person</span> &#123;</span><br><span class="line">    <span class="comment">//属性</span></span><br><span class="line">    <span class="keyword">private</span> <span class="type">int</span> age;</span><br><span class="line">    <span class="keyword">private</span> String name;</span><br><span class="line">    <span class="keyword">private</span> Gender sex;</span><br><span class="line"></span><br><span class="line">    <span class="keyword">public</span> <span class="type">int</span> <span class="title function_">getAge</span><span class="params">()</span> &#123;</span><br><span class="line">        <span class="keyword">return</span> age;</span><br><span class="line">    &#125;</span><br><span class="line"></span><br><span class="line">    <span class="keyword">public</span> <span class="keyword">void</span> <span class="title function_">setAge</span><span class="params">(<span class="type">int</span> age)</span> &#123;</span><br><span class="line">        <span class="built_in">this</span>.age = age;</span><br><span class="line">    &#125;</span><br><span class="line"></span><br><span class="line">    <span class="keyword">public</span> String <span class="title function_">getName</span><span class="params">()</span> &#123;</span><br><span class="line">        <span class="keyword">return</span> name;</span><br><span class="line">    &#125;</span><br><span class="line"></span><br><span class="line">    <span class="keyword">public</span> <span class="keyword">void</span> <span class="title function_">setName</span><span class="params">(String name)</span> &#123;</span><br><span class="line">        <span class="built_in">this</span>.name = name;</span><br><span class="line">    &#125;</span><br><span class="line"></span><br><span class="line">    <span class="keyword">public</span> Gender <span class="title function_">getSex</span><span class="params">()</span> &#123;</span><br><span class="line">        <span class="keyword">return</span> sex;</span><br><span class="line">    &#125;</span><br><span class="line"></span><br><span class="line">    <span class="keyword">public</span> <span class="keyword">void</span> <span class="title function_">setSex</span><span class="params">(Gender sex)</span> &#123;</span><br><span class="line">        <span class="built_in">this</span>.sex = sex;</span><br><span class="line">    &#125;</span><br><span class="line"></span><br><span class="line">    <span class="meta">@Override</span></span><br><span class="line">    <span class="keyword">public</span> String <span class="title function_">toString</span><span class="params">()</span> &#123;</span><br><span class="line">        <span class="keyword">return</span> <span class="string">&quot;Person&#123;&quot;</span> +</span><br><span class="line">                <span class="string">&quot;age=&quot;</span> + age +</span><br><span class="line">                <span class="string">&quot;, name=&#x27;&quot;</span> + name + <span class="string">&#x27;\&#x27;&#x27;</span> +</span><br><span class="line">                <span class="string">&quot;, sex=&#x27;&quot;</span> + sex + <span class="string">&#x27;\&#x27;&#x27;</span> +</span><br><span class="line">                <span class="string">&#x27;&#125;&#x27;</span>;</span><br><span class="line">    &#125;</span><br><span class="line">&#125;</span><br></pre></td></tr></table></figure>
+<figure class="highlight java"><table><tr><td class="gutter"><pre><span class="line">1</span><br><span class="line">2</span><br><span class="line">3</span><br><span class="line">4</span><br><span class="line">5</span><br><span class="line">6</span><br><span class="line">7</span><br><span class="line">8</span><br><span class="line">9</span><br><span class="line">10</span><br><span class="line">11</span><br></pre></td><td class="code"><pre><span class="line"><span class="keyword">package</span> com.zy.enum05;</span><br><span class="line"></span><br><span class="line"><span class="comment">/**</span></span><br><span class="line"><span class="comment"> * <span class="doctag">@Auther</span>: 赵羽</span></span><br><span class="line"><span class="comment"> * <span class="doctag">@Description</span>: com.zy.enum05</span></span><br><span class="line"><span class="comment"> * <span class="doctag">@version</span>: 1.0</span></span><br><span class="line"><span class="comment"> */</span></span><br><span class="line"><span class="keyword">public</span> <span class="keyword">enum</span> <span class="title class_">Gender</span> &#123;</span><br><span class="line">    男,</span><br><span class="line">    女;</span><br><span class="line">&#125;</span><br></pre></td></tr></table></figure>
+<figure class="highlight java"><table><tr><td class="gutter"><pre><span class="line">1</span><br><span class="line">2</span><br><span class="line">3</span><br><span class="line">4</span><br><span class="line">5</span><br><span class="line">6</span><br><span class="line">7</span><br><span class="line">8</span><br><span class="line">9</span><br><span class="line">10</span><br><span class="line">11</span><br><span class="line">12</span><br><span class="line">13</span><br><span class="line">14</span><br><span class="line">15</span><br><span class="line">16</span><br><span class="line">17</span><br></pre></td><td class="code"><pre><span class="line"><span class="keyword">package</span> com.zy.enum05;</span><br><span class="line"></span><br><span class="line"><span class="comment">/**</span></span><br><span class="line"><span class="comment"> * <span class="doctag">@Auther</span>: 赵羽</span></span><br><span class="line"><span class="comment"> * <span class="doctag">@Description</span>: com.zy.enum05</span></span><br><span class="line"><span class="comment"> * <span class="doctag">@version</span>: 1.0</span></span><br><span class="line"><span class="comment"> */</span></span><br><span class="line"><span class="keyword">public</span> <span class="keyword">class</span> <span class="title class_">Test</span> &#123;</span><br><span class="line">    <span class="keyword">public</span> <span class="keyword">static</span> <span class="keyword">void</span> <span class="title function_">main</span><span class="params">(String[] args)</span> &#123;</span><br><span class="line">        <span class="type">Person</span> <span class="variable">p</span> <span class="operator">=</span> <span class="keyword">new</span> <span class="title class_">Person</span>();</span><br><span class="line">        p.setName(<span class="string">&quot;张三&quot;</span>);</span><br><span class="line">        p.setAge(<span class="number">18</span>);</span><br><span class="line">        p.setSex(Gender.男);</span><br><span class="line">        System.out.println(p);</span><br><span class="line"></span><br><span class="line">    &#125;</span><br><span class="line">&#125;</span><br></pre></td></tr></table></figure>
+<p>枚举和switch结合：</p>
+<figure class="highlight java"><table><tr><td class="gutter"><pre><span class="line">1</span><br><span class="line">2</span><br><span class="line">3</span><br><span class="line">4</span><br><span class="line">5</span><br><span class="line">6</span><br><span class="line">7</span><br><span class="line">8</span><br><span class="line">9</span><br><span class="line">10</span><br><span class="line">11</span><br><span class="line">12</span><br><span class="line">13</span><br><span class="line">14</span><br><span class="line">15</span><br><span class="line">16</span><br><span class="line">17</span><br><span class="line">18</span><br><span class="line">19</span><br><span class="line">20</span><br><span class="line">21</span><br><span class="line">22</span><br></pre></td><td class="code"><pre><span class="line"><span class="keyword">package</span> com.zy.enum05;</span><br><span class="line"></span><br><span class="line"><span class="comment">/**</span></span><br><span class="line"><span class="comment"> * <span class="doctag">@Auther</span>: 赵羽</span></span><br><span class="line"><span class="comment"> * <span class="doctag">@Description</span>: com.zy.enum05</span></span><br><span class="line"><span class="comment"> * <span class="doctag">@version</span>: 1.0</span></span><br><span class="line"><span class="comment"> */</span></span><br><span class="line"><span class="keyword">public</span> <span class="keyword">class</span> <span class="title class_">Test02</span> &#123;</span><br><span class="line">    <span class="keyword">public</span> <span class="keyword">static</span> <span class="keyword">void</span> <span class="title function_">main</span><span class="params">(String[] args)</span> &#123;</span><br><span class="line">        <span class="type">Gender</span> <span class="variable">sex</span> <span class="operator">=</span> Gender.男;</span><br><span class="line">        <span class="comment">//switch后面的（）中可以传入枚举类型</span></span><br><span class="line">        <span class="comment">//switch后面的（）：int,short,byte,char,String,枚举</span></span><br><span class="line">        <span class="keyword">switch</span> (sex)&#123;</span><br><span class="line">            <span class="keyword">case</span> 女:</span><br><span class="line">                System.out.println(<span class="string">&quot;这是个女孩。。&quot;</span>);</span><br><span class="line">                <span class="keyword">break</span>;</span><br><span class="line">            <span class="keyword">case</span> 男:</span><br><span class="line">                System.out.println(<span class="string">&quot;这是个男孩。。&quot;</span>);</span><br><span class="line">                <span class="keyword">break</span>;</span><br><span class="line">        &#125;</span><br><span class="line">    &#125;</span><br><span class="line">&#125;</span><br></pre></td></tr></table></figure>
+<h1 id=""><a href="#" class="headerlink" title=" "></a> </h1></article><div class="post-copyright"><div class="post-copyright__author"><span class="post-copyright-meta"><i class="fas fa-circle-user fa-fw"></i>文章作者: </span><span class="post-copyright-info"><a href="https://ktzxy.github.io">蓝桉</a></span></div><div class="post-copyright__type"><span class="post-copyright-meta"><i class="fas fa-square-arrow-up-right fa-fw"></i>文章链接: </span><span class="post-copyright-info"><a href="https://ktzxy.github.io/posts/e364fb8.html">https://ktzxy.github.io/posts/e364fb8.html</a></span></div><div class="post-copyright__notice"><span class="post-copyright-meta"><i class="fas fa-circle-exclamation fa-fw"></i>版权声明: </span><span class="post-copyright-info">本博客所有文章除特别声明外，均采用 <a href="https://creativecommons.org/licenses/by-nc-sa/4.0/" target="_blank">CC BY-NC-SA 4.0</a> 许可协议。转载请注明来源 <a href="https://ktzxy.github.io" target="_blank">蓝桉`Blog</a>！</span></div></div><div class="tag_share"><div class="post-meta__tag-list"><a class="post-meta__tags" href="/tags/Java/">Java</a></div><div class="post-share"><div class="social-share" data-image="/bg/Image00009.webp" data-sites="facebook,twitter,wechat,weibo,qq"></div><link rel="stylesheet" href="https://cdn.jsdelivr.net/npm/butterfly-extsrc/sharejs/dist/css/share.min.css" media="print" onload="this.media='all'"><script src="https://cdn.jsdelivr.net/npm/butterfly-extsrc/sharejs/dist/js/social-share.min.js" defer></script></div></div><link rel="stylesheet" href="/css/coin/coin.css" media="defer" onload="this.media='all'"/><div class="post-reward"><button class="tip-button reward-button"><span class="tip-button__text">不给糖果就捣蛋</span><div class="coin-wrapper"><div class="coin"><div class="coin__middle"></div><div class="coin__back"></div><div class="coin__front"></div></div></div><div class="reward-main"><ul class="reward-all"><li class="reward-item"><a href="/img/wechat.webp" target="_blank"><img class="post-qr-code-img" src="/img/wechat.webp" alt="wechat"/></a><div class="post-qr-code-desc">wechat</div></li><li class="reward-item"><a href="/img/alipay.webp" target="_blank"><img class="post-qr-code-img" src="/img/alipay.webp" alt="alipay"/></a><div class="post-qr-code-desc">alipay</div></li></ul></div></button></div><audio id="coinAudio" src="https://cdn.cbd.int/akilar-candyassets@1.0.36/audio/aowu.m4a"></audio><script defer="defer" src="/js/coin/coin.js"></script><nav class="pagination-post" id="pagination"><a class="pagination-related" href="/posts/64bf1459.html" title="Day-11-IO流"><img class="cover" src="/bg/touxiang.webp" onerror="onerror=null;src='/img/404.jpg'" alt="cover of previous post"><div class="info"><div class="info-1"><div class="info-item-1">上一篇</div><div class="info-item-2">Day-11-IO流</div></div><div class="info-2"><div class="info-item-1">﻿# Day-10-IO流 File类【1】对文件进行操作： 1234567891011121314151617181920212223242526272829//将文件封装为一个File类的对象：File f = new File(&quot;E:\\test.txt&quot;);File f2 = new File(&quot;E:/test.txt&quot;);//File.separator属性帮我们获取当前操作系统的路径拼接符号File f3 = new File(&quot;E:&quot;+File.separator+&quot;test.txt&quot;); //建议使用这种//常用方法：System.out.println(&quot;文件是否可读&quot;+f.canRead());System.out.println(&quot;文件是否可写&quot;+f.canWrite());System.out.println(&quot;文件的名字&quot;+f.getName());System.out.println(&quot;文件上级目录&qu...</div></div></div></a><a class="pagination-related" href="/posts/86068ff9.html" title="Day-09-集合"><img class="cover" src="/bg/Image00022.webp" onerror="onerror=null;src='/img/404.jpg'" alt="cover of next post"><div class="info text-right"><div class="info-1"><div class="info-item-1">下一篇</div><div class="info-item-2">Day-09-集合</div></div><div class="info-2"><div class="info-item-1">Day-09-集合集合1.Java 集合框架概述1.集合框架与数组的对比及概述12345678910111213141516171819/** * 一、集合的框架 * * 1.集合、数组都是对多个数据进行存储操作的结构，简称Java容器。 *   说明；此时的存储，主要是指能存层面的存储，不涉及到持久化的存储（.txt,.jpg,.avi,数据库中） * * 2.1数组在存储多个数据封面的特点： *      》一旦初始化以后，它的长度就确定了。 *      》数组一旦定义好，它的数据类型也就确定了。我们就只能操作指定类型的数据了。 *      比如：String[] arr;int[] str; * 2.2数组在存储多个数据方面的特点： *      》一旦初始化以后，其长度就不可修改。 *      》数组中提供的方法非常有限，对于添加、删除、插入数据等操作，非常不便，同时效率不高。 *      》获取数组中实际元素的个数的需求，数组没有现成的属性或方法可用 *      》数组存储数据的特点：有序、可重复。对于无序、不可重复的需求，不能满足。 * *   * @cre...</div></div></div></a></nav><div class="relatedPosts"><div class="headline"><i class="fas fa-thumbs-up fa-fw"></i><span>相关推荐</span></div><div class="relatedPosts-list"><a class="pagination-related" href="/posts/4e9c3100.html" title="Java基础-网络编程"><img class="cover" src="/bg/Image00026.webp" alt="cover"><div class="info text-center"><div class="info-1"><div class="info-item-1"><i class="far fa-calendar-alt fa-fw"></i> 2025-07-09</div><div class="info-item-2">Java基础-网络编程</div></div><div class="info-2"><div class="info-item-1">1. 网络编程概述在计算机领域中，网络是信息传输、接收、共享的虚拟平台，将各个点、面、体的信息联系到一起，从而实现这些资源的共享。网络编程的作用：解决计算机与计算机数据传输的问题。 网络体系大致分为三种：OSI七层模型、TCP/IP四层模型和五层模型。  Tips: 一般面试的时候考察比较多的是五层模型。  1.1. 网络通讯三要素1.1.1. IP地址IP 是每台电脑在互联网上的唯一标识符。一个 IPV4 的地址是由四段 0—255 的数字组成：192.168.0.100，每一段的取值范围由8位二进制数据组成。 IPv6 使用 16 个字节表示 IP 地址，它所拥有的地址容量约是 IPv4 的 8×1028倍，达到 2128个。  Notes:   127.0.0.1 为本地主机地址(本地回环地址)，与 localhost 类似，均代表本机地址 xxx.xxx.xxx.255 广播地址，即该网段下所有用户均可以被通知到   例如在 windows 系统中，可以通过以下命令来获取 ip 与网络相关内容： 1ipconfig  用于DOS获取计算机IP设置  1ping ip地址 ...</div></div></div></a><a class="pagination-related" href="/posts/2af7de89.html" title="Day-0-IDEA简单学习"><img class="cover" src="/bg/Image00021.webp" alt="cover"><div class="info text-center"><div class="info-1"><div class="info-item-1"><i class="far fa-calendar-alt fa-fw"></i> 2025-07-09</div><div class="info-item-2">Day-0-IDEA简单学习</div></div><div class="info-2"><div class="info-item-1">﻿# Day-0-IDEA简单学习 1.设置主题 2.编辑区的字体变大或者变小：（ctrl+鼠标滚轮） 3.鼠标悬浮在代码上有提示： 4.自动导包和优化多余的包：手动导包：快捷键：alt+enter自动导包和优化多余的包：  5.显示行号 ，  方法和方法间的分隔符： 6.忽略大小写，进行提示： 7.修改代码中注释的字体颜色： 8.修改类头的文档注释信息：注意：对新建的类才有效/**  @Auther: XXX @Date: ${DATE} - ${MONTH} - ${DAY} - ${TIME}  @Description: ${PACKAGE_NAME} @version: 1.0*/   8.自动编译： 9.常用快捷键【1】创建内容：alt+insert 【2】main方法：psvm 【3】输出语句：sout 【4】复制行：ctrl+d 【5】删除行：ctrl+y 【6】代码向上/下移动：Ctrl + Shift + Up / Down 【7】搜索类：  ctrl+n 【8】生成代码  ：alt + Insert（如构造函数等，getter,setter,hashCode...</div></div></div></a><a class="pagination-related" href="/posts/72ba03f7.html" title="Day-02-java基础语法"><img class="cover" src="/bg/Image00027.webp" alt="cover"><div class="info text-center"><div class="info-1"><div class="info-item-1"><i class="far fa-calendar-alt fa-fw"></i> 2025-07-09</div><div class="info-item-2">Day-02-java基础语法</div></div><div class="info-2"><div class="info-item-1">﻿ Day-02-java基础语法快捷键操作 psvm —&gt;快速生成public static void main(String[] args) {} sout —&gt;快速生成System.out.println();  可能会遇到的问题  每个单词的大小不能出现问题，==Java是大小写敏感的==； 尽量使用英文； 文件名和类名必须保证一致，并且首字母大写； 符号使用的了中文。   Java运行机制  编译型 解释型    注释：Java中的注释有三种： 12345678910注释：    单行注释：    //我是单行注释    多行注释      /*我是多行注释*/    文档注释    /**    *@description  HelloWrold    *@Author 作者    */ 标识符：关键字 Java所有的组成部分都需要名字。类名、变量名以及方法名都被称为标识符。 标识符注意点 所有的标识符都应该以字母(A-Z或者a-z),美元符（$)、数字或者下划线(_)开始首字符之后可以是字母（A-Z或者a-z),美元符（$)、下划线(_)或数字的任何字符...</div></div></div></a><a class="pagination-related" href="/posts/369b2118.html" title="Day-03-java流程控制"><img class="cover" src="/bg/Image00020.webp" alt="cover"><div class="info text-center"><div class="info-1"><div class="info-item-1"><i class="far fa-calendar-alt fa-fw"></i> 2025-07-09</div><div class="info-item-2">Day-03-java流程控制</div></div><div class="info-2"><div class="info-item-1">﻿ Day-03-java流程控制Scanner对象java.util.Scanner是Java5的新特性，我们可以通过Scanner类来获取用户的输入。 基本语法 1Scanner s = new Scanner(System.in); 通过Scanner类的next()与nextLine()方法获取输入的字符串，在读取前我们一般需要使用hasNext() 与hasNextLine()判断是否还有输入的数据。 12345678910111213public static void main(String[] args) &#123;    //创建一个扫描对象，用于接受键盘数据    Scanner scanner = new Scanner(System.in);    System.out.println(&quot;使用next方式接受：&quot;);    //判断用户有没有输入字符串    if (scanner.hasNext())&#123;        //使用next方式接受        String str = scanner.next();     ...</div></div></div></a><a class="pagination-related" href="/posts/bbaa91bf.html" title="Day-04-java方法详解"><img class="cover" src="/bg/Image00021.webp" alt="cover"><div class="info text-center"><div class="info-1"><div class="info-item-1"><i class="far fa-calendar-alt fa-fw"></i> 2025-07-09</div><div class="info-item-2">Day-04-java方法详解</div></div><div class="info-2"><div class="info-item-1">﻿ Day-04-java方法详解何谓方法？​    System.out.println(),那么它是什么呢? ​    调用系统类里的标准输出对象out中的方法println ​    Java方法是语句的集合，它们在一起执行一个功能。 ​    方法是解决一类问题的步骤的有序组合 ​    方法包含于类或对象中，方法和方法是并列的关系，所以我们定义的方法不能写到main方法中 ​    方法在程序中被创建，在其他地方被引用 ​    设计方法的原则:方法的本意是功能块，就是实现某个功能的语句块的集合。我们设计方法的时候，最好保持方法的原子性，就是一个方法只完成1个功能，这样利于我们后期的扩展。 方法的定义Java的方法类似争其它语言的函数,是一段用来完成特定功能的代码片段，一股情况卜，定义一个方法包含以下语法: 方法包含一个方法头和一个方法体。 下面是一个方法的所有部分: 修饰符:修饰符，这是可选的，告诉编译器如何调用该方法。定义了该方法的访问类型。 返回值类型∶方法可能会返回值。returnValueType 是方法返回值的数据类型。有些方法执行所需的操作，但没有返回值。...</div></div></div></a><a class="pagination-related" href="/posts/cccc6599.html" title="Day-06-java面向对象"><img class="cover" src="/bg/Image00022.webp" alt="cover"><div class="info text-center"><div class="info-1"><div class="info-item-1"><i class="far fa-calendar-alt fa-fw"></i> 2025-07-09</div><div class="info-item-2">Day-06-java面向对象</div></div><div class="info-2"><div class="info-item-1">﻿ Day-06-java面向对象什么是面向对象面向对象编程(Object-Oriented Programming, OOP) 面向对象编程的本质就是:==以类的方式组织代码，以对象的组织(封装)数据。== 抽象 三大特性: ​        封装 ​        继承 ​        多态从认识论角度考虑是先有对象后有类。对象，是具体的事物。类，是抽象的，是对对象的抽象 从代码运行角度考虑是先有类后有对象。类是对象的模板。 回顾方法及加深方法的定义 修饰符 返回类型 ==break: 跳出switch，结束循环和return的区别方法名== 参数列表 异常抛出 方法的调用        静态方法 ​        非静态方法 ​        形参和实参 ​        值传递和引用传递 ​        this关键字 12345678910111213141516171819202122232425//demo1  类public class demo1 &#123;    //main方法    public static void main(String[] a...</div></div></div></a></div></div></div><div class="aside-content" id="aside-content"><div class="card-widget card-info text-center"><div class="avatar-img"><img src="/img/avatar.webp" onerror="this.onerror=null;this.src='/img/friend_404.gif'" alt="avatar"/></div><div class="author-info-name">蓝桉</div><div class="author-info-description"><div style="line-height:1.38;margin:0.6rem 0;text-align:justify;color:rgba(255, 255, 255, 0.8);">这有关于<b style="color:#fff">生活、学习、技术</b>相关的问题和看法，还有<b style="color:#fff">文章教程</b>和<b style="color:#fff">分享</b>。</div><div style="line-height:1.38;margin:0.6rem 0;text-align:justify;color:rgba(255, 255, 255, 0.8);">相信你可以在这里找到对你有用的<b style="color:#fff">知识</b>和<b style="color:#fff">教程</b>。</div></div><div class="site-data"><a href="/archives/"><div class="headline">文章</div><div class="length-num">264</div></a><a href="/tags/"><div class="headline">标签</div><div class="length-num">38</div></a><a href="/categories/"><div class="headline">分类</div><div class="length-num">37</div></a></div><a id="card-info-btn" target="_blank" rel="noopener" href="https://github.com/ktzxy"><i class="fab fa-github"></i><span>Follow Me</span></a><div class="card-info-social-icons"><a class="social-icon faa-parent animated-hover" href="https://github.com/ktzxy" target="_blank" title="Github"><svg class="social_icon faa-tada" aria-hidden="true"><use xlink:href="#icon-github"></use></svg></a><a class="social-icon faa-parent animated-hover" href="https://mail.qq.com/cgi-bin/qm_share?t=qm_mailme&amp;email=2251511764@qq.com" target="_blank" title="Email"><svg class="social_icon faa-tada" aria-hidden="true"><use xlink:href="#icon-youxiang"></use></svg></a><a class="social-icon faa-parent animated-hover" href="/atom.xml" target="_blank" title="RSS"><svg class="social_icon faa-tada" aria-hidden="true"><use xlink:href="#icon-RSS"></use></svg></a><a class="social-icon faa-parent animated-hover" href="https://space.bilibili.com/496148176" target="_blank" title="BiliBili"><svg class="social_icon faa-tada" aria-hidden="true"><use xlink:href="#icon-QX-BILIBILI"></use></svg></a><a class="social-icon faa-parent animated-hover" href="tencent://Message/?Uin=2251511764&amp;amp;websiteName=local.edu.com:8888=&amp;amp;Menu=yes" target="_blank" title="QQ"><svg class="social_icon faa-tada" aria-hidden="true"><use xlink:href="#icon-QQ"></use></svg></a></div></div><div class="card-widget card-announcement"><div class="item-headline"><i class="fas fa-bullhorn fa-shake"></i><span>公告</span></div><div class="announcement_content">This is my Blog</div></div><div class="sticky_layout"><div class="card-widget" id="card-toc"><div class="item-headline"><i class="fas fa-stream"></i><span>目录</span><span class="toc-percentage"></span></div><div class="toc-content"><ol class="toc"><li class="toc-item toc-level-3"><a class="toc-link" href="#Junit%E7%9A%84%E4%BD%BF%E7%94%A8"><span class="toc-number">1.</span> <span class="toc-text">Junit的使用</span></a></li><li class="toc-item toc-level-3"><a class="toc-link" href="#%E6%B3%A8%E8%A7%A3"><span class="toc-number">2.</span> <span class="toc-text">注解</span></a><ol class="toc-child"><li class="toc-item toc-level-5"><a class="toc-link" href="#%E6%B3%A8%E8%A7%A3%E5%88%9D%E8%AF%86"><span class="toc-number">2.0.1.</span> <span class="toc-text">注解初识</span></a></li><li class="toc-item toc-level-5"><a class="toc-link" href="#%E6%96%87%E6%A1%A3%E7%9B%B8%E5%85%B3%E6%B3%A8%E8%A7%A3"><span class="toc-number">2.0.2.</span> <span class="toc-text">文档相关注解</span></a></li><li class="toc-item toc-level-5"><a class="toc-link" href="#JDK%E5%86%85%E7%BD%AE%E7%9A%84%E4%B8%89%E4%B8%AA%E6%B3%A8%E8%A7%A3"><span class="toc-number">2.0.3.</span> <span class="toc-text">JDK内置的三个注解</span></a></li><li class="toc-item toc-level-5"><a class="toc-link" href="#%E8%87%AA%E5%AE%9A%E4%B9%89%E6%B3%A8%E8%A7%A3"><span class="toc-number">2.0.4.</span> <span class="toc-text">自定义注解</span></a></li><li class="toc-item toc-level-5"><a class="toc-link" href="#%E5%85%83%E6%B3%A8%E8%A7%A3"><span class="toc-number">2.0.5.</span> <span class="toc-text">元注解</span></a></li></ol></li></ol></li><li class="toc-item toc-level-3"><a class="toc-link" href="#%E6%9E%9A%E4%B8%BE"><span class="toc-number">3.</span> <span class="toc-text">枚举</span></a></li></ol></li></ol></li><li class="toc-item toc-level-1"><a class="toc-link"><span class="toc-number"></span> <span class="toc-text"> </span></a></div></div><div class="card-widget card-recent-post"><div class="item-headline"><i class="fas fa-history"></i><span>最新文章</span></div><div class="aside-list"><div class="aside-list-item"><a class="thumbnail" href="/posts/a318ca1f.html" title="MySQL数据库150道高频面试题"><img src="/bg/Image00018.webp" onerror="this.onerror=null;this.src='/img/404.jpg'" alt="MySQL数据库150道高频面试题"/></a><div class="content"><a class="title" href="/posts/a318ca1f.html" title="MySQL数据库150道高频面试题">MySQL数据库150道高频面试题</a><time datetime="2025-07-09T17:28:46.000Z" title="发表于 2025-07-09 17:28:46">2025-07-09</time></div></div><div class="aside-list-item"><a class="thumbnail" href="/posts/8f9b37aa.html" title="技术同学必会的MySQL设计规约"><img src="/bg/Image00014.webp" onerror="this.onerror=null;this.src='/img/404.jpg'" alt="技术同学必会的MySQL设计规约"/></a><div class="content"><a class="title" href="/posts/8f9b37aa.html" title="技术同学必会的MySQL设计规约">技术同学必会的MySQL设计规约</a><time datetime="2025-07-09T17:28:46.000Z" title="发表于 2025-07-09 17:28:46">2025-07-09</time></div></div><div class="aside-list-item"><a class="thumbnail" href="/posts/dfdfdf4.html" title="数据库概述"><img src="/bg/Image00002.webp" onerror="this.onerror=null;this.src='/img/404.jpg'" alt="数据库概述"/></a><div class="content"><a class="title" href="/posts/dfdfdf4.html" title="数据库概述">数据库概述</a><time datetime="2025-07-09T17:28:46.000Z" title="发表于 2025-07-09 17:28:46">2025-07-09</time></div></div><div class="aside-list-item"><a class="thumbnail" href="/posts/490575ab.html" title="24工厂模式俗话解释"><img src="/bg/Image00024.webp" onerror="this.onerror=null;this.src='/img/404.jpg'" alt="24工厂模式俗话解释"/></a><div class="content"><a class="title" href="/posts/490575ab.html" title="24工厂模式俗话解释">24工厂模式俗话解释</a><time datetime="2025-07-09T17:28:46.000Z" title="发表于 2025-07-09 17:28:46">2025-07-09</time></div></div><div class="aside-list-item"><a class="thumbnail" href="/posts/364ea8cc.html" title="设计模式"><img src="/bg/Image00014.webp" onerror="this.onerror=null;this.src='/img/404.jpg'" alt="设计模式"/></a><div class="content"><a class="title" href="/posts/364ea8cc.html" title="设计模式">设计模式</a><time datetime="2025-07-09T17:28:46.000Z" title="发表于 2025-07-09 17:28:46">2025-07-09</time></div></div></div></div></div></div></main><footer id="footer"><div class="footer-other"><div class="footer-copyright"><span class="copyright">&copy;2020 - 2025 By 蓝桉</span><span class="framework-info"><span>框架 </span><a target="_blank" rel="noopener" href="https://hexo.io">Hexo 7.3.0</a><span class="footer-separator">|</span><span>主题 </span><a target="_blank" rel="noopener" href="https://github.com/jerryc127/hexo-theme-butterfly">Butterfly 5.4.2</a></span></div></div></footer></div><div id="rightside"><div id="rightside-config-hide"><button id="readmode" type="button" title="阅读模式"><i class="fas fa-book-open"></i></button><button id="darkmode" type="button" title="日间和夜间模式切换"><i class="fas fa-adjust"></i></button><button id="hide-aside-btn" type="button" title="单栏和双栏切换"><i class="fas fa-arrows-alt-h"></i></button></div><div id="rightside-config-show"><button id="rightside-config" type="button" title="设置"><i class="fas fa-cog fa-spin"></i></button><button class="close" id="mobile-toc-button" type="button" title="目录"><i class="fas fa-list-ul"></i></button><button id="go-up" type="button" title="回到顶部"><span class="scroll-percent"></span><i class="fas fa-arrow-up"></i></button></div></div><div><script src="/js/utils.js"></script><script src="/js/main.js"></script><div class="js-pjax"></div><div class="aplayer no-destroy" data-id="8152976493" data-server="netease" data-type="playlist"   data-order="list" data-fixed="true" data-preload="auto" data-autoplay="false" data-mutex="true" ></div><script async src="//at.alicdn.com/t/c/font_4379924_273fk05h86zi.js"></script><link rel="stylesheet" href="https://cdn.jsdelivr.net/gh/l-lin/font-awesome-animation/dist/font-awesome-animation.min.css"  media="defer" onload="this.media='all'"><script async src="//npm.elemecdn.com/pace-js@1.2.4/pace.min.js"></script><script defer src="https://npm.elemecdn.com/jquery@latest/dist/jquery.min.js"></script><script defer data-pjax src="/js/cat/cat.js"></script><script async data-pjax src="/js/meting/music_lanan.min.js"></script><script defer type="text/javascript" src="https://cdn1.tianli0.top/npm/sweetalert2@8.19.0/dist/sweetalert2.all.js"></script><script defer src="/js/day/lunar.js"></script><script defer src="/js/day/day.js"></script><script async data-pjax src="//busuanzi.ibruce.info/busuanzi/2.3/busuanzi.pure.mini.js"></script></div><!-- hexo injector body_end start --><script data-pjax>
+  function butterfly_clock_anzhiyu_injector_config(){
+    var parent_div_git = document.getElementsByClassName('sticky_layout')[0];
+    var item_html = '<div class="card-widget card-clock"><div class="card-glass"><div class="card-background"><div class="card-content"><div id="hexo_electric_clock"><img class="entered loading" id="card-clock-loading" src="https://cdn.cbd.int/hexo-butterfly-clock-anzhiyu/lib/loading.gif" style="height: 120px; width: 100%;" data-ll-status="loading"/></div></div></div></div></div>';
+    console.log('已挂载butterfly_clock_anzhiyu')
+    if(parent_div_git) {
+      parent_div_git.insertAdjacentHTML("afterbegin",item_html)
+    }
+  }
+  var elist = 'null'.split(',');
+  var cpage = location.pathname;
+  var epage = '/';
+  var qweather_key = '10a7db1c41b6489db9c830c668a18304';
+  var gaud_map_key = '82a64bc994fb6494830f157f319f9f69';
+  var baidu_ak_key = 'undefined';
+  var flag = 0;
+  var clock_rectangle = '113.34532,23.15624';
+  var clock_default_rectangle_enable = 'false';
+
+  for (var i=0;i<elist.length;i++){
+    if (cpage.includes(elist[i])){
+      flag++;
+    }
+  }
+
+  if ((epage ==='all')&&(flag == 0)){
+    butterfly_clock_anzhiyu_injector_config();
+  }
+  else if (epage === cpage){
+    butterfly_clock_anzhiyu_injector_config();
+  }
+  </script><script src="https://widget.qweather.net/simple/static/js/he-simple-common.js?v=2.0"></script><script data-pjax src="https://cdn.cbd.int/hexo-butterfly-clock-anzhiyu/lib/clock.min.js"></script><script data-pjax>
+  function butterfly_footer_beautify_injector_config(){
+    var parent_div_git = document.getElementById('footer-wrap');
+    var item_html = '<div id="workboard"></div><p id="ghbdages"><a class="github-badge" target="_blank" href="https://hexo.io/" style="margin-inline:5px" data-title="博客框架为Hexo_v5.4.0" title=""><img src="https://img.shields.io/badge/Frame-Hexo-blue?style=flat&amp;logo=hexo" alt=""/></a><a class="github-badge" target="_blank" href="https://butterfly.js.org/" style="margin-inline:5px" data-title="主题版本Butterfly_v4.2.2" title=""><img src="https://img.shields.io/badge/Theme-Butterfly-6513df?style=flat&amp;logo=bitdefender" alt=""/></a><a class="github-badge" target="_blank" href="https://www.jsdelivr.com/" style="margin-inline:5px" data-title="本站使用JsDelivr为静态资源提供CDN加速" title=""><img src="https://img.shields.io/badge/CDN-jsDelivr-orange?style=flat&amp;logo=jsDelivr" alt=""/></a><a class="github-badge" target="_blank" href="https://github.com/" style="margin-inline:5px" data-title="本站项目由Github托管" title=""><img src="https://img.shields.io/badge/Source-Github-d021d6?style=flat&amp;logo=GitHub" alt=""/></a><a class="github-badge" target="_blank" href="http://creativecommons.org/licenses/by-nc-sa/4.0/" style="margin-inline:5px" data-title="本站采用知识共享署名-非商业性使用-相同方式共享4.0国际许可协议进行许可" title=""><img src="https://img.shields.io/badge/Copyright-BY--NC--SA%204.0-d42328?style=flat&amp;logo=Claris" alt=""/></a></p>';
+    console.log('已挂载butterfly_footer_beautify')
+    parent_div_git.insertAdjacentHTML("beforeend",item_html)
+    }
+  var elist = 'null'.split(',');
+  var cpage = location.pathname;
+  var epage = 'all';
+  var flag = 0;
+
+  for (var i=0;i<elist.length;i++){
+    if (cpage.includes(elist[i])){
+      flag++;
+    }
+  }
+
+  if ((epage ==='all')&&(flag == 0)){
+    butterfly_footer_beautify_injector_config();
+  }
+  else if (epage === cpage){
+    butterfly_footer_beautify_injector_config();
+  }
+  </script><script async src="/js/runtime/runtime.min.js"></script><script async src="/js/font/ali_font_all.js"></script><div class="js-pjax"><script async="async">var arr = document.getElementsByClassName('recent-post-item');
+for(var i = 0;i<arr.length;i++){
+    arr[i].classList.add('wow');
+    arr[i].classList.add('animate__zoomIn');
+    arr[i].setAttribute('data-wow-duration', '1.5s');
+    arr[i].setAttribute('data-wow-delay', '200ms');
+    arr[i].setAttribute('data-wow-offset', '30');
+    arr[i].setAttribute('data-wow-iteration', '1');
+  }</script><script async="async">var arr = document.getElementsByClassName('card-widget');
+for(var i = 0;i<arr.length;i++){
+    arr[i].classList.add('wow');
+    arr[i].classList.add('animate__zoomIn');
+    arr[i].setAttribute('data-wow-duration', '');
+    arr[i].setAttribute('data-wow-delay', '200ms');
+    arr[i].setAttribute('data-wow-offset', '');
+    arr[i].setAttribute('data-wow-iteration', '');
+  }</script><script async="async">var arr = document.getElementsByClassName('flink-list-card');
+for(var i = 0;i<arr.length;i++){
+    arr[i].classList.add('wow');
+    arr[i].classList.add('animate__flipInY');
+    arr[i].setAttribute('data-wow-duration', '3s');
+    arr[i].setAttribute('data-wow-delay', '');
+    arr[i].setAttribute('data-wow-offset', '');
+    arr[i].setAttribute('data-wow-iteration', '');
+  }</script><script async="async">var arr = document.getElementsByClassName('flink-list-card');
+for(var i = 0;i<arr.length;i++){
+    arr[i].classList.add('wow');
+    arr[i].classList.add('animate__animated');
+    arr[i].setAttribute('data-wow-duration', '3s');
+    arr[i].setAttribute('data-wow-delay', '');
+    arr[i].setAttribute('data-wow-offset', '');
+    arr[i].setAttribute('data-wow-iteration', '');
+  }</script><script async="async">var arr = document.getElementsByClassName('article-sort-item');
+for(var i = 0;i<arr.length;i++){
+    arr[i].classList.add('wow');
+    arr[i].classList.add('animate__slideInRight');
+    arr[i].setAttribute('data-wow-duration', '1.5s');
+    arr[i].setAttribute('data-wow-delay', '');
+    arr[i].setAttribute('data-wow-offset', '');
+    arr[i].setAttribute('data-wow-iteration', '');
+  }</script><script async="async">var arr = document.getElementsByClassName('site-card');
+for(var i = 0;i<arr.length;i++){
+    arr[i].classList.add('wow');
+    arr[i].classList.add('animate__flipInY');
+    arr[i].setAttribute('data-wow-duration', '3s');
+    arr[i].setAttribute('data-wow-delay', '');
+    arr[i].setAttribute('data-wow-offset', '');
+    arr[i].setAttribute('data-wow-iteration', '');
+  }</script><script async="async">var arr = document.getElementsByClassName('site-card');
+for(var i = 0;i<arr.length;i++){
+    arr[i].classList.add('wow');
+    arr[i].classList.add('animate__animated');
+    arr[i].setAttribute('data-wow-duration', '3s');
+    arr[i].setAttribute('data-wow-delay', '');
+    arr[i].setAttribute('data-wow-offset', '');
+    arr[i].setAttribute('data-wow-iteration', '');
+  }</script></div><script defer src="https://cdn.cbd.int/hexo-butterfly-wowjs/lib/wow.min.js"></script><script defer src="https://cdn.cbd.int/hexo-butterfly-wowjs/lib/wow_init.js"></script><!-- hexo injector body_end end --><script src="/live2dw/lib/L2Dwidget.min.js?094cbace49a39548bed64abff5988b05"></script><script>L2Dwidget.init({"pluginRootPath":"live2dw/","pluginJsPath":"lib/","pluginModelPath":"assets/","tagMode":false,"debug":false,"model":{"jsonPath":"/live2dw/assets/shizuku.model.json"},"display":{"position":"right","width":150,"height":300},"mobile":{"show":false},"log":false});</script></body></html>

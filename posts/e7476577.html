@@ -1,0 +1,956 @@
+<!DOCTYPE html><html lang="zh-CN" data-theme="light"><head><meta charset="UTF-8"><meta http-equiv="X-UA-Compatible" content="IE=edge"><meta name="viewport" content="width=device-width, initial-scale=1.0,viewport-fit=cover"><title>Java基础-XML | 蓝桉`Blog</title><meta name="author" content="蓝桉,kt_zxh@163.com"><meta name="copyright" content="蓝桉"><meta name="format-detection" content="telephone=no"><meta name="theme-color" content="#ffffff"><meta name="description" content="Java 基础 - XML1. XML 概述XML 的全称 Extensible Markup Language，中文：可扩展标记语言。XML 是一门语言，由 w3c 组织制定。 XML 是使用标记来描述数据格式，标记又叫标签，元素。标签又分为开始标签和结束标签，比如&lt;name&gt;是开始标签，&lt;&#x2F;name&gt;是结束标签。 1.1. 作用 用于描述数据(关系型数据)，存储数据，可">
+<meta property="og:type" content="article">
+<meta property="og:title" content="Java基础-XML">
+<meta property="og:url" content="https://ktzxy.github.io/posts/e7476577.html">
+<meta property="og:site_name" content="蓝桉&#96;Blog">
+<meta property="og:description" content="Java 基础 - XML1. XML 概述XML 的全称 Extensible Markup Language，中文：可扩展标记语言。XML 是一门语言，由 w3c 组织制定。 XML 是使用标记来描述数据格式，标记又叫标签，元素。标签又分为开始标签和结束标签，比如&lt;name&gt;是开始标签，&lt;&#x2F;name&gt;是结束标签。 1.1. 作用 用于描述数据(关系型数据)，存储数据，可">
+<meta property="og:locale" content="zh_CN">
+<meta property="og:image" content="https://ktzxy.github.io/bg/Image00014.webp">
+<meta property="article:published_time" content="2025-07-09T17:28:45.000Z">
+<meta property="article:modified_time" content="2025-07-13T15:45:18.461Z">
+<meta property="article:author" content="蓝桉">
+<meta property="article:tag" content="Java">
+<meta name="twitter:card" content="summary">
+<meta name="twitter:image" content="https://ktzxy.github.io/bg/Image00014.webp"><script type="application/ld+json">{
+  "@context": "https://schema.org",
+  "@type": "BlogPosting",
+  "headline": "Java基础-XML",
+  "url": "https://ktzxy.github.io/posts/e7476577.html",
+  "image": "https://ktzxy.github.io/bg/Image00014.webp",
+  "datePublished": "2025-07-09T17:28:45.000Z",
+  "dateModified": "2025-07-13T15:45:18.461Z",
+  "author": [
+    {
+      "@type": "Person",
+      "name": "蓝桉",
+      "url": "https://ktzxy.github.io"
+    }
+  ]
+}</script><link rel="shortcut icon" href="/img/favicon.png"><link rel="canonical" href="https://ktzxy.github.io/posts/e7476577.html"><link rel="preconnect" href="//cdn.jsdelivr.net"/><link rel="preconnect" href="//busuanzi.ibruce.info"/><link rel="stylesheet" href="/css/index.css"><link rel="stylesheet" href="https://cdn.jsdelivr.net/npm/@fortawesome/fontawesome-free/css/all.min.css"><script>
+    (() => {
+      
+    const saveToLocal = {
+      set: (key, value, ttl) => {
+        if (!ttl) return
+        const expiry = Date.now() + ttl * 86400000
+        localStorage.setItem(key, JSON.stringify({ value, expiry }))
+      },
+      get: key => {
+        const itemStr = localStorage.getItem(key)
+        if (!itemStr) return undefined
+        const { value, expiry } = JSON.parse(itemStr)
+        if (Date.now() > expiry) {
+          localStorage.removeItem(key)
+          return undefined
+        }
+        return value
+      }
+    }
+
+    window.btf = {
+      saveToLocal,
+      getScript: (url, attr = {}) => new Promise((resolve, reject) => {
+        const script = document.createElement('script')
+        script.src = url
+        script.async = true
+        Object.entries(attr).forEach(([key, val]) => script.setAttribute(key, val))
+        script.onload = script.onreadystatechange = () => {
+          if (!script.readyState || /loaded|complete/.test(script.readyState)) resolve()
+        }
+        script.onerror = reject
+        document.head.appendChild(script)
+      }),
+      getCSS: (url, id) => new Promise((resolve, reject) => {
+        const link = document.createElement('link')
+        link.rel = 'stylesheet'
+        link.href = url
+        if (id) link.id = id
+        link.onload = link.onreadystatechange = () => {
+          if (!link.readyState || /loaded|complete/.test(link.readyState)) resolve()
+        }
+        link.onerror = reject
+        document.head.appendChild(link)
+      }),
+      addGlobalFn: (key, fn, name = false, parent = window) => {
+        if (!false && key.startsWith('pjax')) return
+        const globalFn = parent.globalFn || {}
+        globalFn[key] = globalFn[key] || {}
+        globalFn[key][name || Object.keys(globalFn[key]).length] = fn
+        parent.globalFn = globalFn
+      }
+    }
+  
+      
+      const activateDarkMode = () => {
+        document.documentElement.setAttribute('data-theme', 'dark')
+        if (document.querySelector('meta[name="theme-color"]') !== null) {
+          document.querySelector('meta[name="theme-color"]').setAttribute('content', '#0d0d0d')
+        }
+      }
+      const activateLightMode = () => {
+        document.documentElement.setAttribute('data-theme', 'light')
+        if (document.querySelector('meta[name="theme-color"]') !== null) {
+          document.querySelector('meta[name="theme-color"]').setAttribute('content', '#ffffff')
+        }
+      }
+
+      btf.activateDarkMode = activateDarkMode
+      btf.activateLightMode = activateLightMode
+
+      const theme = saveToLocal.get('theme')
+    
+          theme === 'dark' ? activateDarkMode() : theme === 'light' ? activateLightMode() : null
+        
+      
+      const asideStatus = saveToLocal.get('aside-status')
+      if (asideStatus !== undefined) {
+        document.documentElement.classList.toggle('hide-aside', asideStatus === 'hide')
+      }
+    
+      
+    const detectApple = () => {
+      if (/iPad|iPhone|iPod|Macintosh/.test(navigator.userAgent)) {
+        document.documentElement.classList.add('apple')
+      }
+    }
+    detectApple()
+  
+    })()
+  </script><script>const GLOBAL_CONFIG = {
+  root: '/',
+  algolia: undefined,
+  localSearch: undefined,
+  translate: undefined,
+  highlight: {"plugin":"highlight.js","highlightCopy":true,"highlightLang":true,"highlightHeightLimit":false,"highlightFullpage":false,"highlightMacStyle":false},
+  copy: {
+    success: '复制成功',
+    error: '复制失败',
+    noSupport: '浏览器不支持'
+  },
+  relativeDate: {
+    homepage: false,
+    post: false
+  },
+  runtime: '',
+  dateSuffix: {
+    just: '刚刚',
+    min: '分钟前',
+    hour: '小时前',
+    day: '天前',
+    month: '个月前'
+  },
+  copyright: undefined,
+  lightbox: 'null',
+  Snackbar: undefined,
+  infinitegrid: {
+    js: 'https://cdn.jsdelivr.net/npm/@egjs/infinitegrid/dist/infinitegrid.min.js',
+    buttonText: '加载更多'
+  },
+  isPhotoFigcaption: false,
+  islazyloadPlugin: false,
+  isAnchor: false,
+  percent: {
+    toc: true,
+    rightside: false,
+  },
+  autoDarkmode: false
+}</script><script id="config-diff">var GLOBAL_CONFIG_SITE = {
+  title: 'Java基础-XML',
+  isHighlightShrink: false,
+  isToc: true,
+  pageType: 'post'
+}</script><link rel="stylesheet" href="/css/custom.css" media="defer" onload="this.media='all'"><link rel="stylesheet" href="//at.alicdn.com/t/c/font_4379924_273fk05h86zi.css" media="defer" onload="this.media='all'"><link rel="stylesheet" href="/css/progress_bar/progress_bar.css" media="defer" onload="this.media='all'"><link rel="stylesheet" href="/css/windmill/windmill.css"><link rel="stylesheet" href="/css/cat.css"><link rel="stylesheet" href="/css/meting/music_lanan.css"><div id="myscoll"></div><!-- hexo injector head_end start --><link rel="stylesheet" href="https://cdn.jsdelivr.net/gh/Zfour/Butterfly-double-row-display@1.00/cardlistpost.min.css"/>
+<style>#recent-posts > .recent-post-item >.recent-post-info > .article-meta-wrap > .tags:before {content:"\A";
+  white-space: pre;}#recent-posts > .recent-post-item >.recent-post-info > .article-meta-wrap > .tags > .article-meta__separator{display:none}</style>
+<link rel="stylesheet" href="https://cdn.cbd.int/hexo-butterfly-clock-anzhiyu/lib/clock.min.css" /><link rel="stylesheet" href="/css/runtime/runtime.min.css" media="print" onload="this.media='all'"><link rel="stylesheet" href="https://cdn.cbd.int/hexo-butterfly-tag-plugins-plus@latest/lib/assets/font-awesome-animation.min.css" media="defer" onload="this.media='all'"><link rel="stylesheet" href="https://npm.elemecdn.com/hexo-butterfly-tag-plugins-plus@latest/lib/tag_plugins.css" media="defer" onload="this.media='all'"><script src="https://npm.elemecdn.com/hexo-butterfly-tag-plugins-plus@latest/lib/assets/carousel-touch.js"></script><link rel="stylesheet" href="https://cdn.cbd.int/hexo-butterfly-wowjs/lib/animate.min.css" media="print" onload="this.media='screen'"><!-- hexo injector head_end end --><meta name="generator" content="Hexo 7.3.0"><link rel="alternate" href="/atom.xml" title="蓝桉`Blog" type="application/atom+xml">
+</head><body><div id="loading-box"><div class="loading-left-bg"></div><div class="loading-right-bg"></div><div class="spinner-box"><div class="configure-border-1"><div class="configure-core"></div></div><div class="configure-border-2"><div class="configure-core"></div></div><div class="loading-word">加载中...</div></div></div><script>(()=>{
+  const $loadingBox = document.getElementById('loading-box')
+  const $body = document.body
+  const preloader = {
+    endLoading: () => {
+      $body.style.overflow = ''
+      $loadingBox.classList.add('loaded')
+    },
+    initLoading: () => {
+      $body.style.overflow = 'hidden'
+      $loadingBox.classList.remove('loaded')
+    }
+  }
+
+  preloader.initLoading()
+  window.addEventListener('load', preloader.endLoading)
+
+  if (false) {
+    btf.addGlobalFn('pjaxSend', preloader.initLoading, 'preloader_init')
+    btf.addGlobalFn('pjaxComplete', preloader.endLoading, 'preloader_end')
+  }
+})()</script><div id="web_bg" style="background-image: url(/img/bg.webp);"></div><div id="an_music_bg"></div><div id="sidebar"><div id="menu-mask"></div><div id="sidebar-menus"><div class="avatar-img text-center"><img src="/img/avatar.webp" onerror="this.onerror=null;this.src='/img/friend_404.gif'" alt="avatar"/></div><div class="site-data text-center"><a href="/archives/"><div class="headline">文章</div><div class="length-num">264</div></a><a href="/tags/"><div class="headline">标签</div><div class="length-num">38</div></a><a href="/categories/"><div class="headline">分类</div><div class="length-num">37</div></a></div><div class="menus_items"><div class="menus_item"><a class="site-page faa-parent animated-hover" href="/"><i class="fa-fw icon-zhuye-"></i><svg class="icon faa-tada" aria-hidden="true"><use xlink:href="#icon-zhuye-"></use></svg><span> 首页</span></a></div><div class="menus_item"><a class="site-page faa-parent animated-hover" href="/archives/"><i class="fa-fw icon-shijianzhou"></i><svg class="icon faa-tada" aria-hidden="true"><use xlink:href="#icon-shijianzhou"></use></svg><span> 时间轴</span></a></div><div class="menus_item"><a class="site-page faa-parent animated-hover" href="/essay/"><i class="fa-fw icon-xiaoxi"></i><svg class="icon faa-tada" aria-hidden="true"><use xlink:href="#icon-xiaoxi"></use></svg><span> 闲言碎语</span></a></div><div class="menus_item"><a class="site-page faa-parent animated-hover" href="/music/"><i class="fa-fw icon-music"></i><svg class="icon faa-tada" aria-hidden="true"><use xlink:href="#icon-music"></use></svg><span> 音乐馆</span></a></div><div class="menus_item"><a class="site-page faa-parent animated-hover" href="/categories/"><i class="fa-fw icon-fenlei"></i><svg class="icon faa-tada" aria-hidden="true"><use xlink:href="#icon-fenlei"></use></svg><span> 分类</span></a></div><div class="menus_item"><a class="site-page faa-parent animated-hover" href="/fcircle/"><i class="fa-fw icon-pengyouquan"></i><svg class="icon faa-tada" aria-hidden="true"><use xlink:href="#icon-pengyouquan"></use></svg><span> 朋友圈</span></a></div><div class="menus_item"><a class="site-page faa-parent animated-hover" href="/comments/"><i class="fa-fw icon-xinfeng"></i><svg class="icon faa-tada" aria-hidden="true"><use xlink:href="#icon-xinfeng"></use></svg><span> 留言板</span></a></div><div class="menus_item"><a class="site-page faa-parent animated-hover" href="/link/"><i class="fa-fw icon-lianjie"></i><svg class="icon faa-tada" aria-hidden="true"><use xlink:href="#icon-lianjie"></use></svg><span> 友人帐</span></a></div><div class="menus_item"><a class="site-page faa-parent animated-hover" href="javascript:randomPost();"><i class="fa-fw icon-wodezhuifan"></i><svg class="icon faa-tada" aria-hidden="true"><use xlink:href="#icon-wodezhuifan"></use></svg><span> 随机访问</span></a></div><div class="menus_item"><a class="site-page faa-parent animated-hover" href="/about/"><i class="fa-fw icon-guanyuwomen2"></i><svg class="icon faa-tada" aria-hidden="true"><use xlink:href="#icon-guanyuwomen2"></use></svg><span> 关于</span></a></div></div></div></div><div class="post" id="body-wrap"><header class="post-bg" id="page-header" style="background-image: url(/bg/Image00014.webp);"><nav id="nav"><span id="blog-info"><a class="nav-site-title" href="/"><span class="site-name">蓝桉`Blog</span></a><a class="nav-page-title" href="/"><span class="site-name">Java基础-XML</span><span class="site-name"><i class="fa-solid fa-circle-arrow-left"></i><span>  返回首页</span></span></a></span><div id="menus"><div class="menus_items"><div class="menus_item"><a class="site-page faa-parent animated-hover" href="/"><i class="fa-fw icon-zhuye-"></i><svg class="icon faa-tada" aria-hidden="true"><use xlink:href="#icon-zhuye-"></use></svg><span> 首页</span></a></div><div class="menus_item"><a class="site-page faa-parent animated-hover" href="/archives/"><i class="fa-fw icon-shijianzhou"></i><svg class="icon faa-tada" aria-hidden="true"><use xlink:href="#icon-shijianzhou"></use></svg><span> 时间轴</span></a></div><div class="menus_item"><a class="site-page faa-parent animated-hover" href="/essay/"><i class="fa-fw icon-xiaoxi"></i><svg class="icon faa-tada" aria-hidden="true"><use xlink:href="#icon-xiaoxi"></use></svg><span> 闲言碎语</span></a></div><div class="menus_item"><a class="site-page faa-parent animated-hover" href="/music/"><i class="fa-fw icon-music"></i><svg class="icon faa-tada" aria-hidden="true"><use xlink:href="#icon-music"></use></svg><span> 音乐馆</span></a></div><div class="menus_item"><a class="site-page faa-parent animated-hover" href="/categories/"><i class="fa-fw icon-fenlei"></i><svg class="icon faa-tada" aria-hidden="true"><use xlink:href="#icon-fenlei"></use></svg><span> 分类</span></a></div><div class="menus_item"><a class="site-page faa-parent animated-hover" href="/fcircle/"><i class="fa-fw icon-pengyouquan"></i><svg class="icon faa-tada" aria-hidden="true"><use xlink:href="#icon-pengyouquan"></use></svg><span> 朋友圈</span></a></div><div class="menus_item"><a class="site-page faa-parent animated-hover" href="/comments/"><i class="fa-fw icon-xinfeng"></i><svg class="icon faa-tada" aria-hidden="true"><use xlink:href="#icon-xinfeng"></use></svg><span> 留言板</span></a></div><div class="menus_item"><a class="site-page faa-parent animated-hover" href="/link/"><i class="fa-fw icon-lianjie"></i><svg class="icon faa-tada" aria-hidden="true"><use xlink:href="#icon-lianjie"></use></svg><span> 友人帐</span></a></div><div class="menus_item"><a class="site-page faa-parent animated-hover" href="javascript:randomPost();"><i class="fa-fw icon-wodezhuifan"></i><svg class="icon faa-tada" aria-hidden="true"><use xlink:href="#icon-wodezhuifan"></use></svg><span> 随机访问</span></a></div><div class="menus_item"><a class="site-page faa-parent animated-hover" href="/about/"><i class="fa-fw icon-guanyuwomen2"></i><svg class="icon faa-tada" aria-hidden="true"><use xlink:href="#icon-guanyuwomen2"></use></svg><span> 关于</span></a></div></div><div id="toggle-menu"><span class="site-page"><i class="fas fa-bars fa-fw"></i></span></div></div></nav><div id="post-info"><h1 class="post-title">Java基础-XML</h1><div id="post-meta"><div class="meta-firstline"><span class="post-meta-date"><i class="far fa-calendar-alt fa-fw post-meta-icon"></i><span class="post-meta-label">发表于</span><time class="post-meta-date-created" datetime="2025-07-09T17:28:45.000Z" title="发表于 2025-07-09 17:28:45">2025-07-09</time><span class="post-meta-separator">|</span><i class="fas fa-history fa-fw post-meta-icon"></i><span class="post-meta-label">更新于</span><time class="post-meta-date-updated" datetime="2025-07-13T15:45:18.461Z" title="更新于 2025-07-13 15:45:18">2025-07-13</time></span><span class="post-meta-categories"><span class="post-meta-separator">|</span><i class="fas fa-inbox fa-fw post-meta-icon"></i><a class="post-meta-categories" href="/categories/Java/">Java</a></span></div><div class="meta-secondline"><span class="post-meta-separator">|</span><span class="post-meta-pv-cv" id="" data-flag-title=""><i class="far fa-eye fa-fw post-meta-icon"></i><span class="post-meta-label">浏览量:</span><span id="busuanzi_value_page_pv"><i class="fa-solid fa-spinner fa-spin"></i></span></span></div></div></div></header><main class="layout" id="content-inner"><div id="post"><article class="container post-content" id="article-container"><h1 id="Java-基础-XML"><a href="#Java-基础-XML" class="headerlink" title="Java 基础 - XML"></a>Java 基础 - XML</h1><h2 id="1-XML-概述"><a href="#1-XML-概述" class="headerlink" title="1. XML 概述"></a>1. XML 概述</h2><p>XML 的全称 Extensible Markup Language，中文：可扩展标记语言。XML 是一门语言，由 w3c 组织制定。</p>
+<p>XML 是使用标记来描述数据格式，标记又叫标签，元素。标签又分为开始标签和结束标签，比如<code>&lt;name&gt;</code>是开始标签，<code>&lt;/name&gt;</code>是结束标签。</p>
+<h3 id="1-1-作用"><a href="#1-1-作用" class="headerlink" title="1.1. 作用"></a>1.1. 作用</h3><ul>
+<li>用于描述数据(关系型数据)，存储数据，可以当成一个小型数据库使用。</li>
+<li>作为框架的配置文件(structs.xml, hibernate.cfg.xml…)。好处是可以提升软件的灵活性。如：数据库的配置、JavaBean 的配置。使用时的数据可以查看不同的 xml 配置文件。</li>
+<li>可以用于不同的平台之间进行数据交换# Java基础 - XML</li>
+</ul>
+<blockquote>
+<p>XML 被设计用来描述数据，其焦点是数据的内容。HTML 被设计用来显示数据，其焦点是数据的外观。</p>
+</blockquote>
+<h3 id="1-2-XML-的约束"><a href="#1-2-XML-的约束" class="headerlink" title="1.2. XML 的约束"></a>1.2. XML 的约束</h3><p>XML 约束是用来规定 XML 文件中应该出现哪些标签，哪些属性，每个属性的取值有哪些。其作用是：</p>
+<ul>
+<li>约束XML文件结构</li>
+<li>让XML文档的书写更加规范</li>
+</ul>
+<h4 id="1-2-1-约束文件分类"><a href="#1-2-1-约束文件分类" class="headerlink" title="1.2.1. 约束文件分类"></a>1.2.1. 约束文件分类</h4><p><strong>DTD 约束文件</strong>：</p>
+<ul>
+<li>DTD 约束文件是一个文本文件，语法结构相对简单，数据类型比较单一。</li>
+<li>应用场景: struts.xml 和 hibernate.cfg.xml</li>
+<li>文件后缀名：dtd</li>
+</ul>
+<p><strong>Schema 约束</strong></p>
+<ul>
+<li>Schema 约束文档本身也是一个 XML 文件</li>
+<li>语法结构相关复杂，数据类型很丰富，可以约束文本的具体数据类型</li>
+<li>应用场景：Spring 的配置文件：applicationContext.xml, tomcat 中的 web.xml 等</li>
+<li>文件后缀名：xsd</li>
+</ul>
+<h2 id="2-XML-语法"><a href="#2-XML-语法" class="headerlink" title="2. XML 语法"></a>2. XML 语法</h2><ul>
+<li>xml 文件后缀名是<code>.xml</code>，可以使用浏览器去检查 xml 是否符合语法。因为浏览器内置了 xml 的解析引擎。</li>
+<li>格式良好的 XML 文档规则<ol>
+<li>必须有声明语句</li>
+<li>XML 的标签区分大小写</li>
+<li>XML 文档有且只有一个根元素</li>
+<li>属性值使用引号</li>
+<li>所有的标记必须有相应的结束标记，空标记也必须关闭</li>
+<li>标记必须正确嵌套</li>
+<li>对于特殊字符要进行处理</li>
+</ol>
+</li>
+<li>一个 XML 文件分为几部分内容：文档声明、标签、属性、注释、转义字符、CDATA 区、处理指令。</li>
+</ul>
+<h3 id="2-1-文档声明"><a href="#2-1-文档声明" class="headerlink" title="2.1. 文档声明"></a>2.1. 文档声明</h3><p>在编写 XML 文档时，必须要有文档声明</p>
+<h4 id="2-1-1-声明格式"><a href="#2-1-1-声明格式" class="headerlink" title="2.1.1. 声明格式"></a>2.1.1. 声明格式</h4><p>在 XML 文档的首行声明</p>
+<figure class="highlight xml"><table><tr><td class="gutter"><pre><span class="line">1</span><br></pre></td><td class="code"><pre><span class="line"><span class="meta">&lt;?xml version=<span class="string">&quot;1.0&quot;</span> encoding=<span class="string">&quot;utf-8&quot;</span>?&gt;</span></span><br></pre></td></tr></table></figure>
+<p>还有更简单的声明语法：</p>
+<figure class="highlight xml"><table><tr><td class="gutter"><pre><span class="line">1</span><br></pre></td><td class="code"><pre><span class="line"><span class="meta">&lt;?xml version=<span class="string">&quot;1.0&quot;</span> ?&gt;</span></span><br></pre></td></tr></table></figure>
+<p>标签参数说明：</p>
+<ul>
+<li>version(版本)：表示 xml 的版本号。W3C 在 1998 年 2 月发布 1.0 版本，2004 年 2 月又发布 1.1 版本，但因为 1.1 版本不能向下兼容 1.0 版本，所以 1.1 没有人用。同时，在 2004 年 2 月 W3C 又发布了 1.0 版本的第三版。<font color=red><strong>目前使用 1.0 版本</strong></font></li>
+<li>encoding(编码)：可以指定UTF-8或GBK，是可选属性。<font color=red><strong>常用的是UTF-8</strong></font>。</li>
+</ul>
+<blockquote>
+<p>Notes: </p>
+<ul>
+<li>参数的顺序必须是：<font color=red><strong>version 在前，encoding 在后</strong></font>，否则会报错。</li>
+<li>文档声明的语句必须牌XML文档的最左上角，不能有任何空格和换行。</li>
+</ul>
+</blockquote>
+<h4 id="2-1-2-编码问题"><a href="#2-1-2-编码问题" class="headerlink" title="2.1.2. 编码问题"></a>2.1.2. 编码问题</h4><p>用 encoding 属性说明文档的字符编码：<code>&lt;?xml version=&quot;1.0&quot; encoding=&quot;GBK&quot; ?&gt;</code></p>
+<p>记事本默认是 ANSI 的编码，在简体中文 Windows 操作系统中，ANSI 编码代表 GBK 编码。XML 文件保存的编码要与 encoding 的编码相同，不然解析会出错。</p>
+<h4 id="2-1-3-xml-文档编码问题注意"><a href="#2-1-3-xml-文档编码问题注意" class="headerlink" title="2.1.3. xml 文档编码问题注意"></a>2.1.3. xml 文档编码问题注意</h4><p>ecplise 工具会自动根据 xml 文件的文档声明自动设置保存时的编码，所以在 eclipse 中编写 xml 文件通常不会有编码问题。但是如果使用记事本工具，那么注意保存 xml 文件的编码和文件声明的编码保持一致！</p>
+<h3 id="2-2-标签（元素）"><a href="#2-2-标签（元素）" class="headerlink" title="2.2. 标签（元素）"></a>2.2. 标签（元素）</h3><h4 id="2-2-1-标签的格式"><a href="#2-2-1-标签的格式" class="headerlink" title="2.2.1. 标签的格式"></a>2.2.1. 标签的格式</h4><figure class="highlight xml"><table><tr><td class="gutter"><pre><span class="line">1</span><br></pre></td><td class="code"><pre><span class="line"><span class="tag">&lt;<span class="name">标签名</span>&gt;</span>标签内容(数据部分)<span class="tag">&lt;/<span class="name">标签名</span>&gt;</span></span><br></pre></td></tr></table></figure>
+<p>例：</p>
+<figure class="highlight xml"><table><tr><td class="gutter"><pre><span class="line">1</span><br></pre></td><td class="code"><pre><span class="line"><span class="tag">&lt;<span class="name">student</span>&gt;</span>张三<span class="tag">&lt;/<span class="name">student</span>&gt;</span></span><br></pre></td></tr></table></figure>
+<h4 id="2-2-2-标签分类"><a href="#2-2-2-标签分类" class="headerlink" title="2.2.2. 标签分类"></a>2.2.2. 标签分类</h4><p><strong>有主体标签</strong>：</p>
+<figure class="highlight xml"><table><tr><td class="gutter"><pre><span class="line">1</span><br></pre></td><td class="code"><pre><span class="line"><span class="tag">&lt;<span class="name">a</span>&gt;</span>www.moonzero.com<span class="tag">&lt;/<span class="name">a</span>&gt;</span></span><br></pre></td></tr></table></figure>
+<p><strong>无主体标签，即空标签</strong>：</p>
+<figure class="highlight xml"><table><tr><td class="gutter"><pre><span class="line">1</span><br><span class="line">2</span><br><span class="line">3</span><br></pre></td><td class="code"><pre><span class="line"><span class="tag">&lt;<span class="name">a</span>&gt;</span><span class="tag">&lt;/<span class="name">a</span>&gt;</span></span><br><span class="line"><span class="comment">&lt;!-- 简写 --&gt;</span></span><br><span class="line"><span class="tag">&lt;<span class="name">a</span>/&gt;</span></span><br></pre></td></tr></table></figure>
+<h4 id="2-2-3-标签命名规范"><a href="#2-2-3-标签命名规范" class="headerlink" title="2.2.3. 标签命名规范"></a>2.2.3. 标签命名规范</h4><ul>
+<li>标签名严格区分大小写，比如<code>&lt;A&gt;</code>和<code>&lt;a&gt;</code>是完全不同的标签。</li>
+<li>标签名不能以数字开头。只能以字母或下划线开头，可以是中文。</li>
+<li>标签名不能包含空格，比如<code>&lt;name of&gt;</code>。但是<code>&lt;name &gt;</code>写法是可以，但不推荐使用。</li>
+<li>标签名不能使用冒号(<code>:</code>)，是命名空间的特殊符号。</li>
+</ul>
+<h4 id="2-2-4-标签的注意事项"><a href="#2-2-4-标签的注意事项" class="headerlink" title="2.2.4. 标签的注意事项"></a>2.2.4. 标签的注意事项</h4><ul>
+<li>在一个 xml 文档中，只允许有一个根标签。</li>
+<li>标签中是可以有属性有多个，属性值必须使用引号括起来。</li>
+<li>开始标签和结束标签必须成对出现。</li>
+<li>标签可以嵌套标签，但是必须合理嵌套，不能出现交叉嵌套。</li>
+</ul>
+<p>错误的嵌套示例：</p>
+<figure class="highlight xml"><table><tr><td class="gutter"><pre><span class="line">1</span><br></pre></td><td class="code"><pre><span class="line"><span class="tag">&lt;<span class="name">a</span>&gt;</span>welcome to <span class="tag">&lt;<span class="name">b</span>&gt;</span>www.moonzero.com<span class="tag">&lt;/<span class="name">a</span>&gt;</span><span class="tag">&lt;/<span class="name">b</span>&gt;</span></span><br></pre></td></tr></table></figure>
+<font color=red>**对于 XML 标签中出现的所有空格和换行，XML 解析程序都会当作标签内容进行处理。**</font>
+
+<h3 id="2-3-属性"><a href="#2-3-属性" class="headerlink" title="2.3. 属性"></a>2.3. 属性</h3><h4 id="2-3-1-属性语法格式"><a href="#2-3-1-属性语法格式" class="headerlink" title="2.3.1. 属性语法格式"></a>2.3.1. 属性语法格式</h4><figure class="highlight xml"><table><tr><td class="gutter"><pre><span class="line">1</span><br></pre></td><td class="code"><pre><span class="line"><span class="tag">&lt;<span class="name">开始标签</span> <span class="attr">属性名</span>=<span class="string">&quot;属性值&quot;</span>  <span class="attr">属性值</span> = <span class="string">&#x27;属性值&#x27;</span>&gt;</span>标签内容(数据部分)<span class="tag">&lt;/<span class="name">结束标签</span>&gt;</span></span><br></pre></td></tr></table></figure>
+<p>示例：</p>
+<figure class="highlight xml"><table><tr><td class="gutter"><pre><span class="line">1</span><br></pre></td><td class="code"><pre><span class="line"><span class="tag">&lt;<span class="name">name</span> <span class="attr">id</span>=<span class="string">&quot;001&quot;</span>&gt;</span>李四<span class="tag">&lt;/<span class="name">name</span>&gt;</span></span><br></pre></td></tr></table></figure>
+<h4 id="2-3-2-注意事项"><a href="#2-3-2-注意事项" class="headerlink" title="2.3.2. 注意事项"></a>2.3.2. 注意事项</h4><ul>
+<li>属性值必须放在双引号或单引号中，不能省略引号，也不能单双混用。</li>
+<li>属性必须放在开始标签中，不能写在结束标签中。</li>
+<li>在一个标签中，属性可以有多个，属性之前使用空格分隔即可。但不能出现同名的属性。</li>
+</ul>
+<h3 id="2-4-注释"><a href="#2-4-注释" class="headerlink" title="2.4. 注释"></a>2.4. 注释</h3><h4 id="2-4-1-注释语法格式"><a href="#2-4-1-注释语法格式" class="headerlink" title="2.4.1. 注释语法格式"></a>2.4.1. 注释语法格式</h4><figure class="highlight xml"><table><tr><td class="gutter"><pre><span class="line">1</span><br></pre></td><td class="code"><pre><span class="line"><span class="comment">&lt;!-- xml 注释内容 --&gt;</span></span><br></pre></td></tr></table></figure>
+<h4 id="2-4-2-注意事项"><a href="#2-4-2-注意事项" class="headerlink" title="2.4.2. 注意事项"></a>2.4.2. 注意事项</h4><ul>
+<li>注释不能嵌套。</li>
+<li>XML 注释不能出现在文档声明语句之上。</li>
+</ul>
+<h3 id="2-5-转义字符"><a href="#2-5-转义字符" class="headerlink" title="2.5. 转义字符"></a>2.5. 转义字符</h3><p>有些符号在 XML 语言中是有特殊含义的，如果想原样输出 XML 中的特殊字符，那么就需要对其进行转义。</p>
+<p><strong>转义的语法格式</strong>：<font color=red><strong>以<code>&amp;</code>开始，以<code>;</code>结束</strong></font></p>
+<div class="table-container">
+<table>
+<thead>
+<tr>
+<th style="text-align:center">特殊字符</th>
+<th style="text-align:center">替代字符</th>
+<th>英文</th>
+</tr>
+</thead>
+<tbody>
+<tr>
+<td style="text-align:center"><code>&amp;</code></td>
+<td style="text-align:center"><code>&amp;amp;</code></td>
+<td>ampersand</td>
+</tr>
+<tr>
+<td style="text-align:center"><code>&lt;</code></td>
+<td style="text-align:center"><code>&amp;lt;</code></td>
+<td>less than</td>
+</tr>
+<tr>
+<td style="text-align:center"><code>&gt;</code></td>
+<td style="text-align:center"><code>&amp;gt;</code></td>
+<td>greater than</td>
+</tr>
+<tr>
+<td style="text-align:center"><code>&quot;</code></td>
+<td style="text-align:center"><code>&amp;quot;</code></td>
+<td>quote</td>
+</tr>
+<tr>
+<td style="text-align:center"><code>&#39;</code></td>
+<td style="text-align:center"><code>&amp;apos;</code></td>
+<td>apostrophe</td>
+</tr>
+</tbody>
+</table>
+</div>
+<h3 id="2-6-CDATA-区"><a href="#2-6-CDATA-区" class="headerlink" title="2.6. CDATA 区"></a>2.6. CDATA 区</h3><p>XML 文档中的所有文本均会被解析器解析。而 CDATA 区的作用是：能够保证在CDATA区的字符数据能够原样输出，不会被浏览器解析。</p>
+<h4 id="2-6-1-语法格式"><a href="#2-6-1-语法格式" class="headerlink" title="2.6.1. 语法格式"></a>2.6.1. 语法格式</h4><p>CDATA 部分由 “<code>&lt;![CDATA[</code>“ 开始，由 “<code>]]&gt;</code>“ 结束，其内容可以换行</p>
+<figure class="highlight xml"><table><tr><td class="gutter"><pre><span class="line">1</span><br></pre></td><td class="code"><pre><span class="line">&lt;![CDATA[字符数据(文本内容)]]</span><br></pre></td></tr></table></figure>
+<p>示例：</p>
+<figure class="highlight xml"><table><tr><td class="gutter"><pre><span class="line">1</span><br><span class="line">2</span><br><span class="line">3</span><br><span class="line">4</span><br><span class="line">5</span><br><span class="line">6</span><br><span class="line">7</span><br><span class="line">8</span><br><span class="line">9</span><br><span class="line">10</span><br><span class="line">11</span><br><span class="line">12</span><br><span class="line">13</span><br><span class="line">14</span><br><span class="line">15</span><br></pre></td><td class="code"><pre><span class="line"><span class="tag">&lt;<span class="name">script</span>&gt;</span><span class="language-handlebars"><span class="language-xml"></span></span></span><br><span class="line"><span class="language-xml"><span class="language-handlebars">&lt;![CDATA[</span></span></span><br><span class="line"><span class="language-xml"><span class="language-handlebars">function matchwo(a,b)</span></span></span><br><span class="line"><span class="language-xml"><span class="language-handlebars">&#123;</span></span></span><br><span class="line"><span class="language-xml"><span class="language-handlebars">    if (a &lt; b &amp;&amp; a &lt; 0) then</span></span></span><br><span class="line"><span class="language-xml"><span class="language-handlebars">    &#123;</span></span></span><br><span class="line"><span class="language-xml"><span class="language-handlebars">        return 1;</span></span></span><br><span class="line"><span class="language-xml"><span class="language-handlebars">    &#125;</span></span></span><br><span class="line"><span class="language-xml"><span class="language-handlebars">    else</span></span></span><br><span class="line"><span class="language-xml"><span class="language-handlebars">    &#123;</span></span></span><br><span class="line"><span class="language-xml"><span class="language-handlebars">        return 0;</span></span></span><br><span class="line"><span class="language-xml"><span class="language-handlebars">    &#125;</span></span></span><br><span class="line"><span class="language-xml"><span class="language-handlebars">&#125;</span></span></span><br><span class="line"><span class="language-xml"><span class="language-handlebars">]]&gt;</span></span></span><br><span class="line"><span class="language-xml"><span class="language-handlebars"></span></span><span class="tag">&lt;/<span class="name">script</span>&gt;</span></span><br></pre></td></tr></table></figure>
+<h4 id="2-6-2-注意事项"><a href="#2-6-2-注意事项" class="headerlink" title="2.6.2. 注意事项"></a>2.6.2. 注意事项</h4><ul>
+<li>CDATA 部分不能包含字符串 “<code>]]&gt;</code>“。也不允许嵌套的 CDATA 部分。</li>
+<li>标记 CDATA 部分结尾的 “<code>]]&gt;</code>“ 不能包含空格或换行。</li>
+</ul>
+<h2 id="3-DTD-约束"><a href="#3-DTD-约束" class="headerlink" title="3. DTD 约束"></a>3. DTD 约束</h2><p>DTD 全称：Document Type Definition 文档类型定义</p>
+<h3 id="3-1-DTD-的分类"><a href="#3-1-DTD-的分类" class="headerlink" title="3.1. DTD 的分类"></a>3.1. DTD 的分类</h3><p>按引用位置来分类：</p>
+<ul>
+<li>内部 DTD：约束直接写在XML文档中（不使用）</li>
+<li>外部 DTD：单独使用一个文件来写约束，通过引用来使用</li>
+</ul>
+<h3 id="3-2-DTD-文档声明的两种形式（引用方式）"><a href="#3-2-DTD-文档声明的两种形式（引用方式）" class="headerlink" title="3.2. DTD 文档声明的两种形式（引用方式）"></a>3.2. DTD 文档声明的两种形式（引用方式）</h3><h4 id="3-2-1-SYSTEM"><a href="#3-2-1-SYSTEM" class="headerlink" title="3.2.1. SYSTEM"></a>3.2.1. SYSTEM</h4><p><strong>含义</strong>：表示该DTD约束是个人或是某个组织的，不公开的，私有的，使用范围比较窄</p>
+<p><strong>语法格式</strong>：</p>
+<figure class="highlight xml"><table><tr><td class="gutter"><pre><span class="line">1</span><br></pre></td><td class="code"><pre><span class="line"><span class="meta">&lt;!DOCTYPE 根标签 <span class="keyword">SYSTEM</span> <span class="string">&quot;DTD 文件的地址和名字&quot;</span>&gt;</span></span><br></pre></td></tr></table></figure>
+<p>示例：</p>
+<figure class="highlight xml"><table><tr><td class="gutter"><pre><span class="line">1</span><br></pre></td><td class="code"><pre><span class="line"><span class="meta">&lt;!DOCTYPE <span class="keyword">bookshelf</span> <span class="keyword">SYSTEM</span> <span class="string">&quot;book.dtd&quot;</span>&gt;</span></span><br></pre></td></tr></table></figure>
+<p>文件地址例子说明：</p>
+<ul>
+<li>“../book.dtd” 在上一层目录中</li>
+<li>“../dtd/book.dtd” 在上一层目录的dtd文件夹中</li>
+</ul>
+<h4 id="3-2-2-PUBLIC"><a href="#3-2-2-PUBLIC" class="headerlink" title="3.2.2. PUBLIC"></a>3.2.2. PUBLIC</h4><p><strong>含义</strong>：当前的 DTD 是公开的，可以广泛使用的，使用范围比较广。</p>
+<p><strong>语法格式</strong>：</p>
+<figure class="highlight xml"><table><tr><td class="gutter"><pre><span class="line">1</span><br></pre></td><td class="code"><pre><span class="line"><span class="meta">&lt;!DOCTYPE 根元素 <span class="keyword">PUBLIC</span> <span class="string">&quot;DTD 的描述&quot;</span> <span class="string">&quot;DTD 文件的地址&quot;</span>&gt;</span></span><br></pre></td></tr></table></figure>
+<p>示例：</p>
+<figure class="highlight xml"><table><tr><td class="gutter"><pre><span class="line">1</span><br><span class="line">2</span><br></pre></td><td class="code"><pre><span class="line"><span class="meta">&lt;!DOCTYPE <span class="keyword">struts</span> <span class="keyword">PUBLIC</span> <span class="string">&quot;-//Apache Software Foundation//DTD Struts Configuration 2.1//EN&quot;</span> </span></span><br><span class="line"><span class="meta">                        <span class="string">&quot;http://struts.apache.org/dtds/struts-2.1.dtd&quot;</span>&gt;</span></span><br></pre></td></tr></table></figure>
+<h4 id="3-2-3-DTD-文件描述"><a href="#3-2-3-DTD-文件描述" class="headerlink" title="3.2.3. DTD 文件描述"></a>3.2.3. DTD 文件描述</h4><p>DTD 文件描述由<strong>四个组成部分</strong>：<code>前缀//DTD 文件的所有者//DTD 版本信息//语言</code></p>
+<p>前缀部分有以下三个取值：</p>
+<ul>
+<li><code>ISO</code>： 当前的 DTD 是符合 ISO 标准的(国际化标准)</li>
+<li><code>+</code>： 非 ISO 标准的 DTD，经过了改进</li>
+<li><code>-</code>： 非 ISO 标准的 DTD，没有改进过的</li>
+</ul>
+<h3 id="3-3-DTD语法：元素约束"><a href="#3-3-DTD语法：元素约束" class="headerlink" title="3.3. DTD语法：元素约束"></a>3.3. DTD语法：元素约束</h3><h4 id="3-3-1-元素约束语法格式"><a href="#3-3-1-元素约束语法格式" class="headerlink" title="3.3.1. 元素约束语法格式"></a>3.3.1. 元素约束语法格式</h4><figure class="highlight xml"><table><tr><td class="gutter"><pre><span class="line">1</span><br></pre></td><td class="code"><pre><span class="line"><span class="meta">&lt;!ELEMENT 元素名(标签名) 元素类型或元素内容&gt;</span></span><br></pre></td></tr></table></figure>
+<p>上面三个要素必须要<font color=red><strong>空格分隔，空格不能省略</strong></font>。</p>
+<h4 id="3-3-2-元素的类别（3种）"><a href="#3-3-2-元素的类别（3种）" class="headerlink" title="3.3.2. 元素的类别（3种）"></a>3.3.2. 元素的类别（3种）</h4><ul>
+<li>(#PCDATA)：Parsed Character Data 被解析的字符数据（文本内容）</li>
+<li>EMPTY：空的(表示一个空的标签) 如： <code>&lt;BR/&gt;</code> 的 DTD 为：<code>&lt;!ELEMENT BR EMPTY&gt;</code></li>
+<li>ANY：任意的内容都可以</li>
+</ul>
+<h4 id="3-3-3-元素的内容修饰符号"><a href="#3-3-3-元素的内容修饰符号" class="headerlink" title="3.3.3. 元素的内容修饰符号"></a>3.3.3. 元素的内容修饰符号</h4><div class="table-container">
+<table>
+<thead>
+<tr>
+<th style="text-align:center">符号</th>
+<th>描述</th>
+<th>示例</th>
+<th></th>
+</tr>
+</thead>
+<tbody>
+<tr>
+<td style="text-align:center"><code>?</code></td>
+<td>表示该对象可以出现，但只能出现一次</td>
+<td><code>(author?)</code></td>
+<td>author 出现 0~1 次</td>
+</tr>
+<tr>
+<td style="text-align:center"><code>*</code></td>
+<td>表示该对象允许出现任意多次，也可以是零次</td>
+<td><code>(author*)</code></td>
+<td>author 出现 0~n 次</td>
+</tr>
+<tr>
+<td style="text-align:center"><code>+</code></td>
+<td>表示该对象最少出现一次，可以出现多次</td>
+<td><code>(contact+)</code></td>
+<td>contact 出现 1~n 次</td>
+</tr>
+<tr>
+<td style="text-align:center"><code>()</code></td>
+<td>用来给元素分组</td>
+<td><code>(name,gender,phone)</code></td>
+<td></td>
+</tr>
+<tr>
+<td style="text-align:center">`</td>
+<td>`</td>
+<td>表明在列出的对象中选择一个</td>
+<td>`(title\</td>
+<td>author\</td>
+<td>price)`</td>
+<td>包含这一个子元素，三者选一。</td>
+</tr>
+<tr>
+<td style="text-align:center"><code>,</code></td>
+<td>表示对象必须按指定的顺序出现</td>
+<td><code>(title,author,price)</code></td>
+<td>包含这三个子元素，而且元素要依次出现，出现一次。</td>
+</tr>
+</tbody>
+</table>
+</div>
+<h4 id="3-3-4-元素约束示例"><a href="#3-3-4-元素约束示例" class="headerlink" title="3.3.4. 元素约束示例"></a>3.3.4. 元素约束示例</h4><figure class="highlight xml"><table><tr><td class="gutter"><pre><span class="line">1</span><br><span class="line">2</span><br><span class="line">3</span><br><span class="line">4</span><br><span class="line">5</span><br></pre></td><td class="code"><pre><span class="line"><span class="meta">&lt;!ELEMENT <span class="keyword">bookshelf</span> (<span class="keyword">book</span>+)&gt;</span></span><br><span class="line"><span class="meta">&lt;!ELEMENT <span class="keyword">book</span> (<span class="keyword">title</span>,<span class="keyword">author</span>,<span class="keyword">price</span>)&gt;</span></span><br><span class="line"><span class="meta">&lt;!ELEMENT <span class="keyword">title</span> (<span class="keyword">#PCDATA</span>)&gt;</span></span><br><span class="line"><span class="meta">&lt;!ELEMENT <span class="keyword">author</span> (<span class="keyword">#PCDATA</span>)&gt;</span></span><br><span class="line"><span class="meta">&lt;!ELEMENT <span class="keyword">price</span> (<span class="keyword">#PCDATA</span>)&gt;</span></span><br></pre></td></tr></table></figure>
+<h3 id="3-4-DTD语法：属性约束"><a href="#3-4-DTD语法：属性约束" class="headerlink" title="3.4. DTD语法：属性约束"></a>3.4. DTD语法：属性约束</h3><h4 id="3-4-1-语法格式"><a href="#3-4-1-语法格式" class="headerlink" title="3.4.1. 语法格式"></a>3.4.1. 语法格式</h4><p>语法：</p>
+<figure class="highlight xml"><table><tr><td class="gutter"><pre><span class="line">1</span><br><span class="line">2</span><br><span class="line">3</span><br><span class="line">4</span><br><span class="line">5</span><br></pre></td><td class="code"><pre><span class="line"><span class="meta">&lt;!ATTLIST 元素名</span></span><br><span class="line"><span class="meta">	属性名 属性类型 类型选项</span></span><br><span class="line"><span class="meta">	属性名 属性类型 类型选项</span></span><br><span class="line"><span class="meta">	……</span></span><br><span class="line"><span class="meta">&gt;</span></span><br></pre></td></tr></table></figure>
+<p><strong>属性类型</strong>：</p>
+<div class="table-container">
+<table>
+<thead>
+<tr>
+<th>属性类型</th>
+<th>说明</th>
+</tr>
+</thead>
+<tbody>
+<tr>
+<td><code>CDATA</code></td>
+<td>Character Data字符数据类型，文本内容</td>
+</tr>
+<tr>
+<td>`(enum1</td>
+<td>enum2</td>
+<td>enum3)`</td>
+<td>枚举类型，属性的取值从这几种中选择一种</td>
+</tr>
+<tr>
+<td><code>ID</code></td>
+<td>属性值在整个 XML 文件中是唯一，而且命名不能以数字开头</td>
+</tr>
+</tbody>
+</table>
+</div>
+<p><strong>类型选项</strong>：</p>
+<div class="table-container">
+<table>
+<thead>
+<tr>
+<th>类型选项</th>
+<th>选项的含义</th>
+</tr>
+</thead>
+<tbody>
+<tr>
+<td><code>#REQUIRED</code></td>
+<td>必须的属性</td>
+</tr>
+<tr>
+<td><code>#IMPLIED</code></td>
+<td>可选的属性</td>
+</tr>
+<tr>
+<td><code>#FIXED value</code></td>
+<td>属性的值是固定的，只能取 value</td>
+</tr>
+<tr>
+<td>默认值</td>
+<td>直接写就是默认值</td>
+</tr>
+</tbody>
+</table>
+</div>
+<h4 id="3-4-2-属性约束示例"><a href="#3-4-2-属性约束示例" class="headerlink" title="3.4.2. 属性约束示例"></a>3.4.2. 属性约束示例</h4><p>属性约束（两种写法）</p>
+<figure class="highlight xml"><table><tr><td class="gutter"><pre><span class="line">1</span><br><span class="line">2</span><br><span class="line">3</span><br><span class="line">4</span><br><span class="line">5</span><br><span class="line">6</span><br><span class="line">7</span><br><span class="line">8</span><br><span class="line">9</span><br><span class="line">10</span><br><span class="line">11</span><br></pre></td><td class="code"><pre><span class="line"><span class="meta">&lt;!ATTLIST <span class="keyword">article</span> <span class="keyword">author</span> <span class="keyword">CDATA</span> <span class="keyword">#REQUIRED</span>&gt;</span></span><br><span class="line"><span class="meta">&lt;!ATTLIST <span class="keyword">article</span> <span class="keyword">editor</span> <span class="keyword">CDATA</span> <span class="keyword">#IMPLIED</span>&gt;</span></span><br><span class="line"><span class="meta">&lt;!ATTLIST <span class="keyword">article</span> <span class="keyword">date</span> <span class="keyword">CDATA</span> <span class="keyword">#IMPLIED</span>&gt;</span></span><br><span class="line"><span class="meta">&lt;!ATTLIST <span class="keyword">article</span> <span class="keyword">edition</span> <span class="keyword">CDATA</span> <span class="keyword">#IMPLIED</span>&gt;</span></span><br><span class="line"></span><br><span class="line"><span class="meta">&lt;!ATTLIST <span class="keyword">article</span> </span></span><br><span class="line"><span class="meta">	<span class="keyword">author</span> <span class="keyword">CDATA</span> <span class="keyword">#REQUIRED</span></span></span><br><span class="line"><span class="meta">	<span class="keyword">editor</span> <span class="keyword">CDATA</span> <span class="keyword">#IMPLIED</span></span></span><br><span class="line"><span class="meta">	<span class="keyword">date</span> <span class="keyword">CDATA</span> <span class="keyword">#IMPLIED</span></span></span><br><span class="line"><span class="meta">	<span class="keyword">edition</span> <span class="keyword">CDATA</span> <span class="keyword">#IMPLIED</span></span></span><br><span class="line"><span class="meta">&gt;</span></span><br></pre></td></tr></table></figure>
+<h3 id="3-5-DTD-综合案例"><a href="#3-5-DTD-综合案例" class="headerlink" title="3.5. DTD 综合案例"></a>3.5. DTD 综合案例</h3><p>案例需求：</p>
+<ol>
+<li>根元素是 contactList，其根元素包含 1~n 个 contact 子元素，contact 子元素包含 name,gender,phone,qq,email 元素这个元素必须依次出现，并且元素中都可以包含文本元素(<code>#PCDATA</code>)</li>
+<li>其中 contact 有 id 属性，必须，并且不能重复，不能以数字开头</li>
+<li>contact 有一个可选的属性 vip，取值是 true 或 false</li>
+<li>按此 DTD 约束创建 XML 文件，并添加 3 条 contact 记录。</li>
+</ol>
+<p>案例 DTD 约束文件：</p>
+<figure class="highlight xml"><table><tr><td class="gutter"><pre><span class="line">1</span><br><span class="line">2</span><br><span class="line">3</span><br><span class="line">4</span><br><span class="line">5</span><br><span class="line">6</span><br><span class="line">7</span><br><span class="line">8</span><br><span class="line">9</span><br><span class="line">10</span><br><span class="line">11</span><br><span class="line">12</span><br></pre></td><td class="code"><pre><span class="line"><span class="meta">&lt;!ELEMENT <span class="keyword">contactList</span> (<span class="keyword">contact</span>+)&gt;</span></span><br><span class="line"><span class="meta">&lt;!ELEMENT <span class="keyword">contact</span> (<span class="keyword">name</span>,<span class="keyword">gender</span>,<span class="keyword">phone</span>,<span class="keyword">qq</span>,<span class="keyword">email</span>)&gt;</span></span><br><span class="line"><span class="meta">&lt;!ELEMENT <span class="keyword">name</span> (<span class="keyword">#PCDATA</span>)&gt;</span></span><br><span class="line"><span class="meta">&lt;!ELEMENT <span class="keyword">gender</span> (<span class="keyword">#PCDATA</span>)&gt;</span></span><br><span class="line"><span class="meta">&lt;!ELEMENT <span class="keyword">phone</span> (<span class="keyword">#PCDATA</span>)&gt;</span></span><br><span class="line"><span class="meta">&lt;!ELEMENT <span class="keyword">qq</span> (<span class="keyword">#PCDATA</span>)&gt;</span></span><br><span class="line"><span class="meta">&lt;!ELEMENT <span class="keyword">email</span> (<span class="keyword">#PCDATA</span>)&gt;</span></span><br><span class="line"></span><br><span class="line"><span class="meta">&lt;!ATTLIST <span class="keyword">contact</span></span></span><br><span class="line"><span class="meta">	<span class="keyword">id</span> <span class="keyword">ID</span> <span class="keyword">#REQUIRED</span></span></span><br><span class="line"><span class="meta">	<span class="keyword">vip</span> (<span class="keyword">true</span>|<span class="keyword">false</span>) <span class="keyword">#IMPLIED</span></span></span><br><span class="line"><span class="meta">&gt;</span></span><br></pre></td></tr></table></figure>
+<p>案例 XML 文件</p>
+<figure class="highlight xml"><table><tr><td class="gutter"><pre><span class="line">1</span><br><span class="line">2</span><br><span class="line">3</span><br><span class="line">4</span><br><span class="line">5</span><br><span class="line">6</span><br><span class="line">7</span><br><span class="line">8</span><br><span class="line">9</span><br><span class="line">10</span><br><span class="line">11</span><br><span class="line">12</span><br><span class="line">13</span><br><span class="line">14</span><br><span class="line">15</span><br><span class="line">16</span><br><span class="line">17</span><br><span class="line">18</span><br></pre></td><td class="code"><pre><span class="line"><span class="meta">&lt;?xml version=<span class="string">&quot;1.0&quot;</span> encoding=<span class="string">&quot;UTF-8&quot;</span>?&gt;</span></span><br><span class="line"><span class="meta">&lt;!DOCTYPE <span class="keyword">contactList</span> <span class="keyword">SYSTEM</span> <span class="string">&quot;contact.dtd&quot;</span> &gt;</span></span><br><span class="line"><span class="tag">&lt;<span class="name">contactList</span>&gt;</span></span><br><span class="line">	<span class="tag">&lt;<span class="name">contact</span> <span class="attr">id</span>=<span class="string">&quot;S100&quot;</span> <span class="attr">vip</span>=<span class="string">&quot;true&quot;</span>&gt;</span></span><br><span class="line">		<span class="tag">&lt;<span class="name">name</span>&gt;</span>张三<span class="tag">&lt;/<span class="name">name</span>&gt;</span></span><br><span class="line">		<span class="tag">&lt;<span class="name">gender</span>&gt;</span>男<span class="tag">&lt;/<span class="name">gender</span>&gt;</span></span><br><span class="line">		<span class="tag">&lt;<span class="name">phone</span>&gt;</span>13565784567<span class="tag">&lt;/<span class="name">phone</span>&gt;</span></span><br><span class="line">		<span class="tag">&lt;<span class="name">qq</span>&gt;</span>394832048<span class="tag">&lt;/<span class="name">qq</span>&gt;</span></span><br><span class="line">		<span class="tag">&lt;<span class="name">email</span>&gt;</span>zhang@moonzero.com<span class="tag">&lt;/<span class="name">email</span>&gt;</span></span><br><span class="line">	<span class="tag">&lt;/<span class="name">contact</span>&gt;</span></span><br><span class="line">	<span class="tag">&lt;<span class="name">contact</span> <span class="attr">id</span>=<span class="string">&quot;S200&quot;</span>&gt;</span></span><br><span class="line">		<span class="tag">&lt;<span class="name">name</span>&gt;</span>李四<span class="tag">&lt;/<span class="name">name</span>&gt;</span></span><br><span class="line">		<span class="tag">&lt;<span class="name">gender</span>&gt;</span>女<span class="tag">&lt;/<span class="name">gender</span>&gt;</span></span><br><span class="line">		<span class="tag">&lt;<span class="name">phone</span>&gt;</span>15687960980<span class="tag">&lt;/<span class="name">phone</span>&gt;</span></span><br><span class="line">		<span class="tag">&lt;<span class="name">qq</span>&gt;</span>109456893<span class="tag">&lt;/<span class="name">qq</span>&gt;</span></span><br><span class="line">		<span class="tag">&lt;<span class="name">email</span>&gt;</span>li@moonzero.com<span class="tag">&lt;/<span class="name">email</span>&gt;</span></span><br><span class="line">	<span class="tag">&lt;/<span class="name">contact</span>&gt;</span></span><br><span class="line"><span class="tag">&lt;/<span class="name">contactList</span>&gt;</span></span><br></pre></td></tr></table></figure>
+<h2 id="4-Schema-约束"><a href="#4-Schema-约束" class="headerlink" title="4. Schema 约束"></a>4. Schema 约束</h2><p>Schema <code>/&#39;ski:mə/</code>  概要，纲要</p>
+<h3 id="4-1-Schema-约束概述"><a href="#4-1-Schema-约束概述" class="headerlink" title="4.1. Schema 约束概述"></a>4.1. Schema 约束概述</h3><ol>
+<li>扩展名(XML Schema Definition) XML 模式定义：xsd</li>
+<li>Schema 约束文件本身也是个 XML 文件，所以它也有根元素，根标签(元素)的名字叫 schema</li>
+</ol>
+<p>模式文档和实例文档的概念</p>
+<ul>
+<li>制定约束的 XML 文档称为：模式文档 (类似于：类)</li>
+<li>被模式该当约束的 XML 文档称为：实例文档 (类似于：对象)</li>
+</ul>
+<blockquote>
+<p>Notes: <font color=purple><strong>Schema 也被约束，被官方Schema约束文档所约束。</strong></font></p>
+</blockquote>
+<h3 id="4-2-Schema-的命名空间"><a href="#4-2-Schema-的命名空间" class="headerlink" title="4.2. Schema 的命名空间"></a>4.2. Schema 的命名空间</h3><h4 id="4-2-1-概述"><a href="#4-2-1-概述" class="headerlink" title="4.2.1. 概述"></a>4.2.1. 概述</h4><p>由于 XML 中的元素名是预定义的，当两个不同的文档使用相同的元素名时，就会发生<strong>命名冲突</strong>的问题。</p>
+<p>Schema 命名空间的作用：用来描述实例文档使用的标签，属性是来自于哪一个模式文档。避免标签名、属性名冲突的问题。</p>
+<h4 id="4-2-2-名称空间声明的一般形式"><a href="#4-2-2-名称空间声明的一般形式" class="headerlink" title="4.2.2. 名称空间声明的一般形式"></a>4.2.2. 名称空间声明的一般形式</h4><p>名称空间声明的一般形式为：</p>
+<ul>
+<li>第一部分是一个关键字<code>xmlns:</code></li>
+<li>第二部分是名称空间的前缀</li>
+<li>第三部分是一个等号</li>
+<li>第四部分是双引号，将第五部分的名称空间标识URI 包括起来</li>
+</ul>
+<figure class="highlight xml"><table><tr><td class="gutter"><pre><span class="line">1</span><br></pre></td><td class="code"><pre><span class="line">xmlns:xs=&quot;http://www.w3.org/2001/XMLSchema&quot;</span><br></pre></td></tr></table></figure>
+<h4 id="4-2-3-XML-Namespace-xmlns-属性"><a href="#4-2-3-XML-Namespace-xmlns-属性" class="headerlink" title="4.2.3. XML Namespace (xmlns) 属性"></a>4.2.3. XML Namespace (xmlns) 属性</h4><p>XML 命名空间属性被放置于某个元素的开始标签之中，并使用以下的语法：</p>
+<figure class="highlight xml"><table><tr><td class="gutter"><pre><span class="line">1</span><br></pre></td><td class="code"><pre><span class="line">xmlns:前缀=&quot;URI 地址&quot;</span><br></pre></td></tr></table></figure>
+<p>当一个命名空间被定义在某个元素的开始标签中时，所有带有相同前缀的子元素都会与同一个命名空间相关联。</p>
+<blockquote>
+<p>Notes: <font color=red><strong>用于标示命名空间的地址不会被解析器用于查找信息。其唯一的作用是赋予命名空间一个唯一的名称。</strong></font></p>
+</blockquote>
+<h4 id="4-2-4-统一资源标示符（Uniform-Resource-Identifier-URI-）"><a href="#4-2-4-统一资源标示符（Uniform-Resource-Identifier-URI-）" class="headerlink" title="4.2.4. 统一资源标示符（Uniform Resource Identifier (URI)）"></a>4.2.4. 统一资源标示符（Uniform Resource Identifier (URI)）</h4><p>统一资源标示符是一串可以标示因特网资源的字符。最常用的 URI     是用来标示因特网域名地址的统一资源定位器(URL)。例如：</p>
+<figure class="highlight plaintext"><table><tr><td class="gutter"><pre><span class="line">1</span><br></pre></td><td class="code"><pre><span class="line">http://www.baidu.com/xxx</span><br></pre></td></tr></table></figure>
+<h4 id="4-2-5-默认的命名空间（Default-Namespaces）"><a href="#4-2-5-默认的命名空间（Default-Namespaces）" class="headerlink" title="4.2.5. 默认的命名空间（Default Namespaces）"></a>4.2.5. 默认的命名空间（Default Namespaces）</h4><p>默认命名空间格式：</p>
+<figure class="highlight xml"><table><tr><td class="gutter"><pre><span class="line">1</span><br></pre></td><td class="code"><pre><span class="line">xmlns=&quot;namespaceURI&quot;</span><br></pre></td></tr></table></figure>
+<p>为某个元素定义默认的命名空间可以让我们省去在所有的子元素中使用前缀的工作。<font color=red><strong>一个 XML 文件中只能使用一个默认的命名空间</strong></font>。例如：</p>
+<figure class="highlight xml"><table><tr><td class="gutter"><pre><span class="line">1</span><br></pre></td><td class="code"><pre><span class="line"><span class="tag">&lt;<span class="name">table</span> <span class="attr">xmlns</span>=<span class="string">&quot;http://www.moonzero.com/html4&quot;</span>&gt;</span></span><br></pre></td></tr></table></figure>
+<h4 id="4-2-6-命名冲突解决方案"><a href="#4-2-6-命名冲突解决方案" class="headerlink" title="4.2.6. 命名冲突解决方案"></a>4.2.6. 命名冲突解决方案</h4><p><strong>使用前缀来避免命名冲突</strong>：</p>
+<figure class="highlight xml"><table><tr><td class="gutter"><pre><span class="line">1</span><br><span class="line">2</span><br><span class="line">3</span><br><span class="line">4</span><br><span class="line">5</span><br><span class="line">6</span><br><span class="line">7</span><br><span class="line">8</span><br><span class="line">9</span><br><span class="line">10</span><br><span class="line">11</span><br><span class="line">12</span><br><span class="line">13</span><br></pre></td><td class="code"><pre><span class="line">// 代表表格</span><br><span class="line"><span class="tag">&lt;<span class="name">h:table</span>&gt;</span></span><br><span class="line">	<span class="tag">&lt;<span class="name">h:tr</span>&gt;</span></span><br><span class="line">	<span class="tag">&lt;<span class="name">h:td</span>&gt;</span>Apples<span class="tag">&lt;/<span class="name">h:td</span>&gt;</span></span><br><span class="line">	<span class="tag">&lt;<span class="name">h:td</span>&gt;</span>Bananas<span class="tag">&lt;/<span class="name">h:td</span>&gt;</span></span><br><span class="line">	<span class="tag">&lt;/<span class="name">h:tr</span>&gt;</span></span><br><span class="line"><span class="tag">&lt;/<span class="name">h:table</span>&gt;</span></span><br><span class="line">// 代表家具</span><br><span class="line"><span class="tag">&lt;<span class="name">f:table</span>&gt;</span></span><br><span class="line">	<span class="tag">&lt;<span class="name">f:name</span>&gt;</span>African Coffee Table<span class="tag">&lt;/<span class="name">f:name</span>&gt;</span></span><br><span class="line">	<span class="tag">&lt;<span class="name">f:width</span>&gt;</span>80<span class="tag">&lt;/<span class="name">f:width</span>&gt;</span></span><br><span class="line">	<span class="tag">&lt;<span class="name">f:length</span>&gt;</span>120<span class="tag">&lt;/<span class="name">f:length</span>&gt;</span></span><br><span class="line"><span class="tag">&lt;/<span class="name">f:table</span>&gt;</span></span><br></pre></td></tr></table></figure>
+<p>两个文档都使用了不同的名称来命名它们的 <code>&lt;table&gt;</code> 元素 (<code>&lt;h:table&gt;</code> 和 <code>&lt;f:table&gt;</code>)。通过使用前缀，创建了两种不同类型的 <code>&lt;table&gt;</code> 元素。</p>
+<p><strong>使用命名空间（Namespaces）解决命名冲突</strong>：</p>
+<figure class="highlight xml"><table><tr><td class="gutter"><pre><span class="line">1</span><br><span class="line">2</span><br><span class="line">3</span><br><span class="line">4</span><br><span class="line">5</span><br><span class="line">6</span><br><span class="line">7</span><br></pre></td><td class="code"><pre><span class="line"><span class="meta">&lt;?xml version=<span class="string">&quot;1.0&quot;</span> encoding=<span class="string">&quot;UTF-8&quot;</span>?&gt;</span></span><br><span class="line"><span class="tag">&lt;<span class="name">xs:schema</span> </span></span><br><span class="line"><span class="tag">	<span class="attr">xmlns:xs</span>=<span class="string">&quot;http://www.w3.org/2001/XMLSchema&quot;</span> </span></span><br><span class="line"><span class="tag">	<span class="attr">targetNamespace</span>=<span class="string">&quot;http://www.example.org/NewXMLSchema&quot;</span> </span></span><br><span class="line"><span class="tag">	<span class="attr">xmlns:tns</span>=<span class="string">&quot;http://www.example.org/NewXMLSchema&quot;</span> </span></span><br><span class="line"><span class="tag">	<span class="attr">elementFormDefault</span>=<span class="string">&quot;qualified&quot;</span>&gt;</span></span><br><span class="line"><span class="tag">&lt;/<span class="name">xs:schema</span>&gt;</span></span><br></pre></td></tr></table></figure>
+<p>与仅仅使用前缀不同，可以为标签添加了一个 <code>xmlns</code> 属性，这样就为前缀赋予了一个与某个命名空间相关联的限定名称</p>
+<h3 id="4-3-Schema-文档使用与解析"><a href="#4-3-Schema-文档使用与解析" class="headerlink" title="4.3. Schema 文档使用与解析"></a>4.3. Schema 文档使用与解析</h3><h4 id="4-3-1-使用示例"><a href="#4-3-1-使用示例" class="headerlink" title="4.3.1. 使用示例"></a>4.3.1. 使用示例</h4><p>示例 Schema 模式文档：note.xsd：</p>
+<figure class="highlight xml"><table><tr><td class="gutter"><pre><span class="line">1</span><br><span class="line">2</span><br><span class="line">3</span><br><span class="line">4</span><br><span class="line">5</span><br><span class="line">6</span><br><span class="line">7</span><br><span class="line">8</span><br><span class="line">9</span><br><span class="line">10</span><br><span class="line">11</span><br><span class="line">12</span><br><span class="line">13</span><br><span class="line">14</span><br><span class="line">15</span><br></pre></td><td class="code"><pre><span class="line"><span class="meta">&lt;?xml version=<span class="string">&quot;1.0&quot;</span>?&gt;</span></span><br><span class="line"><span class="tag">&lt;<span class="name">xs:schema</span> <span class="attr">xmlns:xs</span>=<span class="string">&quot;http://www.w3.org/2001/XMLSchema&quot;</span></span></span><br><span class="line"><span class="tag">	<span class="attr">targetNamespace</span>=<span class="string">&quot;http://www.moonzero.com/note&quot;</span></span></span><br><span class="line"><span class="tag">	<span class="attr">elementFormDefault</span>=<span class="string">&quot;qualified&quot;</span>&gt;</span></span><br><span class="line">	<span class="tag">&lt;<span class="name">xs:element</span> <span class="attr">name</span>=<span class="string">&quot;note&quot;</span>&gt;</span></span><br><span class="line"> 		<span class="tag">&lt;<span class="name">xs:complexType</span>&gt;</span></span><br><span class="line">			<span class="tag">&lt;<span class="name">xs:sequence</span>&gt;</span></span><br><span class="line">			 <span class="tag">&lt;<span class="name">xs:element</span> <span class="attr">name</span>=<span class="string">&quot;to&quot;</span> <span class="attr">type</span>=<span class="string">&quot;xs:string&quot;</span>/&gt;</span></span><br><span class="line">			 <span class="tag">&lt;<span class="name">xs:element</span> <span class="attr">name</span>=<span class="string">&quot;from&quot;</span> <span class="attr">type</span>=<span class="string">&quot;xs:string&quot;</span>/&gt;</span></span><br><span class="line">			 <span class="tag">&lt;<span class="name">xs:element</span> <span class="attr">name</span>=<span class="string">&quot;heading&quot;</span> <span class="attr">type</span>=<span class="string">&quot;xs:string&quot;</span>/&gt;</span></span><br><span class="line">			 <span class="tag">&lt;<span class="name">xs:element</span> <span class="attr">name</span>=<span class="string">&quot;body&quot;</span> <span class="attr">type</span>=<span class="string">&quot;xs:string&quot;</span>/&gt;</span></span><br><span class="line"> 			<span class="tag">&lt;/<span class="name">xs:sequence</span>&gt;</span></span><br><span class="line"> 		<span class="tag">&lt;/<span class="name">xs:complexType</span>&gt;</span></span><br><span class="line"> 	<span class="tag">&lt;/<span class="name">xs:element</span>&gt;</span></span><br><span class="line"><span class="tag">&lt;/<span class="name">xs:schema</span>&gt;</span></span><br></pre></td></tr></table></figure>
+<p>实例文档：note.xml</p>
+<figure class="highlight xml"><table><tr><td class="gutter"><pre><span class="line">1</span><br><span class="line">2</span><br><span class="line">3</span><br><span class="line">4</span><br><span class="line">5</span><br><span class="line">6</span><br><span class="line">7</span><br><span class="line">8</span><br><span class="line">9</span><br></pre></td><td class="code"><pre><span class="line"><span class="meta">&lt;?xml version=<span class="string">&quot;1.0&quot;</span>?&gt;</span></span><br><span class="line"><span class="tag">&lt;<span class="name">note</span> <span class="attr">xmlns</span>=<span class="string">&quot;http://www.moonzero.com/note&quot;</span></span></span><br><span class="line"><span class="tag">	<span class="attr">xmlns:xsi</span>=<span class="string">&quot;http://www.w3.org/2001/XMLSchema-instance&quot;</span></span></span><br><span class="line"><span class="tag">	<span class="attr">xsi:schemaLocation</span>=<span class="string">&quot;http://www.moonzero.com/note note.xsd&quot;</span>&gt;</span></span><br><span class="line">	<span class="tag">&lt;<span class="name">to</span>&gt;</span>Tove<span class="tag">&lt;/<span class="name">to</span>&gt;</span></span><br><span class="line">	<span class="tag">&lt;<span class="name">from</span>&gt;</span>Jani<span class="tag">&lt;/<span class="name">from</span>&gt;</span></span><br><span class="line">	<span class="tag">&lt;<span class="name">heading</span>&gt;</span>Reminder<span class="tag">&lt;/<span class="name">heading</span>&gt;</span></span><br><span class="line">	<span class="tag">&lt;<span class="name">body</span>&gt;</span>Don&#x27;t forget me this weekend!<span class="tag">&lt;/<span class="name">body</span>&gt;</span></span><br><span class="line"><span class="tag">&lt;/<span class="name">note</span>&gt;</span></span><br></pre></td></tr></table></figure>
+<h4 id="4-3-2-Schema-元素解析说明"><a href="#4-3-2-Schema-元素解析说明" class="headerlink" title="4.3.2. Schema 元素解析说明"></a>4.3.2. Schema 元素解析说明</h4><ol>
+<li>schema 是每一个 XML 模式文档的根元素</li>
+<li><code>&lt;schema&gt;</code> 元素包含属性 <code>xmlns:xs=&quot;http://www.w3.org/2001/XMLSchema&quot;</code><ul>
+<li>作用一：表示 schema 中用到的元素和数据类型来自命名空间 <code>&quot;http://www.w3.org/2001/XMLSchema&quot;</code>。</li>
+<li>作用二：规定了来自命名空间 <code>&quot;http://www.w3.org/2001/XMLSchema&quot;</code> 的元素和数据类型使用前缀 <code>xs</code>。</li>
+<li><font color=red>**这个引用官方指定的约束，约束来自于该命名空间。一般生成不用去修改。**</font></li>
+</ul>
+</li>
+<li><code>targetNamespace=&quot;http://www.moonzero.com/note&quot;</code> 表示被此 schema 定义的元素 (note, to, from, heading, body) ，被绑定到了命名空间：<code>&quot;http://www.moonzero.com/note&quot;</code>。<ul>
+<li><code>targetNamespace = &quot;URI字符串&quot;</code> 注意 URI 字符串，一般设置的公司的域名或网址，不查找该网址是否存在。它的作用就是用来唯一标识一个命名空间。</li>
+<li>该模式文档定义的约束将被绑定到<code>&quot;http://xx//xxx/xxx&quot;</code>，命名空间(包)中</li>
+<li><font color=red>**注：用于标示命名空间的地址不会被解析器用于查找信息。其唯一的作用是赋予命名空间一个唯一的名称。**</font></li>
+</ul>
+</li>
+<li><code>elementFormDefault=&quot;qualified&quot;</code> 使用此 xsd 的实例文档必须遵守此文档的约束。<ul>
+<li>取值<code>qualified</code>: 必须遵循该模式文档定义的约束条件</li>
+<li>取值<code>unqualified</code>: 使用该模式文档的实例文档不需要遵循约束条件</li>
+</ul>
+</li>
+<li><code>note</code> 元素是一个复合类型，因为它包含其他的子元素。</li>
+<li><code>&lt;xs:sequence&gt;</code> 表示其中的子元素要按顺序出现</li>
+<li>其他元素 (to, from, heading, body) 是简易类型，因为它们没有包含其他元素。</li>
+</ol>
+<h4 id="4-3-3-Schema-使用说明"><a href="#4-3-3-Schema-使用说明" class="headerlink" title="4.3.3. Schema 使用说明"></a>4.3.3. Schema 使用说明</h4><p><strong>定义位置</strong>：在模式文档的根标签中定义</p>
+<p><strong>引用格式</strong>：</p>
+<ul>
+<li>没有使用前缀 <code>xmlns = &quot;包名&quot;</code></li>
+<li>如果没有使用前缀<code>：</code>标识使用</li>
+</ul>
+<p><strong>引用位置</strong>：在实例文档的根标签中引用</p>
+<ol>
+<li>指定 XML Schema 实例命名空间：<code>xmlns:xsi=&quot;http://www.w3.org/2001/XMLSchema-instance&quot;</code></li>
+<li>使用 <code>xsi:schemaLocation</code> 属性：<ul>
+<li>第一个值是需要使用的命名空间。</li>
+<li>第二个值是供命名空间使用的 XML schema 的位置。</li>
+<li>如：<code>xsi:schemaLocation=&quot;http://www.moonzero.com/note note.xsd&quot;</code>，xsi 即 xml schema instance 简写</li>
+</ul>
+</li>
+<li><code>xmlns=&quot;http://www.moonzero.com/note&quot;</code> 规定了默认命名空间的声明。此声明会告知 schema 验证器，在此 XML 文档中使用的所有元素的约束都来源于这个命名空间。也可以指定一个前缀，这里使用默认的命名空间，则可以省略前缀。</li>
+</ol>
+<p>使用 eclipse 创建 XML 文件关联 xsd 文件：新建项目 -&gt; 选择XML File -&gt; 选择【Create XML file from an XML schema file】 -&gt; 选择相应的 schema.xsd 文件 -&gt; 最后的 Prefix 是设置前缀名，可以修改设置为空</p>
+<p><img src="https://gitee.com/Bluetom/img2/raw/master/img20240905/202410251037357.jpg" alt=""></p>
+<h3 id="4-4-Schema-与DTD-的区别"><a href="#4-4-Schema-与DTD-的区别" class="headerlink" title="4.4. Schema 与DTD 的区别"></a>4.4. Schema 与DTD 的区别</h3><ol>
+<li>XML: DTD 只是个普通的文本文件，并不是 XML 文件。而 Schema 本身也是一个 XML 文件。</li>
+<li>数据类型： DTD 的类型比较单一，Schema 的数据类型丰富得多，可以指定如：integer、date、double。</li>
+<li>约束功能：约束功能更加强大，可以使用更多规则，甚至可以使用正则表达式来约束。一个 XML 可以有多个 Schema 约束文档。</li>
+<li>复杂度：比 DTD 要复杂。</li>
+<li><font color=red><strong>可以多个 Schema 模式文档约束一个 XML 实例文档，而一个 DTD 文件只能约束一个 XML 文档</strong></font>。</li>
+</ol>
+<h2 id="5-XML-解析"><a href="#5-XML-解析" class="headerlink" title="5. XML 解析"></a>5. XML 解析</h2><h3 id="5-1-XML-的解析概述"><a href="#5-1-XML-的解析概述" class="headerlink" title="5.1. XML 的解析概述"></a>5.1. XML 的解析概述</h3><p><strong>XML 解析</strong>是指，使用 Java 技术从 XML 文档中获取数据的过程。</p>
+<h3 id="5-2-XML-解析的方式"><a href="#5-2-XML-解析的方式" class="headerlink" title="5.2. XML 解析的方式"></a>5.2. XML 解析的方式</h3><h4 id="5-2-1-DOM-解析"><a href="#5-2-1-DOM-解析" class="headerlink" title="5.2.1. DOM 解析"></a>5.2.1. DOM 解析</h4><p>DOM 解析是直接将 XML 文档加载到内存中，在内存中生成一个 DOM 树。DOM 树上的每一个对象都是一个节点(Node)对象。DOM 解析优缺点如下：</p>
+<ul>
+<li>优点：xml 中的每个元素都是 dom 树上的一个节点，<font color=red><strong>可以在解析的过程中对结点上的每个元素进行增删改操作</strong></font>。一般使用在PC端开发。</li>
+<li>缺点：如果 XML 文档内容特别大，则会导致内存占用也比较大。</li>
+</ul>
+<h4 id="5-2-2-SAX-解析"><a href="#5-2-2-SAX-解析" class="headerlink" title="5.2.2. SAX 解析"></a>5.2.2. SAX 解析</h4><p>SAX 解析是指，从上往下一行一行解析，解析一行释放一行。SAX 解析优缺点如下：</p>
+<ul>
+<li>优点：占用内存空间小，一般使用客户端App开发。</li>
+<li>缺点：以只读的方式解析，不能对节点进行增删改操作。</li>
+</ul>
+<h3 id="5-3-DOM4J（第三方解析工具）"><a href="#5-3-DOM4J（第三方解析工具）" class="headerlink" title="5.3. DOM4J（第三方解析工具）"></a>5.3. DOM4J（第三方解析工具）</h3><p>DOM4J 是一个最优秀的第三方 Java 的 XML API 解析框架，是 jdom 的升级品，采用 dom 方式来解析 xml 文件（<em>Hibernate 框架就是使用 Dom4j 解析 XML</em>）。该框架具有性能优异、功能强大和极其易使用的特点，它的性能超过 sun 公司官方的dom 技术，同时它也是一个开放源代码的软件，可以在 SourceForge 上找到。</p>
+<blockquote>
+<p>DOM4J 官网地址：<a target="_blank" rel="noopener" href="http://www.dom4j.org/">http://www.dom4j.org/</a></p>
+</blockquote>
+<p>在 eclipse 中使用 dom4j 的步骤：</p>
+<ol>
+<li>在项目中创建一个文件夹：lib</li>
+<li>将 dom4j-1.6.1.jar 文件复制到 lib 文件夹</li>
+<li>在 jar 文件上点右键，选 Builder Path -&gt; Add to Builder Path</li>
+<li>在类中导包使用</li>
+</ol>
+<h2 id="6-使用-DOM4J-解析-XML"><a href="#6-使用-DOM4J-解析-XML" class="headerlink" title="6. 使用 DOM4J 解析 XML"></a>6. 使用 DOM4J 解析 XML</h2><h3 id="6-1-DOM-树的组成元素"><a href="#6-1-DOM-树的组成元素" class="headerlink" title="6.1. DOM 树的组成元素"></a>6.1. DOM 树的组成元素</h3><ul>
+<li>文档对象：Document</li>
+<li>节点：Node</li>
+<li>元素：Element</li>
+<li>属性：Attribute</li>
+<li>文本：Text</li>
+</ul>
+<h4 id="6-1-1-Document-文档对象"><a href="#6-1-1-Document-文档对象" class="headerlink" title="6.1.1. Document 文档对象"></a>6.1.1. Document 文档对象</h4><p>每一个 XML 文档加载到内存中后会生成一个 <code>Document</code> 对象，通过 <code>Document</code> 对象就可以获取 XML 文档中的所有内容。获得 <code>Document</code> 对象步骤如下：</p>
+<ol>
+<li>创建一个 <code>SAXReader</code> 对象，用于读取 xml 文件。</li>
+<li>通过 <code>SAXReader</code> 对象调用 <code>read</code> 方法，读取 xml 文件得到 <code>Document</code> 对象</li>
+</ol>
+<h4 id="6-1-2-Node-节点信息"><a href="#6-1-2-Node-节点信息" class="headerlink" title="6.1.2. Node 节点信息"></a>6.1.2. Node 节点信息</h4><font color=red>**DOM 树中每个元素都抽象成一个节点对象 `Node`，节点是所有元素的父元素**</font>。
+
+获得 `Node` 对象步骤：
+
+1. 通过 `Element` 类的 `nodeIterator()` 方法获取 `Node` 对象迭代器对象
+2. 通过迭代器对象就可以遍历当前元素节点下的所有 `Node` 对象
+3. 获取 `Node` 的对象后，通过判断 `Node` 对象的类型来筛选需要的对象
+
+#### 6.1.3. Element 标签信息
+
+所有元素(标签)都是一个 `Element` 对象
+
+#### 6.1.4. Attribute 属性信息
+
+每一个元素上的每一个属性都是一个 `Attribute` 对象。获得 `Attribute` 属性的前提，先获得标签 `Element` 对象。
+
+获取属性值的两种方式：
+
+- 先得到 `Attribute` 对象，再通过对象的方法得到属性名和属性值。
+- 直接通过属性的名字得到字符串类型的属性值。
+
+#### 6.1.5. Text 文本元素
+
+Text 文本元素就是指标签体的内容，获取步骤如下：
+
+1. 得到文本元素的前提：先得到元素 Element
+2. 调用相关操作文本信息的方法
+
+> Notes: 空格、换行、制表符：也是属于文本的一部分，所以在解析 xml 文件的时候，格式化 XML 文件要注意。
+
+### 6.2. DOM4J 工具包常用类
+
+#### 6.2.1. SAXReader 类
+
+<figure class="highlight java"><table><tr><td class="gutter"><pre><span class="line">1</span><br></pre></td><td class="code"><pre><span class="line"><span class="keyword">public</span> Document <span class="title function_">read</span><span class="params">(String name)</span>;</span><br></pre></td></tr></table></figure>
+
+- 返回一个 Document 对象，name 是 xml 文档名字
+
+<figure class="highlight java"><table><tr><td class="gutter"><pre><span class="line">1</span><br></pre></td><td class="code"><pre><span class="line"><span class="keyword">public</span> Document <span class="title function_">read</span><span class="params">(File file)</span></span><br></pre></td></tr></table></figure>
+
+- 返回一个 Document 对象，参数是一个 File 文件路径对象
+
+#### 6.2.2. Document 类
+
+<figure class="highlight java"><table><tr><td class="gutter"><pre><span class="line">1</span><br></pre></td><td class="code"><pre><span class="line"><span class="keyword">public</span> Element <span class="title function_">getRootElement</span><span class="params">()</span></span><br></pre></td></tr></table></figure>
+
+- 获得根标签(元素)对象
+
+<figure class="highlight java"><table><tr><td class="gutter"><pre><span class="line">1</span><br></pre></td><td class="code"><pre><span class="line"><span class="keyword">public</span> <span class="keyword">void</span> <span class="title function_">setRootElement</span><span class="params">(Element rootElement)</span></span><br></pre></td></tr></table></figure>
+
+- 将标签(元素)对象添加到该 document 对象中。(调用此方法的 Document 对象)
+
+#### 6.2.3. Node 类
+
+<figure class="highlight java"><table><tr><td class="gutter"><pre><span class="line">1</span><br></pre></td><td class="code"><pre><span class="line"><span class="keyword">public</span> <span class="type">short</span> <span class="title function_">getNodeType</span><span class="params">()</span></span><br></pre></td></tr></table></figure>
+
+- 得到节点的类型，所有的节点类型在 Node 接口中定义了常量。<font color=red>**注：通过判断返回的类型来筛选需要得到的Node对象**</font>。**常用 Node 常量对象类型**如下：
+    - Node.ELEMENT_NODE 标签节点
+    - Node.TEXT_NODE 文本节点
+    - Node.COMMENT_NODE 注释节点
+    - Node.ATTRIBUTE_NODE 属性节点
+
+<figure class="highlight java"><table><tr><td class="gutter"><pre><span class="line">1</span><br></pre></td><td class="code"><pre><span class="line"><span class="keyword">public</span> String <span class="title function_">getName</span><span class="params">()</span></span><br></pre></td></tr></table></figure>
+
+- 获取当前节点的名称，返回字符串
+
+<figure class="highlight java"><table><tr><td class="gutter"><pre><span class="line">1</span><br></pre></td><td class="code"><pre><span class="line"><span class="keyword">public</span> <span class="keyword">void</span> <span class="title function_">setText</span><span class="params">(String text)</span></span><br></pre></td></tr></table></figure>
+
+- 给当前的节点对象设置text文本内容
+
+#### 6.2.4. Element 类
+
+所有元素(标签)都是一个 Element 对象，是 Branch 的子类
+
+<figure class="highlight java"><table><tr><td class="gutter"><pre><span class="line">1</span><br></pre></td><td class="code"><pre><span class="line"><span class="keyword">public</span> <span class="keyword">interface</span> <span class="title class_">Element</span> <span class="keyword">extends</span> <span class="title class_">Branch</span></span><br></pre></td></tr></table></figure>
+
+##### 6.2.4.1. Element 类对节点 Node 的操作相关方法
+
+<figure class="highlight java"><table><tr><td class="gutter"><pre><span class="line">1</span><br></pre></td><td class="code"><pre><span class="line"><span class="keyword">public</span> Iterator&lt;Node&gt; <span class="title function_">nodeIterator</span><span class="params">()</span></span><br></pre></td></tr></table></figure>
+
+- Element继承父类的方法，方法返回当前标签下所有的子节点（Node对象）的迭代器，<font color=red>**获取的包含了注解、空白内容等等元素**</font>。
+
+##### 6.2.4.2. Element 类对元素（标签）Element 的操作相关方法
+
+<figure class="highlight java"><table><tr><td class="gutter"><pre><span class="line">1</span><br></pre></td><td class="code"><pre><span class="line"><span class="keyword">public</span> Iterator&lt;Element&gt; <span class="title function_">elementIterator</span><span class="params">()</span></span><br></pre></td></tr></table></figure>
+
+- 获得该元素节点下所有子元素(Element、标签)的迭代器对象。(<font color=red>**只获取到标签对象**</font>)
+> 原文档解释：Returns an iterator over all this elements child elements.
+
+<figure class="highlight java"><table><tr><td class="gutter"><pre><span class="line">1</span><br></pre></td><td class="code"><pre><span class="line"><span class="keyword">public</span> Iterator <span class="title function_">elementIterator</span><span class="params">(String name)</span></span><br></pre></td></tr></table></figure>
+
+- 获得该元素节点下指定名字的所有子元素(Element、标签)的迭代器对象。(<font color=red>**只获取到标签名为name的对象**</font>)
+
+<figure class="highlight java"><table><tr><td class="gutter"><pre><span class="line">1</span><br></pre></td><td class="code"><pre><span class="line"><span class="keyword">public</span> List&lt;Element&gt; <span class="title function_">elements</span><span class="params">()</span>;</span><br></pre></td></tr></table></figure>
+
+- 获得当前元素下的所有子元素Element对象的List集合
+
+<figure class="highlight java"><table><tr><td class="gutter"><pre><span class="line">1</span><br></pre></td><td class="code"><pre><span class="line"><span class="keyword">public</span> List&lt;Element&gt; <span class="title function_">elements</span><span class="params">(String name)</span>;</span><br></pre></td></tr></table></figure>
+
+- 根据元素名name获得所有的该名称的所有元素对象的List集合。
+
+<figure class="highlight java"><table><tr><td class="gutter"><pre><span class="line">1</span><br></pre></td><td class="code"><pre><span class="line"><span class="keyword">public</span> Element <span class="title function_">element</span><span class="params">(String name)</span>;</span><br></pre></td></tr></table></figure>
+
+- 得到指定名字name的标签对象，<font color=red>**如果多个同名标签则默认返回第一个元素对象**</font>
+
+<figure class="highlight java"><table><tr><td class="gutter"><pre><span class="line">1</span><br></pre></td><td class="code"><pre><span class="line"><span class="keyword">public</span> String <span class="title function_">getName</span><span class="params">()</span>;</span><br></pre></td></tr></table></figure>
+<ul>
+<li>继承父类(Node)的方法，获取当前标签的名称，返回字符串</li>
+</ul>
+<figure class="highlight java"><table><tr><td class="gutter"><pre><span class="line">1</span><br></pre></td><td class="code"><pre><span class="line"><span class="keyword">public</span> Element <span class="title function_">addElement</span><span class="params">(String name)</span></span><br></pre></td></tr></table></figure>
+<ul>
+<li>继承父类(Branch)的方法，给当前元素标签对象新增一个新的子标签，并<font color=red><strong>返回该新增的标签对象</strong></font><blockquote>
+<p>原文档解释：Adds a new Element node with the given name to this branch and returns a reference to the new node.</p>
+</blockquote>
+</li>
+</ul>
+<figure class="highlight java"><table><tr><td class="gutter"><pre><span class="line">1</span><br></pre></td><td class="code"><pre><span class="line"><span class="keyword">public</span> Element <span class="title function_">addAttribute</span><span class="params">(String name, String value)</span></span><br></pre></td></tr></table></figure>
+<ul>
+<li>给当前标签对象新增一个属性(包括名称和值)，如：<code>&quot;name&quot;=&quot;value&quot;</code><blockquote>
+<p>原文档解释：Adds the attribute value of the given local name. If an attribute already exists for the given name it will be replaced. Attributes with null values are silently ignored. If the value of the attribute is null then this method call will remove any attributes with the given name.</p>
+</blockquote>
+</li>
+</ul>
+<figure class="highlight java"><table><tr><td class="gutter"><pre><span class="line">1</span><br></pre></td><td class="code"><pre><span class="line"><span class="keyword">public</span> <span class="keyword">void</span> <span class="title function_">add</span><span class="params">(Element element)</span></span><br></pre></td></tr></table></figure>
+<ul>
+<li>继承父类(Branch)的方法，给当前标签对象新增一个子标签对象element，无返回值。</li>
+</ul>
+<figure class="highlight java"><table><tr><td class="gutter"><pre><span class="line">1</span><br></pre></td><td class="code"><pre><span class="line"><span class="keyword">public</span> <span class="keyword">void</span> <span class="title function_">setText</span><span class="params">(String text)</span></span><br></pre></td></tr></table></figure>
+<ul>
+<li>继承父类(Node)方法，给当前的标签对象设置text文本内容</li>
+</ul>
+<h5 id="6-2-4-3-Element-类对属性-Attribute-的操作相关方法"><a href="#6-2-4-3-Element-类对属性-Attribute-的操作相关方法" class="headerlink" title="6.2.4.3. Element 类对属性 Attribute 的操作相关方法"></a>6.2.4.3. Element 类对属性 Attribute 的操作相关方法</h5><figure class="highlight java"><table><tr><td class="gutter"><pre><span class="line">1</span><br></pre></td><td class="code"><pre><span class="line"><span class="keyword">public</span> Attribute <span class="title function_">attribute</span><span class="params">(String name)</span>;</span><br></pre></td></tr></table></figure>
+<ul>
+<li>通过指定属性的名字name得到一个属性对象<blockquote>
+<p>原文档解释：Returns the attribute with the given name</p>
+</blockquote>
+</li>
+</ul>
+<figure class="highlight java"><table><tr><td class="gutter"><pre><span class="line">1</span><br></pre></td><td class="code"><pre><span class="line"><span class="keyword">public</span> String <span class="title function_">attributeValue</span><span class="params">(String name)</span>;</span><br></pre></td></tr></table></figure>
+<ul>
+<li>通过属性名字直接得到当前标签element对象的属性值，返回 String 类型</li>
+</ul>
+<figure class="highlight java"><table><tr><td class="gutter"><pre><span class="line">1</span><br></pre></td><td class="code"><pre><span class="line"><span class="keyword">public</span> List&lt;Attribute&gt; <span class="title function_">attributes</span><span class="params">()</span>;</span><br></pre></td></tr></table></figure>
+<ul>
+<li>得到当前标签的所有的属性对象(Attribute)的List集合</li>
+</ul>
+<figure class="highlight java"><table><tr><td class="gutter"><pre><span class="line">1</span><br></pre></td><td class="code"><pre><span class="line"><span class="keyword">public</span> Iterator&lt;Attribute&gt; <span class="title function_">attributeIterator</span><span class="params">()</span>;</span><br></pre></td></tr></table></figure>
+<ul>
+<li>获得当前元素属性的迭代器对象。</li>
+</ul>
+<h5 id="6-2-4-4-Element类对文本Text的操作相关方法"><a href="#6-2-4-4-Element类对文本Text的操作相关方法" class="headerlink" title="6.2.4.4. Element类对文本Text的操作相关方法"></a>6.2.4.4. Element类对文本Text的操作相关方法</h5><figure class="highlight java"><table><tr><td class="gutter"><pre><span class="line">1</span><br></pre></td><td class="code"><pre><span class="line"><span class="keyword">public</span> String <span class="title function_">getText</span><span class="params">()</span>;</span><br></pre></td></tr></table></figure>
+<ul>
+<li>通过元素对象得到元素的文本内容（包括了左右空格，换行符等内容）</li>
+</ul>
+<figure class="highlight java"><table><tr><td class="gutter"><pre><span class="line">1</span><br></pre></td><td class="code"><pre><span class="line"><span class="keyword">public</span> String <span class="title function_">getTextTrim</span><span class="params">()</span>;</span><br></pre></td></tr></table></figure>
+<ul>
+<li>通过元素对象得到元素的文本内容（<font color=red><strong>会自动去掉包括了左右空格，换行符等内容</strong></font>）</li>
+</ul>
+<figure class="highlight java"><table><tr><td class="gutter"><pre><span class="line">1</span><br></pre></td><td class="code"><pre><span class="line"><span class="keyword">public</span> String <span class="title function_">elementText</span><span class="params">(String name)</span>;</span><br></pre></td></tr></table></figure>
+<ul>
+<li>通过元素对象根据子元素名name得到该元素的文本内容（包括了左右空格，换行符等内容）</li>
+</ul>
+<figure class="highlight java"><table><tr><td class="gutter"><pre><span class="line">1</span><br></pre></td><td class="code"><pre><span class="line"><span class="keyword">public</span> String <span class="title function_">elementTextTrim</span><span class="params">(String name)</span>;</span><br></pre></td></tr></table></figure>
+<ul>
+<li>通过元素对象根据子元素名name得到该元素的文本内容（<font color=red><strong>会自动去掉包括了左右空格，换行符等内容</strong></font>）</li>
+</ul>
+<h4 id="6-2-5-Attribute-类"><a href="#6-2-5-Attribute-类" class="headerlink" title="6.2.5. Attribute 类"></a>6.2.5. Attribute 类</h4><figure class="highlight java"><table><tr><td class="gutter"><pre><span class="line">1</span><br></pre></td><td class="code"><pre><span class="line"><span class="keyword">public</span> String <span class="title function_">getText</span><span class="params">()</span>;</span><br></pre></td></tr></table></figure>
+<ul>
+<li>获取属性的值。(继承父类Node的方法)</li>
+</ul>
+<figure class="highlight java"><table><tr><td class="gutter"><pre><span class="line">1</span><br></pre></td><td class="code"><pre><span class="line"><span class="keyword">public</span> String <span class="title function_">getName</span><span class="params">()</span>;</span><br></pre></td></tr></table></figure>
+<ul>
+<li>得到属性的名字。(继承父类Node的方法)</li>
+</ul>
+<figure class="highlight java"><table><tr><td class="gutter"><pre><span class="line">1</span><br></pre></td><td class="code"><pre><span class="line"><span class="keyword">public</span> String <span class="title function_">getValue</span><span class="params">()</span>;</span><br></pre></td></tr></table></figure>
+<ul>
+<li>得到属性的值。</li>
+</ul>
+<h4 id="6-2-6-XMLWriter-类"><a href="#6-2-6-XMLWriter-类" class="headerlink" title="6.2.6. XMLWriter 类"></a>6.2.6. XMLWriter 类</h4><h5 id="6-2-6-1-DocumentHelper-工具类"><a href="#6-2-6-1-DocumentHelper-工具类" class="headerlink" title="6.2.6.1. DocumentHelper 工具类"></a>6.2.6.1. DocumentHelper 工具类</h5><p>DocumentHelper 工具类可以用来创建文档对象，元素对象，属性对象…</p>
+<figure class="highlight java"><table><tr><td class="gutter"><pre><span class="line">1</span><br></pre></td><td class="code"><pre><span class="line"><span class="keyword">public</span> <span class="keyword">static</span> Document <span class="title function_">createDocument</span><span class="params">()</span></span><br></pre></td></tr></table></figure>
+<ul>
+<li>用来创建空的文档对象</li>
+</ul>
+<figure class="highlight java"><table><tr><td class="gutter"><pre><span class="line">1</span><br></pre></td><td class="code"><pre><span class="line"><span class="keyword">public</span> <span class="keyword">static</span> Document <span class="title function_">createDocument</span><span class="params">(Element rootElement)</span></span><br></pre></td></tr></table></figure>
+<ul>
+<li>以 <code>rootElement</code> 对象为根标签，并创建文档对象</li>
+</ul>
+<figure class="highlight java"><table><tr><td class="gutter"><pre><span class="line">1</span><br></pre></td><td class="code"><pre><span class="line"><span class="keyword">public</span> <span class="keyword">static</span> Element <span class="title function_">createElement</span><span class="params">(String name)</span></span><br></pre></td></tr></table></figure>
+<ul>
+<li>创建名称是 name 的 <code>Element</code> 对象</li>
+</ul>
+<h5 id="6-2-6-2-OutputFormat-类（格式化）"><a href="#6-2-6-2-OutputFormat-类（格式化）" class="headerlink" title="6.2.6.2. OutputFormat 类（格式化）"></a>6.2.6.2. OutputFormat 类（格式化）</h5><figure class="highlight java"><table><tr><td class="gutter"><pre><span class="line">1</span><br></pre></td><td class="code"><pre><span class="line"><span class="keyword">public</span> <span class="keyword">static</span> OutputFormat <span class="title function_">createPrettyPrint</span><span class="params">()</span></span><br></pre></td></tr></table></figure>
+<ul>
+<li>静态方法，创建漂亮型格式化的对象。每个元素内容换新一行。<blockquote>
+<p>原文档解释：A static helper method to create the default pretty printing format. This format consists of an indent of 2 spaces, newlines after each element and all other whitespace trimmed, and XMTML is false.</p>
+</blockquote>
+</li>
+</ul>
+<figure class="highlight java"><table><tr><td class="gutter"><pre><span class="line">1</span><br></pre></td><td class="code"><pre><span class="line"><span class="keyword">public</span> <span class="keyword">static</span> OutputFormat <span class="title function_">createCompactFormat</span><span class="params">()</span></span><br></pre></td></tr></table></figure>
+<ul>
+<li>静态方法，创建紧凑型格式化的对象，所有的内容一行显示<blockquote>
+<p>原文档解释：A static helper method to create the default compact format. This format does not have any indentation or newlines after an alement and all other whitespace trimmed</p>
+</blockquote>
+</li>
+</ul>
+<h5 id="6-2-6-3-XMLWriter-类"><a href="#6-2-6-3-XMLWriter-类" class="headerlink" title="6.2.6.3. XMLWriter 类"></a>6.2.6.3. XMLWriter 类</h5><figure class="highlight java"><table><tr><td class="gutter"><pre><span class="line">1</span><br></pre></td><td class="code"><pre><span class="line"><span class="keyword">public</span> <span class="title function_">XMLWriter</span><span class="params">(OutputStream out, OutputFormat format)</span></span><br></pre></td></tr></table></figure>
+<ul>
+<li>XMLWriter 类的构造方法。参数说明：<ul>
+<li>out：字节输出流对象，用来关联目标文件</li>
+<li>format：格式化对象</li>
+</ul>
+</li>
+</ul>
+<figure class="highlight java"><table><tr><td class="gutter"><pre><span class="line">1</span><br></pre></td><td class="code"><pre><span class="line"><span class="keyword">public</span> <span class="keyword">void</span> <span class="title function_">write</span><span class="params">(Document doc)</span>;</span><br></pre></td></tr></table></figure>
+<ul>
+<li>将文档对象写出 XML 文件中</li>
+</ul>
+<h3 id="6-3-使用示例"><a href="#6-3-使用示例" class="headerlink" title="6.3. 使用示例"></a>6.3. 使用示例</h3><h4 id="6-3-1-DOM4J-常用方法练习"><a href="#6-3-1-DOM4J-常用方法练习" class="headerlink" title="6.3.1. DOM4J 常用方法练习"></a>6.3.1. DOM4J 常用方法练习</h4><p>示例 xml 文档</p>
+<figure class="highlight xml"><table><tr><td class="gutter"><pre><span class="line">1</span><br><span class="line">2</span><br><span class="line">3</span><br><span class="line">4</span><br><span class="line">5</span><br><span class="line">6</span><br><span class="line">7</span><br><span class="line">8</span><br><span class="line">9</span><br><span class="line">10</span><br><span class="line">11</span><br><span class="line">12</span><br><span class="line">13</span><br><span class="line">14</span><br><span class="line">15</span><br><span class="line">16</span><br><span class="line">17</span><br><span class="line">18</span><br><span class="line">19</span><br><span class="line">20</span><br><span class="line">21</span><br><span class="line">22</span><br><span class="line">23</span><br><span class="line">24</span><br><span class="line">25</span><br><span class="line">26</span><br><span class="line">27</span><br><span class="line">28</span><br><span class="line">29</span><br><span class="line">30</span><br><span class="line">31</span><br><span class="line">32</span><br><span class="line">33</span><br><span class="line">34</span><br></pre></td><td class="code"><pre><span class="line"><span class="meta">&lt;?xml version=<span class="string">&quot;1.0&quot;</span> encoding=<span class="string">&quot;UTF-8&quot;</span>?&gt;</span></span><br><span class="line"><span class="tag">&lt;<span class="name">contactList</span>&gt;</span> </span><br><span class="line">  <span class="comment">&lt;!--  注释内容 --&gt;</span>  </span><br><span class="line">  <span class="tag">&lt;<span class="name">contact</span> <span class="attr">id</span>=<span class="string">&quot;S100&quot;</span> <span class="attr">vip</span>=<span class="string">&quot;true&quot;</span>&gt;</span> </span><br><span class="line">    <span class="tag">&lt;<span class="name">name</span>&gt;</span></span><br><span class="line">    	潘金莲</span><br><span class="line">    <span class="tag">&lt;/<span class="name">name</span>&gt;</span>  </span><br><span class="line">    <span class="tag">&lt;<span class="name">gender</span>&gt;</span>女<span class="tag">&lt;/<span class="name">gender</span>&gt;</span>  </span><br><span class="line">    <span class="tag">&lt;<span class="name">phone</span>&gt;</span>136909877890<span class="tag">&lt;/<span class="name">phone</span>&gt;</span>  </span><br><span class="line">    <span class="tag">&lt;<span class="name">qq</span>&gt;</span>387439274<span class="tag">&lt;/<span class="name">qq</span>&gt;</span>  </span><br><span class="line">    <span class="tag">&lt;<span class="name">email</span>&gt;</span>panpan@moonzero.com<span class="tag">&lt;/<span class="name">email</span>&gt;</span> </span><br><span class="line">  <span class="tag">&lt;/<span class="name">contact</span>&gt;</span>  </span><br><span class="line">  <span class="tag">&lt;<span class="name">contact</span> <span class="attr">id</span>=<span class="string">&quot;S200&quot;</span> <span class="attr">vip</span>=<span class="string">&quot;false&quot;</span>&gt;</span> </span><br><span class="line">    <span class="tag">&lt;<span class="name">name</span>&gt;</span>武大狼<span class="tag">&lt;/<span class="name">name</span>&gt;</span>  </span><br><span class="line">    <span class="tag">&lt;<span class="name">gender</span>&gt;</span>男<span class="tag">&lt;/<span class="name">gender</span>&gt;</span>  </span><br><span class="line">    <span class="tag">&lt;<span class="name">phone</span>&gt;</span>13609876543<span class="tag">&lt;/<span class="name">phone</span>&gt;</span>  </span><br><span class="line">    <span class="tag">&lt;<span class="name">qq</span>&gt;</span>394535<span class="tag">&lt;/<span class="name">qq</span>&gt;</span>  </span><br><span class="line">    <span class="tag">&lt;<span class="name">email</span>&gt;</span>wuda@moonzero.com<span class="tag">&lt;/<span class="name">email</span>&gt;</span> </span><br><span class="line">  <span class="tag">&lt;/<span class="name">contact</span>&gt;</span>  </span><br><span class="line">  <span class="tag">&lt;<span class="name">contact</span> <span class="attr">id</span>=<span class="string">&quot;X999&quot;</span> <span class="attr">vip</span>=<span class="string">&quot;false&quot;</span>&gt;</span> </span><br><span class="line">    <span class="tag">&lt;<span class="name">name</span>&gt;</span>西蒙<span class="tag">&lt;/<span class="name">name</span>&gt;</span>  </span><br><span class="line">    <span class="tag">&lt;<span class="name">gender</span>&gt;</span>男<span class="tag">&lt;/<span class="name">gender</span>&gt;</span>  </span><br><span class="line">    <span class="tag">&lt;<span class="name">phone</span>&gt;</span>2987342394<span class="tag">&lt;/<span class="name">phone</span>&gt;</span>  </span><br><span class="line">    <span class="tag">&lt;<span class="name">qq</span>&gt;</span>29342394<span class="tag">&lt;/<span class="name">qq</span>&gt;</span>  </span><br><span class="line">    <span class="tag">&lt;<span class="name">email</span>&gt;</span>aaa@aa.com<span class="tag">&lt;/<span class="name">email</span>&gt;</span> </span><br><span class="line">  <span class="tag">&lt;/<span class="name">contact</span>&gt;</span>  </span><br><span class="line">  <span class="tag">&lt;<span class="name">contact</span> <span class="attr">id</span>=<span class="string">&quot;9527&quot;</span> <span class="attr">vip</span>=<span class="string">&quot;false&quot;</span>&gt;</span> </span><br><span class="line">    <span class="tag">&lt;<span class="name">name</span>&gt;</span>华安<span class="tag">&lt;/<span class="name">name</span>&gt;</span>  </span><br><span class="line">    <span class="tag">&lt;<span class="name">phone</span>&gt;</span>10086<span class="tag">&lt;/<span class="name">phone</span>&gt;</span>  </span><br><span class="line">    <span class="tag">&lt;<span class="name">gender</span>&gt;</span>男<span class="tag">&lt;/<span class="name">gender</span>&gt;</span>  </span><br><span class="line">    <span class="tag">&lt;<span class="name">qq</span>&gt;</span>10000<span class="tag">&lt;/<span class="name">qq</span>&gt;</span>  </span><br><span class="line">    <span class="tag">&lt;<span class="name">email</span>&gt;</span>10000@qq.com<span class="tag">&lt;/<span class="name">email</span>&gt;</span> </span><br><span class="line">  <span class="tag">&lt;/<span class="name">contact</span>&gt;</span></span><br><span class="line"><span class="tag">&lt;/<span class="name">contactList</span>&gt;</span></span><br></pre></td></tr></table></figure>
+<p>DOM4J 解析 xml 示例代码：</p>
+<figure class="highlight java"><table><tr><td class="gutter"><pre><span class="line">1</span><br><span class="line">2</span><br><span class="line">3</span><br><span class="line">4</span><br><span class="line">5</span><br><span class="line">6</span><br><span class="line">7</span><br><span class="line">8</span><br><span class="line">9</span><br><span class="line">10</span><br><span class="line">11</span><br><span class="line">12</span><br><span class="line">13</span><br><span class="line">14</span><br><span class="line">15</span><br><span class="line">16</span><br><span class="line">17</span><br><span class="line">18</span><br><span class="line">19</span><br><span class="line">20</span><br><span class="line">21</span><br><span class="line">22</span><br><span class="line">23</span><br><span class="line">24</span><br><span class="line">25</span><br><span class="line">26</span><br><span class="line">27</span><br><span class="line">28</span><br><span class="line">29</span><br><span class="line">30</span><br><span class="line">31</span><br><span class="line">32</span><br><span class="line">33</span><br><span class="line">34</span><br><span class="line">35</span><br><span class="line">36</span><br><span class="line">37</span><br><span class="line">38</span><br><span class="line">39</span><br><span class="line">40</span><br><span class="line">41</span><br><span class="line">42</span><br><span class="line">43</span><br><span class="line">44</span><br><span class="line">45</span><br><span class="line">46</span><br><span class="line">47</span><br><span class="line">48</span><br><span class="line">49</span><br><span class="line">50</span><br><span class="line">51</span><br><span class="line">52</span><br><span class="line">53</span><br><span class="line">54</span><br><span class="line">55</span><br><span class="line">56</span><br><span class="line">57</span><br><span class="line">58</span><br><span class="line">59</span><br><span class="line">60</span><br><span class="line">61</span><br><span class="line">62</span><br><span class="line">63</span><br><span class="line">64</span><br><span class="line">65</span><br><span class="line">66</span><br><span class="line">67</span><br><span class="line">68</span><br><span class="line">69</span><br><span class="line">70</span><br><span class="line">71</span><br><span class="line">72</span><br><span class="line">73</span><br><span class="line">74</span><br><span class="line">75</span><br><span class="line">76</span><br><span class="line">77</span><br><span class="line">78</span><br><span class="line">79</span><br><span class="line">80</span><br><span class="line">81</span><br><span class="line">82</span><br><span class="line">83</span><br><span class="line">84</span><br><span class="line">85</span><br><span class="line">86</span><br><span class="line">87</span><br><span class="line">88</span><br><span class="line">89</span><br><span class="line">90</span><br><span class="line">91</span><br><span class="line">92</span><br><span class="line">93</span><br><span class="line">94</span><br><span class="line">95</span><br><span class="line">96</span><br><span class="line">97</span><br><span class="line">98</span><br><span class="line">99</span><br><span class="line">100</span><br><span class="line">101</span><br><span class="line">102</span><br></pre></td><td class="code"><pre><span class="line"><span class="keyword">import</span> java.util.Iterator;</span><br><span class="line"><span class="keyword">import</span> java.util.List;</span><br><span class="line"></span><br><span class="line"><span class="keyword">import</span> org.dom4j.Attribute;</span><br><span class="line"><span class="keyword">import</span> org.dom4j.Document;</span><br><span class="line"><span class="keyword">import</span> org.dom4j.Element;</span><br><span class="line"><span class="keyword">import</span> org.dom4j.Node;</span><br><span class="line"><span class="keyword">import</span> org.dom4j.io.SAXReader;</span><br><span class="line"></span><br><span class="line"><span class="keyword">public</span> <span class="keyword">class</span> <span class="title class_">MoonZero</span> &#123;</span><br><span class="line">	<span class="meta">@SuppressWarnings(&quot;unchecked&quot;)</span></span><br><span class="line">	<span class="keyword">public</span> <span class="keyword">static</span> <span class="keyword">void</span> <span class="title function_">main</span><span class="params">(String[] args)</span> <span class="keyword">throws</span> Exception &#123;</span><br><span class="line">		<span class="comment">// 创建SAXReader类的对象</span></span><br><span class="line">		<span class="type">SAXReader</span> <span class="variable">sax</span> <span class="operator">=</span> <span class="keyword">new</span> <span class="title class_">SAXReader</span>();</span><br><span class="line">		<span class="comment">// 获取xml文档的Document类对象</span></span><br><span class="line">		<span class="type">Document</span> <span class="variable">doc</span> <span class="operator">=</span> sax.read(<span class="string">&quot;contact.xml&quot;</span>);</span><br><span class="line">		System.out.println(doc);</span><br><span class="line"></span><br><span class="line">		<span class="comment">// 获取标签对象</span></span><br><span class="line">		<span class="type">Element</span> <span class="variable">rootEle</span> <span class="operator">=</span> doc.getRootElement();</span><br><span class="line">		System.out.println(rootEle);</span><br><span class="line">		<span class="comment">// 使用节点Node对象的迭代器遍历全部子标签元素</span></span><br><span class="line">		<span class="comment">// getNodeIterator(rootEle);</span></span><br><span class="line"></span><br><span class="line">		System.out.println(<span class="string">&quot;-========&quot;</span>);</span><br><span class="line">		<span class="comment">// 获取当前标签下的子标签对象迭代器,输出所有子标签对象</span></span><br><span class="line">		getElementIterator(rootEle);</span><br><span class="line"></span><br><span class="line">		<span class="comment">// 两种获取当前标签下的所有子标签对象Element的List集合</span></span><br><span class="line">		getElementList(rootEle);</span><br><span class="line">		<span class="comment">// 得到指定名字的标签对象，如果多个同名标签则默认返回第一个元素对象</span></span><br><span class="line">		System.out.println(rootEle.element(<span class="string">&quot;contact&quot;</span>).getName());</span><br><span class="line"></span><br><span class="line">		<span class="comment">// 获取文本内容 第一个获取子标签名字&quot;name&quot;</span></span><br><span class="line">		System.out.println(rootEle.element(<span class="string">&quot;contact&quot;</span>).element(<span class="string">&quot;name&quot;</span>).getName());</span><br><span class="line">		<span class="comment">// 下面全部获取子标签的文本内容&quot;潘金莲&quot;</span></span><br><span class="line">		System.out.println(rootEle.element(<span class="string">&quot;contact&quot;</span>).element(<span class="string">&quot;name&quot;</span>).getText());</span><br><span class="line">		System.out.println(rootEle.element(<span class="string">&quot;contact&quot;</span>).element(<span class="string">&quot;name&quot;</span>).getTextTrim());</span><br><span class="line">		System.out.println(<span class="string">&quot;===================&quot;</span>);</span><br><span class="line">		System.out.println(rootEle.element(<span class="string">&quot;contact&quot;</span>).elementText(<span class="string">&quot;name&quot;</span>));</span><br><span class="line">		System.out.println(rootEle.element(<span class="string">&quot;contact&quot;</span>).elementTextTrim(<span class="string">&quot;name&quot;</span>));</span><br><span class="line"></span><br><span class="line">		<span class="comment">// 获取属性对象的迭代器</span></span><br><span class="line">		<span class="type">Element</span> <span class="variable">childEle</span> <span class="operator">=</span> rootEle.element(<span class="string">&quot;contact&quot;</span>);</span><br><span class="line">		Iterator&lt;Attribute&gt; attIt = childEle.attributeIterator();</span><br><span class="line">		<span class="keyword">while</span> (attIt.hasNext()) &#123;</span><br><span class="line">			System.out.println(attIt.next().getText());</span><br><span class="line">		&#125;</span><br><span class="line"></span><br><span class="line">		System.out.println(<span class="string">&quot;=====================&quot;</span>);</span><br><span class="line">		<span class="comment">// 获取属性对象的List集合</span></span><br><span class="line">		List&lt;Attribute&gt; attList = childEle.attributes();</span><br><span class="line">		<span class="keyword">for</span> (Attribute a : attList) &#123;</span><br><span class="line">			System.out.println(a.getText());</span><br><span class="line">		&#125;</span><br><span class="line"></span><br><span class="line">		<span class="comment">// 直接获取属性值</span></span><br><span class="line">		System.out.println(childEle.attribute(<span class="string">&quot;id&quot;</span>).getValue());</span><br><span class="line">		System.out.println(childEle.attribute(<span class="string">&quot;id&quot;</span>).getText());</span><br><span class="line">		System.out.println(childEle.attributeValue(<span class="string">&quot;id&quot;</span>));</span><br><span class="line">		<span class="comment">// 获取属性的名称</span></span><br><span class="line">		System.out.println(childEle.attribute(<span class="string">&quot;id&quot;</span>).getName());</span><br><span class="line">	&#125;</span><br><span class="line"></span><br><span class="line">	<span class="meta">@SuppressWarnings(&quot;unchecked&quot;)</span></span><br><span class="line">	<span class="keyword">public</span> <span class="keyword">static</span> <span class="keyword">void</span> <span class="title function_">getElementList</span><span class="params">(Element rootEle)</span> &#123;</span><br><span class="line">		List&lt;Element&gt; listEle = rootEle.elements();</span><br><span class="line">		<span class="keyword">for</span> (Element childEle : listEle) &#123;</span><br><span class="line">			System.out.println(childEle);</span><br><span class="line">		&#125;</span><br><span class="line">		System.out.println(<span class="string">&quot;===============&quot;</span>);</span><br><span class="line">		List&lt;Element&gt; listEle2 = rootEle.elements(<span class="string">&quot;contact&quot;</span>);</span><br><span class="line">		<span class="keyword">for</span> (Element childEle : listEle2) &#123;</span><br><span class="line">			System.out.println(childEle);</span><br><span class="line">		&#125;</span><br><span class="line">	&#125;</span><br><span class="line"></span><br><span class="line">	<span class="meta">@SuppressWarnings(&quot;unchecked&quot;)</span></span><br><span class="line">	<span class="keyword">public</span> <span class="keyword">static</span> <span class="keyword">void</span> <span class="title function_">getElementIterator</span><span class="params">(Element rootEle)</span> &#123;</span><br><span class="line">		<span class="comment">// 获取当前标签下的子标签对象迭代器</span></span><br><span class="line">		Iterator&lt;Element&gt; eleIt = rootEle.elementIterator(<span class="string">&quot;contact&quot;</span>);</span><br><span class="line">		<span class="comment">// 遍历迭代器，输出所有子标签对象</span></span><br><span class="line">		<span class="keyword">while</span> (eleIt.hasNext()) &#123;</span><br><span class="line">			<span class="type">Element</span> <span class="variable">ele</span> <span class="operator">=</span> eleIt.next();</span><br><span class="line">			System.out.println(ele);</span><br><span class="line">		&#125;</span><br><span class="line">	&#125;</span><br><span class="line"></span><br><span class="line">	<span class="meta">@SuppressWarnings(&#123; &quot;unchecked&quot;, &quot;static-access&quot; &#125;)</span></span><br><span class="line">	<span class="keyword">public</span> <span class="keyword">static</span> <span class="keyword">void</span> <span class="title function_">getNodeIterator</span><span class="params">(Element rootEle)</span> &#123;</span><br><span class="line">		<span class="comment">// 获取Node对象的迭代器</span></span><br><span class="line">		Iterator&lt;Node&gt; nodeIt = rootEle.nodeIterator();</span><br><span class="line"></span><br><span class="line">		<span class="comment">// 遍历迭代器,判断是contact标签才输出</span></span><br><span class="line">		<span class="keyword">while</span> (nodeIt.hasNext()) &#123;</span><br><span class="line">			<span class="type">Node</span> <span class="variable">node</span> <span class="operator">=</span> nodeIt.next();</span><br><span class="line">			<span class="keyword">if</span> (node.getNodeType() == node.ELEMENT_NODE) &#123;</span><br><span class="line">				System.out.println(node);</span><br><span class="line">			&#125;</span><br><span class="line">		&#125;</span><br><span class="line">	&#125;</span><br><span class="line">&#125;</span><br></pre></td></tr></table></figure>
+<h4 id="6-3-2-XML-数据的封装案例"><a href="#6-3-2-XML-数据的封装案例" class="headerlink" title="6.3.2. XML 数据的封装案例"></a>6.3.2. XML 数据的封装案例</h4><figure class="highlight java"><table><tr><td class="gutter"><pre><span class="line">1</span><br><span class="line">2</span><br><span class="line">3</span><br><span class="line">4</span><br><span class="line">5</span><br><span class="line">6</span><br><span class="line">7</span><br><span class="line">8</span><br><span class="line">9</span><br><span class="line">10</span><br><span class="line">11</span><br><span class="line">12</span><br><span class="line">13</span><br><span class="line">14</span><br><span class="line">15</span><br><span class="line">16</span><br><span class="line">17</span><br><span class="line">18</span><br><span class="line">19</span><br><span class="line">20</span><br><span class="line">21</span><br><span class="line">22</span><br><span class="line">23</span><br><span class="line">24</span><br><span class="line">25</span><br><span class="line">26</span><br><span class="line">27</span><br><span class="line">28</span><br><span class="line">29</span><br><span class="line">30</span><br><span class="line">31</span><br><span class="line">32</span><br><span class="line">33</span><br><span class="line">34</span><br><span class="line">35</span><br><span class="line">36</span><br><span class="line">37</span><br><span class="line">38</span><br><span class="line">39</span><br><span class="line">40</span><br><span class="line">41</span><br><span class="line">42</span><br><span class="line">43</span><br><span class="line">44</span><br><span class="line">45</span><br><span class="line">46</span><br><span class="line">47</span><br><span class="line">48</span><br><span class="line">49</span><br><span class="line">50</span><br><span class="line">51</span><br><span class="line">52</span><br><span class="line">53</span><br></pre></td><td class="code"><pre><span class="line"><span class="keyword">import</span> java.io.File;</span><br><span class="line"><span class="keyword">import</span> java.util.List;</span><br><span class="line"></span><br><span class="line"><span class="keyword">import</span> org.apache.commons.beanutils.BeanUtils;</span><br><span class="line"><span class="keyword">import</span> org.dom4j.Attribute;</span><br><span class="line"><span class="keyword">import</span> org.dom4j.Document;</span><br><span class="line"><span class="keyword">import</span> org.dom4j.Element;</span><br><span class="line"><span class="keyword">import</span> org.dom4j.io.SAXReader;</span><br><span class="line"></span><br><span class="line"><span class="comment">/**</span></span><br><span class="line"><span class="comment"> * 需求</span></span><br><span class="line"><span class="comment">	* 创建实体类Contact，包含属性：id、name、gender、phone、qq、email，属性全部使用String类型</span></span><br><span class="line"><span class="comment">	* 将XML文件中的联系人封装成一个List&lt;Contact&gt;集合，并输出在控制台</span></span><br><span class="line"><span class="comment">		* 1) 得到根元素</span></span><br><span class="line"><span class="comment">		* 2）得到所有的contact元素</span></span><br><span class="line"><span class="comment">		* 3) 得到contact元素中的下级元素封装成数据，其中id是属性，其它的都是文本。 </span></span><br><span class="line"><span class="comment"></span></span><br><span class="line"><span class="comment"> */</span></span><br><span class="line"><span class="keyword">public</span> <span class="keyword">class</span> <span class="title class_">MoonZero</span> &#123;</span><br><span class="line">	<span class="meta">@SuppressWarnings(&quot;unchecked&quot;)</span></span><br><span class="line">	<span class="keyword">public</span> <span class="keyword">static</span> <span class="keyword">void</span> <span class="title function_">main</span><span class="params">(String[] args)</span> <span class="keyword">throws</span> Exception &#123;</span><br><span class="line">		<span class="comment">//创建SAXReader对象</span></span><br><span class="line">		<span class="type">SAXReader</span> <span class="variable">sax</span> <span class="operator">=</span> <span class="keyword">new</span> <span class="title class_">SAXReader</span>();</span><br><span class="line">		<span class="comment">//获取XML的document对象</span></span><br><span class="line">		<span class="type">Document</span> <span class="variable">doc</span> <span class="operator">=</span> sax.read(<span class="keyword">new</span> <span class="title class_">File</span>(<span class="string">&quot;contact.xml&quot;</span>));</span><br><span class="line">		</span><br><span class="line">		<span class="comment">//获取根元素对对象</span></span><br><span class="line">		<span class="type">Element</span> <span class="variable">ele</span> <span class="operator">=</span> doc.getRootElement();</span><br><span class="line">		</span><br><span class="line">		<span class="comment">//获取子元素对象List集合</span></span><br><span class="line">		List&lt;Element&gt; eleList = ele.elements();</span><br><span class="line">		<span class="comment">//遍历集合</span></span><br><span class="line">		<span class="keyword">for</span> (Element childEle: eleList) &#123;</span><br><span class="line">			<span class="comment">//创建contact对象</span></span><br><span class="line">			<span class="type">Contact</span> <span class="variable">c</span> <span class="operator">=</span> <span class="keyword">new</span> <span class="title class_">Contact</span>();</span><br><span class="line">			<span class="comment">//再获取子元素对象下的所有子子元素List集合</span></span><br><span class="line">			List&lt;Element&gt; childEleList = childEle.elements();</span><br><span class="line">			<span class="keyword">for</span> (Element ccEle : childEleList) &#123;</span><br><span class="line">				<span class="type">String</span> <span class="variable">name</span> <span class="operator">=</span> ccEle.getName();</span><br><span class="line">				<span class="type">Object</span> <span class="variable">value</span> <span class="operator">=</span> ccEle.getTextTrim();</span><br><span class="line">				<span class="comment">//使用BeanUtils方法给对象赋值</span></span><br><span class="line">				BeanUtils.setProperty(c, name, value);</span><br><span class="line">			&#125;</span><br><span class="line">			</span><br><span class="line">			<span class="comment">//获取子元素属性对象集合</span></span><br><span class="line">			List&lt;Attribute&gt; attList = childEle.attributes();</span><br><span class="line">			<span class="keyword">for</span> (Attribute att : attList) &#123;</span><br><span class="line">				BeanUtils.setProperty(c, att.getName(), att.getValue());</span><br><span class="line">			&#125;</span><br><span class="line">			System.out.println(c);</span><br><span class="line">		&#125;</span><br><span class="line">	&#125;</span><br><span class="line">&#125;</span><br></pre></td></tr></table></figure>
+<h4 id="6-3-3-XMLWriter-基础使用案例"><a href="#6-3-3-XMLWriter-基础使用案例" class="headerlink" title="6.3.3. XMLWriter 基础使用案例"></a>6.3.3. XMLWriter 基础使用案例</h4><figure class="highlight java"><table><tr><td class="gutter"><pre><span class="line">1</span><br><span class="line">2</span><br><span class="line">3</span><br><span class="line">4</span><br><span class="line">5</span><br><span class="line">6</span><br><span class="line">7</span><br><span class="line">8</span><br><span class="line">9</span><br><span class="line">10</span><br><span class="line">11</span><br><span class="line">12</span><br><span class="line">13</span><br><span class="line">14</span><br><span class="line">15</span><br><span class="line">16</span><br><span class="line">17</span><br><span class="line">18</span><br><span class="line">19</span><br><span class="line">20</span><br><span class="line">21</span><br><span class="line">22</span><br><span class="line">23</span><br><span class="line">24</span><br><span class="line">25</span><br><span class="line">26</span><br><span class="line">27</span><br><span class="line">28</span><br><span class="line">29</span><br><span class="line">30</span><br><span class="line">31</span><br><span class="line">32</span><br><span class="line">33</span><br><span class="line">34</span><br><span class="line">35</span><br><span class="line">36</span><br><span class="line">37</span><br><span class="line">38</span><br><span class="line">39</span><br><span class="line">40</span><br><span class="line">41</span><br><span class="line">42</span><br><span class="line">43</span><br><span class="line">44</span><br><span class="line">45</span><br><span class="line">46</span><br><span class="line">47</span><br><span class="line">48</span><br><span class="line">49</span><br><span class="line">50</span><br><span class="line">51</span><br><span class="line">52</span><br><span class="line">53</span><br><span class="line">54</span><br><span class="line">55</span><br><span class="line">56</span><br><span class="line">57</span><br><span class="line">58</span><br><span class="line">59</span><br><span class="line">60</span><br><span class="line">61</span><br><span class="line">62</span><br><span class="line">63</span><br><span class="line">64</span><br><span class="line">65</span><br><span class="line">66</span><br><span class="line">67</span><br><span class="line">68</span><br><span class="line">69</span><br><span class="line">70</span><br><span class="line">71</span><br><span class="line">72</span><br><span class="line">73</span><br><span class="line">74</span><br><span class="line">75</span><br><span class="line">76</span><br><span class="line">77</span><br><span class="line">78</span><br><span class="line">79</span><br><span class="line">80</span><br><span class="line">81</span><br><span class="line">82</span><br><span class="line">83</span><br><span class="line">84</span><br><span class="line">85</span><br><span class="line">86</span><br><span class="line">87</span><br><span class="line">88</span><br><span class="line">89</span><br><span class="line">90</span><br><span class="line">91</span><br><span class="line">92</span><br><span class="line">93</span><br><span class="line">94</span><br><span class="line">95</span><br><span class="line">96</span><br></pre></td><td class="code"><pre><span class="line"><span class="keyword">import</span> java.io.FileOutputStream;</span><br><span class="line"><span class="keyword">import</span> java.io.IOException;</span><br><span class="line"></span><br><span class="line"><span class="keyword">import</span> org.dom4j.Document;</span><br><span class="line"><span class="keyword">import</span> org.dom4j.DocumentHelper;</span><br><span class="line"><span class="keyword">import</span> org.dom4j.Element;</span><br><span class="line"><span class="keyword">import</span> org.dom4j.io.OutputFormat;</span><br><span class="line"><span class="keyword">import</span> org.dom4j.io.SAXReader;</span><br><span class="line"><span class="keyword">import</span> org.dom4j.io.XMLWriter;</span><br><span class="line"></span><br><span class="line"><span class="comment">/*</span></span><br><span class="line"><span class="comment"> * 需求：</span></span><br><span class="line"><span class="comment"> * 		生成一个空的XML文件</span></span><br><span class="line"><span class="comment"> * 		新增一个联系人对象到XML文件</span></span><br><span class="line"><span class="comment"> */</span></span><br><span class="line"><span class="keyword">public</span> <span class="keyword">class</span> <span class="title class_">MoonZero</span> &#123;</span><br><span class="line">	<span class="keyword">public</span> <span class="keyword">static</span> <span class="keyword">void</span> <span class="title function_">main</span><span class="params">(String[] args)</span> <span class="keyword">throws</span> Exception &#123;</span><br><span class="line">		<span class="comment">// 生成一个空的XML文件</span></span><br><span class="line">		<span class="comment">// createNewDocument();</span></span><br><span class="line"></span><br><span class="line">		<span class="comment">// 给XML文件新增联系人</span></span><br><span class="line">		<span class="comment">// 先读取文档，创建SAXReader对象获取Document对象</span></span><br><span class="line">		<span class="type">SAXReader</span> <span class="variable">sax</span> <span class="operator">=</span> <span class="keyword">new</span> <span class="title class_">SAXReader</span>();</span><br><span class="line">		<span class="type">Document</span> <span class="variable">doc</span> <span class="operator">=</span> sax.read(<span class="string">&quot;newXML.xml&quot;</span>);</span><br><span class="line"></span><br><span class="line">		<span class="comment">// 获取根元素对象</span></span><br><span class="line">		<span class="type">Element</span> <span class="variable">rootEle</span> <span class="operator">=</span> doc.getRootElement();</span><br><span class="line">		<span class="comment">// 调用方法获取新增的标签对象，新增到根元素对象下</span></span><br><span class="line">		rootEle.add(createNewContact());</span><br><span class="line"></span><br><span class="line">		<span class="comment">// 创建字节输出流对象，关联输出文件对象</span></span><br><span class="line">		<span class="type">FileOutputStream</span> <span class="variable">fos</span> <span class="operator">=</span> <span class="keyword">new</span> <span class="title class_">FileOutputStream</span>(<span class="string">&quot;newXML.xml&quot;</span>);</span><br><span class="line">		<span class="comment">// 创建格式化</span></span><br><span class="line">		<span class="type">OutputFormat</span> <span class="variable">format</span> <span class="operator">=</span> OutputFormat.createPrettyPrint();</span><br><span class="line"></span><br><span class="line">		<span class="comment">// 创建XMLWriter对象，将Document对象输出到文件、</span></span><br><span class="line">		<span class="type">XMLWriter</span> <span class="variable">xml</span> <span class="operator">=</span> <span class="keyword">new</span> <span class="title class_">XMLWriter</span>(fos, format);</span><br><span class="line">		xml.write(doc);</span><br><span class="line"></span><br><span class="line">		<span class="comment">// 关闭流对象</span></span><br><span class="line">		fos.close();</span><br><span class="line">	&#125;</span><br><span class="line"></span><br><span class="line">	<span class="keyword">public</span> <span class="keyword">static</span> Element <span class="title function_">createNewContact</span><span class="params">()</span> &#123;</span><br><span class="line">		<span class="comment">// 创建新增联系人对象</span></span><br><span class="line">		<span class="type">Contact</span> <span class="variable">con</span> <span class="operator">=</span> <span class="keyword">new</span> <span class="title class_">Contact</span>(<span class="string">&quot;剑圣主宰&quot;</span>, <span class="string">&quot;男&quot;</span>, <span class="string">&quot;10086&quot;</span>, <span class="string">&quot;10000&quot;</span>, <span class="string">&quot;10000@qq.com&quot;</span>, <span class="string">&quot;9527&quot;</span>, <span class="literal">true</span>);</span><br><span class="line"></span><br><span class="line">		<span class="comment">// 将对象新增到根元素对象子标签中</span></span><br><span class="line">		<span class="comment">// 给根元素新增一个子元素对象</span></span><br><span class="line">		<span class="type">Element</span> <span class="variable">childEle</span> <span class="operator">=</span> DocumentHelper.createElement(<span class="string">&quot;contact&quot;</span>);</span><br><span class="line">		<span class="comment">// 给子元素对象新增子元素对象和文本内容</span></span><br><span class="line">		childEle.addElement(<span class="string">&quot;name&quot;</span>).setText(con.getName());</span><br><span class="line">		childEle.addElement(<span class="string">&quot;gender&quot;</span>).setText(con.getGender());</span><br><span class="line">		childEle.addElement(<span class="string">&quot;phone&quot;</span>).setText(con.getPhone());</span><br><span class="line">		childEle.addElement(<span class="string">&quot;qq&quot;</span>).setText(con.getQq());</span><br><span class="line">		childEle.addElement(<span class="string">&quot;email&quot;</span>).setText(con.getEmail());</span><br><span class="line">		<span class="comment">// 给子元素对象新增属性对象和文本内容</span></span><br><span class="line">		childEle.addAttribute(<span class="string">&quot;id&quot;</span>, con.getId());</span><br><span class="line">		childEle.addAttribute(<span class="string">&quot;vip&quot;</span>, Boolean.toString(con.isVip()));</span><br><span class="line">		<span class="keyword">return</span> childEle;</span><br><span class="line">	&#125;</span><br><span class="line"></span><br><span class="line">	<span class="comment">// 生成一个空的XML文件</span></span><br><span class="line">	<span class="keyword">public</span> <span class="keyword">static</span> <span class="keyword">void</span> <span class="title function_">createNewDocument</span><span class="params">()</span> <span class="keyword">throws</span> IOException &#123;</span><br><span class="line">		<span class="comment">// 使用工具类DocumentHelper一个元素Element对象</span></span><br><span class="line">		<span class="type">Element</span> <span class="variable">rootEle</span> <span class="operator">=</span> DocumentHelper.createElement(<span class="string">&quot;contactList&quot;</span>);</span><br><span class="line"></span><br><span class="line">		<span class="comment">// 获取一个有根元素的Document对象</span></span><br><span class="line">		<span class="type">Document</span> <span class="variable">doc</span> <span class="operator">=</span> DocumentHelper.createDocument(rootEle);</span><br><span class="line"></span><br><span class="line">		<span class="comment">// 创建格式化对象</span></span><br><span class="line">		<span class="type">OutputFormat</span> <span class="variable">format</span> <span class="operator">=</span> OutputFormat.createPrettyPrint();</span><br><span class="line">		<span class="comment">// 创建字节输出流对象，关联输出文件对象</span></span><br><span class="line">		<span class="type">FileOutputStream</span> <span class="variable">fos</span> <span class="operator">=</span> <span class="keyword">new</span> <span class="title class_">FileOutputStream</span>(<span class="string">&quot;newXML.xml&quot;</span>);</span><br><span class="line"></span><br><span class="line">		<span class="comment">// 创建XMLWriter对象</span></span><br><span class="line">		<span class="type">XMLWriter</span> <span class="variable">xml</span> <span class="operator">=</span> <span class="keyword">new</span> <span class="title class_">XMLWriter</span>(fos, format);</span><br><span class="line"></span><br><span class="line">		<span class="comment">// 给根元素新增一个子元素对象</span></span><br><span class="line">		<span class="type">Element</span> <span class="variable">childEle</span> <span class="operator">=</span> rootEle.addElement(<span class="string">&quot;contact&quot;</span>);</span><br><span class="line">		<span class="comment">// 给子元素对象新增子元素对象和文本内容</span></span><br><span class="line">		childEle.addElement(<span class="string">&quot;name&quot;</span>).setText(<span class="string">&quot;敌法师&quot;</span>);</span><br><span class="line">		childEle.addElement(<span class="string">&quot;gender&quot;</span>).setText(<span class="string">&quot;男&quot;</span>);</span><br><span class="line">		childEle.addElement(<span class="string">&quot;phone&quot;</span>).setText(<span class="string">&quot;10086&quot;</span>);</span><br><span class="line">		childEle.addElement(<span class="string">&quot;qq&quot;</span>).setText(<span class="string">&quot;10101010&quot;</span>);</span><br><span class="line">		childEle.addElement(<span class="string">&quot;email&quot;</span>).setText(<span class="string">&quot;10101010@qq.com&quot;</span>);</span><br><span class="line">		<span class="comment">// 给子元素对象新增属性对象和文本内容</span></span><br><span class="line">		childEle.addAttribute(<span class="string">&quot;id&quot;</span>, <span class="string">&quot;s001&quot;</span>);</span><br><span class="line">		childEle.addAttribute(<span class="string">&quot;vip&quot;</span>, <span class="string">&quot;true&quot;</span>);</span><br><span class="line"></span><br><span class="line">		<span class="comment">// 将Document输出到文件</span></span><br><span class="line">		xml.write(doc);</span><br><span class="line">		<span class="comment">// 关闭流对象</span></span><br><span class="line">		fos.close();</span><br><span class="line">	&#125;</span><br><span class="line">&#125;</span><br></pre></td></tr></table></figure>
+</article><div class="post-copyright"><div class="post-copyright__author"><span class="post-copyright-meta"><i class="fas fa-circle-user fa-fw"></i>文章作者: </span><span class="post-copyright-info"><a href="https://ktzxy.github.io">蓝桉</a></span></div><div class="post-copyright__type"><span class="post-copyright-meta"><i class="fas fa-square-arrow-up-right fa-fw"></i>文章链接: </span><span class="post-copyright-info"><a href="https://ktzxy.github.io/posts/e7476577.html">https://ktzxy.github.io/posts/e7476577.html</a></span></div><div class="post-copyright__notice"><span class="post-copyright-meta"><i class="fas fa-circle-exclamation fa-fw"></i>版权声明: </span><span class="post-copyright-info">本博客所有文章除特别声明外，均采用 <a href="https://creativecommons.org/licenses/by-nc-sa/4.0/" target="_blank">CC BY-NC-SA 4.0</a> 许可协议。转载请注明来源 <a href="https://ktzxy.github.io" target="_blank">蓝桉`Blog</a>！</span></div></div><div class="tag_share"><div class="post-meta__tag-list"><a class="post-meta__tags" href="/tags/Java/">Java</a></div><div class="post-share"><div class="social-share" data-image="/bg/Image00014.webp" data-sites="facebook,twitter,wechat,weibo,qq"></div><link rel="stylesheet" href="https://cdn.jsdelivr.net/npm/butterfly-extsrc/sharejs/dist/css/share.min.css" media="print" onload="this.media='all'"><script src="https://cdn.jsdelivr.net/npm/butterfly-extsrc/sharejs/dist/js/social-share.min.js" defer></script></div></div><link rel="stylesheet" href="/css/coin/coin.css" media="defer" onload="this.media='all'"/><div class="post-reward"><button class="tip-button reward-button"><span class="tip-button__text">不给糖果就捣蛋</span><div class="coin-wrapper"><div class="coin"><div class="coin__middle"></div><div class="coin__back"></div><div class="coin__front"></div></div></div><div class="reward-main"><ul class="reward-all"><li class="reward-item"><a href="/img/wechat.webp" target="_blank"><img class="post-qr-code-img" src="/img/wechat.webp" alt="wechat"/></a><div class="post-qr-code-desc">wechat</div></li><li class="reward-item"><a href="/img/alipay.webp" target="_blank"><img class="post-qr-code-img" src="/img/alipay.webp" alt="alipay"/></a><div class="post-qr-code-desc">alipay</div></li></ul></div></button></div><audio id="coinAudio" src="https://cdn.cbd.int/akilar-candyassets@1.0.36/audio/aowu.m4a"></audio><script defer="defer" src="/js/coin/coin.js"></script><nav class="pagination-post" id="pagination"><a class="pagination-related" href="/posts/4842548.html" title="Java基础-反射"><img class="cover" src="/bg/Image00017.webp" onerror="onerror=null;src='/img/404.jpg'" alt="cover of previous post"><div class="info"><div class="info-1"><div class="info-item-1">上一篇</div><div class="info-item-2">Java基础-反射</div></div><div class="info-2"><div class="info-item-1">1. 反射的概述1.1. 动态语言的概念动态语言指程序在运行时可以改变其结构的语言，比如新的属性或方法的添加、删除等结构上的变化。JavaScript、Ruby、Python 等都属于动态语言；C、C++ 不属于动态语言。从反射的角度来说，Java 属于半动态语言。 1.2. 什么是反射动态获取类和对象的信息，以及动态调用对象的方法的功能被称为 Java 语言的反射机制。 在程序运行状态中，对于任意一个类，都能够获取类的所有属性和方法；对于任意一个对象，都能够调用其任意一个方法和属性。 反射是一种机制，利用该机制可以在程序运行过程中对类进行解剖并操作类中所有成员。因为在 Java 中把一切的东西都抽象成对象，所以类本身也可以抽象成一个对象。类中的构造方法、方法、成员变量等也可以抽象成对象。反射就是通过类对象Class，得到类中有哪些构造方法Constructor、成员方法Method、成员变量（字段）Field 等对象。程序编译分为以下两种：  静态编译：在编译时确定类型，绑定对象 动态编译：运行时确定类型，绑定对象   Notes: 反射的前提条件是，获得该类Class对象，就...</div></div></div></a><a class="pagination-related" href="/posts/8bebd4ec.html" title="Java基础-Java8新特性"><img class="cover" src="/bg/Image00018.webp" onerror="onerror=null;src='/img/404.jpg'" alt="cover of next post"><div class="info text-right"><div class="info-1"><div class="info-item-1">下一篇</div><div class="info-item-2">Java基础-Java8新特性</div></div><div class="info-2"><div class="info-item-1">1. Java 8 新特性概述Java 8 (又称为 jdk 1.8) 是 Java 语言开发的一个主要版本。Oracle 公司于 2014 年 3 月 18 日发布 Java 8 ，它支持函数式编程，新的 JavaScript 引擎，新的日期 API，新的Stream API 等。Java8 新增了非常多的特性，常用有以下几个：  Lambda 表达式 − Lambda 允许把函数作为一个方法的参数（函数作为参数传递到方法中）。 方法引用 − 方法引用提供了非常有用的语法，可以直接引用已有 Java 类或对象（实例）的方法或构造器。与lambda联合使用，方法引用可以使语言的构造更紧凑简洁，减少冗余代码。 默认方法 − 默认方法就是一个在接口里面有了一个实现的方法。 新的编译工具 - 如：Nashorn引擎 jjs、 类依赖分析器jdeps。 Stream API − 新添加的 Stream API（java.util.stream） 把真正的函数式编程风格引入到Java中。 Date Time API − 加强对日期与时间的处理。 Optional 类 − Optional ...</div></div></div></a></nav><div class="relatedPosts"><div class="headline"><i class="fas fa-thumbs-up fa-fw"></i><span>相关推荐</span></div><div class="relatedPosts-list"><a class="pagination-related" href="/posts/4e9c3100.html" title="Java基础-网络编程"><img class="cover" src="/bg/Image00026.webp" alt="cover"><div class="info text-center"><div class="info-1"><div class="info-item-1"><i class="far fa-calendar-alt fa-fw"></i> 2025-07-09</div><div class="info-item-2">Java基础-网络编程</div></div><div class="info-2"><div class="info-item-1">1. 网络编程概述在计算机领域中，网络是信息传输、接收、共享的虚拟平台，将各个点、面、体的信息联系到一起，从而实现这些资源的共享。网络编程的作用：解决计算机与计算机数据传输的问题。 网络体系大致分为三种：OSI七层模型、TCP/IP四层模型和五层模型。  Tips: 一般面试的时候考察比较多的是五层模型。  1.1. 网络通讯三要素1.1.1. IP地址IP 是每台电脑在互联网上的唯一标识符。一个 IPV4 的地址是由四段 0—255 的数字组成：192.168.0.100，每一段的取值范围由8位二进制数据组成。 IPv6 使用 16 个字节表示 IP 地址，它所拥有的地址容量约是 IPv4 的 8×1028倍，达到 2128个。  Notes:   127.0.0.1 为本地主机地址(本地回环地址)，与 localhost 类似，均代表本机地址 xxx.xxx.xxx.255 广播地址，即该网段下所有用户均可以被通知到   例如在 windows 系统中，可以通过以下命令来获取 ip 与网络相关内容： 1ipconfig  用于DOS获取计算机IP设置  1ping ip地址 ...</div></div></div></a><a class="pagination-related" href="/posts/2af7de89.html" title="Day-0-IDEA简单学习"><img class="cover" src="/bg/Image00021.webp" alt="cover"><div class="info text-center"><div class="info-1"><div class="info-item-1"><i class="far fa-calendar-alt fa-fw"></i> 2025-07-09</div><div class="info-item-2">Day-0-IDEA简单学习</div></div><div class="info-2"><div class="info-item-1">﻿# Day-0-IDEA简单学习 1.设置主题 2.编辑区的字体变大或者变小：（ctrl+鼠标滚轮） 3.鼠标悬浮在代码上有提示： 4.自动导包和优化多余的包：手动导包：快捷键：alt+enter自动导包和优化多余的包：  5.显示行号 ，  方法和方法间的分隔符： 6.忽略大小写，进行提示： 7.修改代码中注释的字体颜色： 8.修改类头的文档注释信息：注意：对新建的类才有效/**  @Auther: XXX @Date: ${DATE} - ${MONTH} - ${DAY} - ${TIME}  @Description: ${PACKAGE_NAME} @version: 1.0*/   8.自动编译： 9.常用快捷键【1】创建内容：alt+insert 【2】main方法：psvm 【3】输出语句：sout 【4】复制行：ctrl+d 【5】删除行：ctrl+y 【6】代码向上/下移动：Ctrl + Shift + Up / Down 【7】搜索类：  ctrl+n 【8】生成代码  ：alt + Insert（如构造函数等，getter,setter,hashCode...</div></div></div></a><a class="pagination-related" href="/posts/72ba03f7.html" title="Day-02-java基础语法"><img class="cover" src="/bg/Image00027.webp" alt="cover"><div class="info text-center"><div class="info-1"><div class="info-item-1"><i class="far fa-calendar-alt fa-fw"></i> 2025-07-09</div><div class="info-item-2">Day-02-java基础语法</div></div><div class="info-2"><div class="info-item-1">﻿ Day-02-java基础语法快捷键操作 psvm —&gt;快速生成public static void main(String[] args) {} sout —&gt;快速生成System.out.println();  可能会遇到的问题  每个单词的大小不能出现问题，==Java是大小写敏感的==； 尽量使用英文； 文件名和类名必须保证一致，并且首字母大写； 符号使用的了中文。   Java运行机制  编译型 解释型    注释：Java中的注释有三种： 12345678910注释：    单行注释：    //我是单行注释    多行注释      /*我是多行注释*/    文档注释    /**    *@description  HelloWrold    *@Author 作者    */ 标识符：关键字 Java所有的组成部分都需要名字。类名、变量名以及方法名都被称为标识符。 标识符注意点 所有的标识符都应该以字母(A-Z或者a-z),美元符（$)、数字或者下划线(_)开始首字符之后可以是字母（A-Z或者a-z),美元符（$)、下划线(_)或数字的任何字符...</div></div></div></a><a class="pagination-related" href="/posts/369b2118.html" title="Day-03-java流程控制"><img class="cover" src="/bg/Image00020.webp" alt="cover"><div class="info text-center"><div class="info-1"><div class="info-item-1"><i class="far fa-calendar-alt fa-fw"></i> 2025-07-09</div><div class="info-item-2">Day-03-java流程控制</div></div><div class="info-2"><div class="info-item-1">﻿ Day-03-java流程控制Scanner对象java.util.Scanner是Java5的新特性，我们可以通过Scanner类来获取用户的输入。 基本语法 1Scanner s = new Scanner(System.in); 通过Scanner类的next()与nextLine()方法获取输入的字符串，在读取前我们一般需要使用hasNext() 与hasNextLine()判断是否还有输入的数据。 12345678910111213public static void main(String[] args) &#123;    //创建一个扫描对象，用于接受键盘数据    Scanner scanner = new Scanner(System.in);    System.out.println(&quot;使用next方式接受：&quot;);    //判断用户有没有输入字符串    if (scanner.hasNext())&#123;        //使用next方式接受        String str = scanner.next();     ...</div></div></div></a><a class="pagination-related" href="/posts/bbaa91bf.html" title="Day-04-java方法详解"><img class="cover" src="/bg/Image00021.webp" alt="cover"><div class="info text-center"><div class="info-1"><div class="info-item-1"><i class="far fa-calendar-alt fa-fw"></i> 2025-07-09</div><div class="info-item-2">Day-04-java方法详解</div></div><div class="info-2"><div class="info-item-1">﻿ Day-04-java方法详解何谓方法？​    System.out.println(),那么它是什么呢? ​    调用系统类里的标准输出对象out中的方法println ​    Java方法是语句的集合，它们在一起执行一个功能。 ​    方法是解决一类问题的步骤的有序组合 ​    方法包含于类或对象中，方法和方法是并列的关系，所以我们定义的方法不能写到main方法中 ​    方法在程序中被创建，在其他地方被引用 ​    设计方法的原则:方法的本意是功能块，就是实现某个功能的语句块的集合。我们设计方法的时候，最好保持方法的原子性，就是一个方法只完成1个功能，这样利于我们后期的扩展。 方法的定义Java的方法类似争其它语言的函数,是一段用来完成特定功能的代码片段，一股情况卜，定义一个方法包含以下语法: 方法包含一个方法头和一个方法体。 下面是一个方法的所有部分: 修饰符:修饰符，这是可选的，告诉编译器如何调用该方法。定义了该方法的访问类型。 返回值类型∶方法可能会返回值。returnValueType 是方法返回值的数据类型。有些方法执行所需的操作，但没有返回值。...</div></div></div></a><a class="pagination-related" href="/posts/cccc6599.html" title="Day-06-java面向对象"><img class="cover" src="/bg/Image00022.webp" alt="cover"><div class="info text-center"><div class="info-1"><div class="info-item-1"><i class="far fa-calendar-alt fa-fw"></i> 2025-07-09</div><div class="info-item-2">Day-06-java面向对象</div></div><div class="info-2"><div class="info-item-1">﻿ Day-06-java面向对象什么是面向对象面向对象编程(Object-Oriented Programming, OOP) 面向对象编程的本质就是:==以类的方式组织代码，以对象的组织(封装)数据。== 抽象 三大特性: ​        封装 ​        继承 ​        多态从认识论角度考虑是先有对象后有类。对象，是具体的事物。类，是抽象的，是对对象的抽象 从代码运行角度考虑是先有类后有对象。类是对象的模板。 回顾方法及加深方法的定义 修饰符 返回类型 ==break: 跳出switch，结束循环和return的区别方法名== 参数列表 异常抛出 方法的调用        静态方法 ​        非静态方法 ​        形参和实参 ​        值传递和引用传递 ​        this关键字 12345678910111213141516171819202122232425//demo1  类public class demo1 &#123;    //main方法    public static void main(String[] a...</div></div></div></a></div></div></div><div class="aside-content" id="aside-content"><div class="card-widget card-info text-center"><div class="avatar-img"><img src="/img/avatar.webp" onerror="this.onerror=null;this.src='/img/friend_404.gif'" alt="avatar"/></div><div class="author-info-name">蓝桉</div><div class="author-info-description"><div style="line-height:1.38;margin:0.6rem 0;text-align:justify;color:rgba(255, 255, 255, 0.8);">这有关于<b style="color:#fff">生活、学习、技术</b>相关的问题和看法，还有<b style="color:#fff">文章教程</b>和<b style="color:#fff">分享</b>。</div><div style="line-height:1.38;margin:0.6rem 0;text-align:justify;color:rgba(255, 255, 255, 0.8);">相信你可以在这里找到对你有用的<b style="color:#fff">知识</b>和<b style="color:#fff">教程</b>。</div></div><div class="site-data"><a href="/archives/"><div class="headline">文章</div><div class="length-num">264</div></a><a href="/tags/"><div class="headline">标签</div><div class="length-num">38</div></a><a href="/categories/"><div class="headline">分类</div><div class="length-num">37</div></a></div><a id="card-info-btn" target="_blank" rel="noopener" href="https://github.com/ktzxy"><i class="fab fa-github"></i><span>Follow Me</span></a><div class="card-info-social-icons"><a class="social-icon faa-parent animated-hover" href="https://github.com/ktzxy" target="_blank" title="Github"><svg class="social_icon faa-tada" aria-hidden="true"><use xlink:href="#icon-github"></use></svg></a><a class="social-icon faa-parent animated-hover" href="https://mail.qq.com/cgi-bin/qm_share?t=qm_mailme&amp;email=2251511764@qq.com" target="_blank" title="Email"><svg class="social_icon faa-tada" aria-hidden="true"><use xlink:href="#icon-youxiang"></use></svg></a><a class="social-icon faa-parent animated-hover" href="/atom.xml" target="_blank" title="RSS"><svg class="social_icon faa-tada" aria-hidden="true"><use xlink:href="#icon-RSS"></use></svg></a><a class="social-icon faa-parent animated-hover" href="https://space.bilibili.com/496148176" target="_blank" title="BiliBili"><svg class="social_icon faa-tada" aria-hidden="true"><use xlink:href="#icon-QX-BILIBILI"></use></svg></a><a class="social-icon faa-parent animated-hover" href="tencent://Message/?Uin=2251511764&amp;amp;websiteName=local.edu.com:8888=&amp;amp;Menu=yes" target="_blank" title="QQ"><svg class="social_icon faa-tada" aria-hidden="true"><use xlink:href="#icon-QQ"></use></svg></a></div></div><div class="card-widget card-announcement"><div class="item-headline"><i class="fas fa-bullhorn fa-shake"></i><span>公告</span></div><div class="announcement_content">This is my Blog</div></div><div class="sticky_layout"><div class="card-widget" id="card-toc"><div class="item-headline"><i class="fas fa-stream"></i><span>目录</span><span class="toc-percentage"></span></div><div class="toc-content"><ol class="toc"><li class="toc-item toc-level-1"><a class="toc-link" href="#Java-%E5%9F%BA%E7%A1%80-XML"><span class="toc-number">1.</span> <span class="toc-text">Java 基础 - XML</span></a><ol class="toc-child"><li class="toc-item toc-level-2"><a class="toc-link" href="#1-XML-%E6%A6%82%E8%BF%B0"><span class="toc-number">1.1.</span> <span class="toc-text">1. XML 概述</span></a><ol class="toc-child"><li class="toc-item toc-level-3"><a class="toc-link" href="#1-1-%E4%BD%9C%E7%94%A8"><span class="toc-number">1.1.1.</span> <span class="toc-text">1.1. 作用</span></a></li><li class="toc-item toc-level-3"><a class="toc-link" href="#1-2-XML-%E7%9A%84%E7%BA%A6%E6%9D%9F"><span class="toc-number">1.1.2.</span> <span class="toc-text">1.2. XML 的约束</span></a><ol class="toc-child"><li class="toc-item toc-level-4"><a class="toc-link" href="#1-2-1-%E7%BA%A6%E6%9D%9F%E6%96%87%E4%BB%B6%E5%88%86%E7%B1%BB"><span class="toc-number">1.1.2.1.</span> <span class="toc-text">1.2.1. 约束文件分类</span></a></li></ol></li></ol></li><li class="toc-item toc-level-2"><a class="toc-link" href="#2-XML-%E8%AF%AD%E6%B3%95"><span class="toc-number">1.2.</span> <span class="toc-text">2. XML 语法</span></a><ol class="toc-child"><li class="toc-item toc-level-3"><a class="toc-link" href="#2-1-%E6%96%87%E6%A1%A3%E5%A3%B0%E6%98%8E"><span class="toc-number">1.2.1.</span> <span class="toc-text">2.1. 文档声明</span></a><ol class="toc-child"><li class="toc-item toc-level-4"><a class="toc-link" href="#2-1-1-%E5%A3%B0%E6%98%8E%E6%A0%BC%E5%BC%8F"><span class="toc-number">1.2.1.1.</span> <span class="toc-text">2.1.1. 声明格式</span></a></li><li class="toc-item toc-level-4"><a class="toc-link" href="#2-1-2-%E7%BC%96%E7%A0%81%E9%97%AE%E9%A2%98"><span class="toc-number">1.2.1.2.</span> <span class="toc-text">2.1.2. 编码问题</span></a></li><li class="toc-item toc-level-4"><a class="toc-link" href="#2-1-3-xml-%E6%96%87%E6%A1%A3%E7%BC%96%E7%A0%81%E9%97%AE%E9%A2%98%E6%B3%A8%E6%84%8F"><span class="toc-number">1.2.1.3.</span> <span class="toc-text">2.1.3. xml 文档编码问题注意</span></a></li></ol></li><li class="toc-item toc-level-3"><a class="toc-link" href="#2-2-%E6%A0%87%E7%AD%BE%EF%BC%88%E5%85%83%E7%B4%A0%EF%BC%89"><span class="toc-number">1.2.2.</span> <span class="toc-text">2.2. 标签（元素）</span></a><ol class="toc-child"><li class="toc-item toc-level-4"><a class="toc-link" href="#2-2-1-%E6%A0%87%E7%AD%BE%E7%9A%84%E6%A0%BC%E5%BC%8F"><span class="toc-number">1.2.2.1.</span> <span class="toc-text">2.2.1. 标签的格式</span></a></li><li class="toc-item toc-level-4"><a class="toc-link" href="#2-2-2-%E6%A0%87%E7%AD%BE%E5%88%86%E7%B1%BB"><span class="toc-number">1.2.2.2.</span> <span class="toc-text">2.2.2. 标签分类</span></a></li><li class="toc-item toc-level-4"><a class="toc-link" href="#2-2-3-%E6%A0%87%E7%AD%BE%E5%91%BD%E5%90%8D%E8%A7%84%E8%8C%83"><span class="toc-number">1.2.2.3.</span> <span class="toc-text">2.2.3. 标签命名规范</span></a></li><li class="toc-item toc-level-4"><a class="toc-link" href="#2-2-4-%E6%A0%87%E7%AD%BE%E7%9A%84%E6%B3%A8%E6%84%8F%E4%BA%8B%E9%A1%B9"><span class="toc-number">1.2.2.4.</span> <span class="toc-text">2.2.4. 标签的注意事项</span></a></li></ol></li><li class="toc-item toc-level-3"><a class="toc-link" href="#2-3-%E5%B1%9E%E6%80%A7"><span class="toc-number">1.2.3.</span> <span class="toc-text">2.3. 属性</span></a><ol class="toc-child"><li class="toc-item toc-level-4"><a class="toc-link" href="#2-3-1-%E5%B1%9E%E6%80%A7%E8%AF%AD%E6%B3%95%E6%A0%BC%E5%BC%8F"><span class="toc-number">1.2.3.1.</span> <span class="toc-text">2.3.1. 属性语法格式</span></a></li><li class="toc-item toc-level-4"><a class="toc-link" href="#2-3-2-%E6%B3%A8%E6%84%8F%E4%BA%8B%E9%A1%B9"><span class="toc-number">1.2.3.2.</span> <span class="toc-text">2.3.2. 注意事项</span></a></li></ol></li><li class="toc-item toc-level-3"><a class="toc-link" href="#2-4-%E6%B3%A8%E9%87%8A"><span class="toc-number">1.2.4.</span> <span class="toc-text">2.4. 注释</span></a><ol class="toc-child"><li class="toc-item toc-level-4"><a class="toc-link" href="#2-4-1-%E6%B3%A8%E9%87%8A%E8%AF%AD%E6%B3%95%E6%A0%BC%E5%BC%8F"><span class="toc-number">1.2.4.1.</span> <span class="toc-text">2.4.1. 注释语法格式</span></a></li><li class="toc-item toc-level-4"><a class="toc-link" href="#2-4-2-%E6%B3%A8%E6%84%8F%E4%BA%8B%E9%A1%B9"><span class="toc-number">1.2.4.2.</span> <span class="toc-text">2.4.2. 注意事项</span></a></li></ol></li><li class="toc-item toc-level-3"><a class="toc-link" href="#2-5-%E8%BD%AC%E4%B9%89%E5%AD%97%E7%AC%A6"><span class="toc-number">1.2.5.</span> <span class="toc-text">2.5. 转义字符</span></a></li><li class="toc-item toc-level-3"><a class="toc-link" href="#2-6-CDATA-%E5%8C%BA"><span class="toc-number">1.2.6.</span> <span class="toc-text">2.6. CDATA 区</span></a><ol class="toc-child"><li class="toc-item toc-level-4"><a class="toc-link" href="#2-6-1-%E8%AF%AD%E6%B3%95%E6%A0%BC%E5%BC%8F"><span class="toc-number">1.2.6.1.</span> <span class="toc-text">2.6.1. 语法格式</span></a></li><li class="toc-item toc-level-4"><a class="toc-link" href="#2-6-2-%E6%B3%A8%E6%84%8F%E4%BA%8B%E9%A1%B9"><span class="toc-number">1.2.6.2.</span> <span class="toc-text">2.6.2. 注意事项</span></a></li></ol></li></ol></li><li class="toc-item toc-level-2"><a class="toc-link" href="#3-DTD-%E7%BA%A6%E6%9D%9F"><span class="toc-number">1.3.</span> <span class="toc-text">3. DTD 约束</span></a><ol class="toc-child"><li class="toc-item toc-level-3"><a class="toc-link" href="#3-1-DTD-%E7%9A%84%E5%88%86%E7%B1%BB"><span class="toc-number">1.3.1.</span> <span class="toc-text">3.1. DTD 的分类</span></a></li><li class="toc-item toc-level-3"><a class="toc-link" href="#3-2-DTD-%E6%96%87%E6%A1%A3%E5%A3%B0%E6%98%8E%E7%9A%84%E4%B8%A4%E7%A7%8D%E5%BD%A2%E5%BC%8F%EF%BC%88%E5%BC%95%E7%94%A8%E6%96%B9%E5%BC%8F%EF%BC%89"><span class="toc-number">1.3.2.</span> <span class="toc-text">3.2. DTD 文档声明的两种形式（引用方式）</span></a><ol class="toc-child"><li class="toc-item toc-level-4"><a class="toc-link" href="#3-2-1-SYSTEM"><span class="toc-number">1.3.2.1.</span> <span class="toc-text">3.2.1. SYSTEM</span></a></li><li class="toc-item toc-level-4"><a class="toc-link" href="#3-2-2-PUBLIC"><span class="toc-number">1.3.2.2.</span> <span class="toc-text">3.2.2. PUBLIC</span></a></li><li class="toc-item toc-level-4"><a class="toc-link" href="#3-2-3-DTD-%E6%96%87%E4%BB%B6%E6%8F%8F%E8%BF%B0"><span class="toc-number">1.3.2.3.</span> <span class="toc-text">3.2.3. DTD 文件描述</span></a></li></ol></li><li class="toc-item toc-level-3"><a class="toc-link" href="#3-3-DTD%E8%AF%AD%E6%B3%95%EF%BC%9A%E5%85%83%E7%B4%A0%E7%BA%A6%E6%9D%9F"><span class="toc-number">1.3.3.</span> <span class="toc-text">3.3. DTD语法：元素约束</span></a><ol class="toc-child"><li class="toc-item toc-level-4"><a class="toc-link" href="#3-3-1-%E5%85%83%E7%B4%A0%E7%BA%A6%E6%9D%9F%E8%AF%AD%E6%B3%95%E6%A0%BC%E5%BC%8F"><span class="toc-number">1.3.3.1.</span> <span class="toc-text">3.3.1. 元素约束语法格式</span></a></li><li class="toc-item toc-level-4"><a class="toc-link" href="#3-3-2-%E5%85%83%E7%B4%A0%E7%9A%84%E7%B1%BB%E5%88%AB%EF%BC%883%E7%A7%8D%EF%BC%89"><span class="toc-number">1.3.3.2.</span> <span class="toc-text">3.3.2. 元素的类别（3种）</span></a></li><li class="toc-item toc-level-4"><a class="toc-link" href="#3-3-3-%E5%85%83%E7%B4%A0%E7%9A%84%E5%86%85%E5%AE%B9%E4%BF%AE%E9%A5%B0%E7%AC%A6%E5%8F%B7"><span class="toc-number">1.3.3.3.</span> <span class="toc-text">3.3.3. 元素的内容修饰符号</span></a></li><li class="toc-item toc-level-4"><a class="toc-link" href="#3-3-4-%E5%85%83%E7%B4%A0%E7%BA%A6%E6%9D%9F%E7%A4%BA%E4%BE%8B"><span class="toc-number">1.3.3.4.</span> <span class="toc-text">3.3.4. 元素约束示例</span></a></li></ol></li><li class="toc-item toc-level-3"><a class="toc-link" href="#3-4-DTD%E8%AF%AD%E6%B3%95%EF%BC%9A%E5%B1%9E%E6%80%A7%E7%BA%A6%E6%9D%9F"><span class="toc-number">1.3.4.</span> <span class="toc-text">3.4. DTD语法：属性约束</span></a><ol class="toc-child"><li class="toc-item toc-level-4"><a class="toc-link" href="#3-4-1-%E8%AF%AD%E6%B3%95%E6%A0%BC%E5%BC%8F"><span class="toc-number">1.3.4.1.</span> <span class="toc-text">3.4.1. 语法格式</span></a></li><li class="toc-item toc-level-4"><a class="toc-link" href="#3-4-2-%E5%B1%9E%E6%80%A7%E7%BA%A6%E6%9D%9F%E7%A4%BA%E4%BE%8B"><span class="toc-number">1.3.4.2.</span> <span class="toc-text">3.4.2. 属性约束示例</span></a></li></ol></li><li class="toc-item toc-level-3"><a class="toc-link" href="#3-5-DTD-%E7%BB%BC%E5%90%88%E6%A1%88%E4%BE%8B"><span class="toc-number">1.3.5.</span> <span class="toc-text">3.5. DTD 综合案例</span></a></li></ol></li><li class="toc-item toc-level-2"><a class="toc-link" href="#4-Schema-%E7%BA%A6%E6%9D%9F"><span class="toc-number">1.4.</span> <span class="toc-text">4. Schema 约束</span></a><ol class="toc-child"><li class="toc-item toc-level-3"><a class="toc-link" href="#4-1-Schema-%E7%BA%A6%E6%9D%9F%E6%A6%82%E8%BF%B0"><span class="toc-number">1.4.1.</span> <span class="toc-text">4.1. Schema 约束概述</span></a></li><li class="toc-item toc-level-3"><a class="toc-link" href="#4-2-Schema-%E7%9A%84%E5%91%BD%E5%90%8D%E7%A9%BA%E9%97%B4"><span class="toc-number">1.4.2.</span> <span class="toc-text">4.2. Schema 的命名空间</span></a><ol class="toc-child"><li class="toc-item toc-level-4"><a class="toc-link" href="#4-2-1-%E6%A6%82%E8%BF%B0"><span class="toc-number">1.4.2.1.</span> <span class="toc-text">4.2.1. 概述</span></a></li><li class="toc-item toc-level-4"><a class="toc-link" href="#4-2-2-%E5%90%8D%E7%A7%B0%E7%A9%BA%E9%97%B4%E5%A3%B0%E6%98%8E%E7%9A%84%E4%B8%80%E8%88%AC%E5%BD%A2%E5%BC%8F"><span class="toc-number">1.4.2.2.</span> <span class="toc-text">4.2.2. 名称空间声明的一般形式</span></a></li><li class="toc-item toc-level-4"><a class="toc-link" href="#4-2-3-XML-Namespace-xmlns-%E5%B1%9E%E6%80%A7"><span class="toc-number">1.4.2.3.</span> <span class="toc-text">4.2.3. XML Namespace (xmlns) 属性</span></a></li><li class="toc-item toc-level-4"><a class="toc-link" href="#4-2-4-%E7%BB%9F%E4%B8%80%E8%B5%84%E6%BA%90%E6%A0%87%E7%A4%BA%E7%AC%A6%EF%BC%88Uniform-Resource-Identifier-URI-%EF%BC%89"><span class="toc-number">1.4.2.4.</span> <span class="toc-text">4.2.4. 统一资源标示符（Uniform Resource Identifier (URI)）</span></a></li><li class="toc-item toc-level-4"><a class="toc-link" href="#4-2-5-%E9%BB%98%E8%AE%A4%E7%9A%84%E5%91%BD%E5%90%8D%E7%A9%BA%E9%97%B4%EF%BC%88Default-Namespaces%EF%BC%89"><span class="toc-number">1.4.2.5.</span> <span class="toc-text">4.2.5. 默认的命名空间（Default Namespaces）</span></a></li><li class="toc-item toc-level-4"><a class="toc-link" href="#4-2-6-%E5%91%BD%E5%90%8D%E5%86%B2%E7%AA%81%E8%A7%A3%E5%86%B3%E6%96%B9%E6%A1%88"><span class="toc-number">1.4.2.6.</span> <span class="toc-text">4.2.6. 命名冲突解决方案</span></a></li></ol></li><li class="toc-item toc-level-3"><a class="toc-link" href="#4-3-Schema-%E6%96%87%E6%A1%A3%E4%BD%BF%E7%94%A8%E4%B8%8E%E8%A7%A3%E6%9E%90"><span class="toc-number">1.4.3.</span> <span class="toc-text">4.3. Schema 文档使用与解析</span></a><ol class="toc-child"><li class="toc-item toc-level-4"><a class="toc-link" href="#4-3-1-%E4%BD%BF%E7%94%A8%E7%A4%BA%E4%BE%8B"><span class="toc-number">1.4.3.1.</span> <span class="toc-text">4.3.1. 使用示例</span></a></li><li class="toc-item toc-level-4"><a class="toc-link" href="#4-3-2-Schema-%E5%85%83%E7%B4%A0%E8%A7%A3%E6%9E%90%E8%AF%B4%E6%98%8E"><span class="toc-number">1.4.3.2.</span> <span class="toc-text">4.3.2. Schema 元素解析说明</span></a></li><li class="toc-item toc-level-4"><a class="toc-link" href="#4-3-3-Schema-%E4%BD%BF%E7%94%A8%E8%AF%B4%E6%98%8E"><span class="toc-number">1.4.3.3.</span> <span class="toc-text">4.3.3. Schema 使用说明</span></a></li></ol></li><li class="toc-item toc-level-3"><a class="toc-link" href="#4-4-Schema-%E4%B8%8EDTD-%E7%9A%84%E5%8C%BA%E5%88%AB"><span class="toc-number">1.4.4.</span> <span class="toc-text">4.4. Schema 与DTD 的区别</span></a></li></ol></li><li class="toc-item toc-level-2"><a class="toc-link" href="#5-XML-%E8%A7%A3%E6%9E%90"><span class="toc-number">1.5.</span> <span class="toc-text">5. XML 解析</span></a><ol class="toc-child"><li class="toc-item toc-level-3"><a class="toc-link" href="#5-1-XML-%E7%9A%84%E8%A7%A3%E6%9E%90%E6%A6%82%E8%BF%B0"><span class="toc-number">1.5.1.</span> <span class="toc-text">5.1. XML 的解析概述</span></a></li><li class="toc-item toc-level-3"><a class="toc-link" href="#5-2-XML-%E8%A7%A3%E6%9E%90%E7%9A%84%E6%96%B9%E5%BC%8F"><span class="toc-number">1.5.2.</span> <span class="toc-text">5.2. XML 解析的方式</span></a><ol class="toc-child"><li class="toc-item toc-level-4"><a class="toc-link" href="#5-2-1-DOM-%E8%A7%A3%E6%9E%90"><span class="toc-number">1.5.2.1.</span> <span class="toc-text">5.2.1. DOM 解析</span></a></li><li class="toc-item toc-level-4"><a class="toc-link" href="#5-2-2-SAX-%E8%A7%A3%E6%9E%90"><span class="toc-number">1.5.2.2.</span> <span class="toc-text">5.2.2. SAX 解析</span></a></li></ol></li><li class="toc-item toc-level-3"><a class="toc-link" href="#5-3-DOM4J%EF%BC%88%E7%AC%AC%E4%B8%89%E6%96%B9%E8%A7%A3%E6%9E%90%E5%B7%A5%E5%85%B7%EF%BC%89"><span class="toc-number">1.5.3.</span> <span class="toc-text">5.3. DOM4J（第三方解析工具）</span></a></li></ol></li><li class="toc-item toc-level-2"><a class="toc-link" href="#6-%E4%BD%BF%E7%94%A8-DOM4J-%E8%A7%A3%E6%9E%90-XML"><span class="toc-number">1.6.</span> <span class="toc-text">6. 使用 DOM4J 解析 XML</span></a><ol class="toc-child"><li class="toc-item toc-level-3"><a class="toc-link" href="#6-1-DOM-%E6%A0%91%E7%9A%84%E7%BB%84%E6%88%90%E5%85%83%E7%B4%A0"><span class="toc-number">1.6.1.</span> <span class="toc-text">6.1. DOM 树的组成元素</span></a><ol class="toc-child"><li class="toc-item toc-level-4"><a class="toc-link" href="#6-1-1-Document-%E6%96%87%E6%A1%A3%E5%AF%B9%E8%B1%A1"><span class="toc-number">1.6.1.1.</span> <span class="toc-text">6.1.1. Document 文档对象</span></a></li><li class="toc-item toc-level-4"><a class="toc-link" href="#6-1-2-Node-%E8%8A%82%E7%82%B9%E4%BF%A1%E6%81%AF"><span class="toc-number">1.6.1.2.</span> <span class="toc-text">6.1.2. Node 节点信息</span></a><ol class="toc-child"><li class="toc-item toc-level-5"><a class="toc-link" href="#6-2-4-3-Element-%E7%B1%BB%E5%AF%B9%E5%B1%9E%E6%80%A7-Attribute-%E7%9A%84%E6%93%8D%E4%BD%9C%E7%9B%B8%E5%85%B3%E6%96%B9%E6%B3%95"><span class="toc-number">1.6.1.2.1.</span> <span class="toc-text">6.2.4.3. Element 类对属性 Attribute 的操作相关方法</span></a></li><li class="toc-item toc-level-5"><a class="toc-link" href="#6-2-4-4-Element%E7%B1%BB%E5%AF%B9%E6%96%87%E6%9C%ACText%E7%9A%84%E6%93%8D%E4%BD%9C%E7%9B%B8%E5%85%B3%E6%96%B9%E6%B3%95"><span class="toc-number">1.6.1.2.2.</span> <span class="toc-text">6.2.4.4. Element类对文本Text的操作相关方法</span></a></li></ol></li><li class="toc-item toc-level-4"><a class="toc-link" href="#6-2-5-Attribute-%E7%B1%BB"><span class="toc-number">1.6.1.3.</span> <span class="toc-text">6.2.5. Attribute 类</span></a></li><li class="toc-item toc-level-4"><a class="toc-link" href="#6-2-6-XMLWriter-%E7%B1%BB"><span class="toc-number">1.6.1.4.</span> <span class="toc-text">6.2.6. XMLWriter 类</span></a><ol class="toc-child"><li class="toc-item toc-level-5"><a class="toc-link" href="#6-2-6-1-DocumentHelper-%E5%B7%A5%E5%85%B7%E7%B1%BB"><span class="toc-number">1.6.1.4.1.</span> <span class="toc-text">6.2.6.1. DocumentHelper 工具类</span></a></li><li class="toc-item toc-level-5"><a class="toc-link" href="#6-2-6-2-OutputFormat-%E7%B1%BB%EF%BC%88%E6%A0%BC%E5%BC%8F%E5%8C%96%EF%BC%89"><span class="toc-number">1.6.1.4.2.</span> <span class="toc-text">6.2.6.2. OutputFormat 类（格式化）</span></a></li><li class="toc-item toc-level-5"><a class="toc-link" href="#6-2-6-3-XMLWriter-%E7%B1%BB"><span class="toc-number">1.6.1.4.3.</span> <span class="toc-text">6.2.6.3. XMLWriter 类</span></a></li></ol></li></ol></li><li class="toc-item toc-level-3"><a class="toc-link" href="#6-3-%E4%BD%BF%E7%94%A8%E7%A4%BA%E4%BE%8B"><span class="toc-number">1.6.2.</span> <span class="toc-text">6.3. 使用示例</span></a><ol class="toc-child"><li class="toc-item toc-level-4"><a class="toc-link" href="#6-3-1-DOM4J-%E5%B8%B8%E7%94%A8%E6%96%B9%E6%B3%95%E7%BB%83%E4%B9%A0"><span class="toc-number">1.6.2.1.</span> <span class="toc-text">6.3.1. DOM4J 常用方法练习</span></a></li><li class="toc-item toc-level-4"><a class="toc-link" href="#6-3-2-XML-%E6%95%B0%E6%8D%AE%E7%9A%84%E5%B0%81%E8%A3%85%E6%A1%88%E4%BE%8B"><span class="toc-number">1.6.2.2.</span> <span class="toc-text">6.3.2. XML 数据的封装案例</span></a></li><li class="toc-item toc-level-4"><a class="toc-link" href="#6-3-3-XMLWriter-%E5%9F%BA%E7%A1%80%E4%BD%BF%E7%94%A8%E6%A1%88%E4%BE%8B"><span class="toc-number">1.6.2.3.</span> <span class="toc-text">6.3.3. XMLWriter 基础使用案例</span></a></li></ol></li></ol></li></ol></li></ol></div></div><div class="card-widget card-recent-post"><div class="item-headline"><i class="fas fa-history"></i><span>最新文章</span></div><div class="aside-list"><div class="aside-list-item"><a class="thumbnail" href="/posts/a318ca1f.html" title="MySQL数据库150道高频面试题"><img src="/bg/Image00018.webp" onerror="this.onerror=null;this.src='/img/404.jpg'" alt="MySQL数据库150道高频面试题"/></a><div class="content"><a class="title" href="/posts/a318ca1f.html" title="MySQL数据库150道高频面试题">MySQL数据库150道高频面试题</a><time datetime="2025-07-09T17:28:46.000Z" title="发表于 2025-07-09 17:28:46">2025-07-09</time></div></div><div class="aside-list-item"><a class="thumbnail" href="/posts/8f9b37aa.html" title="技术同学必会的MySQL设计规约"><img src="/bg/Image00014.webp" onerror="this.onerror=null;this.src='/img/404.jpg'" alt="技术同学必会的MySQL设计规约"/></a><div class="content"><a class="title" href="/posts/8f9b37aa.html" title="技术同学必会的MySQL设计规约">技术同学必会的MySQL设计规约</a><time datetime="2025-07-09T17:28:46.000Z" title="发表于 2025-07-09 17:28:46">2025-07-09</time></div></div><div class="aside-list-item"><a class="thumbnail" href="/posts/dfdfdf4.html" title="数据库概述"><img src="/bg/Image00002.webp" onerror="this.onerror=null;this.src='/img/404.jpg'" alt="数据库概述"/></a><div class="content"><a class="title" href="/posts/dfdfdf4.html" title="数据库概述">数据库概述</a><time datetime="2025-07-09T17:28:46.000Z" title="发表于 2025-07-09 17:28:46">2025-07-09</time></div></div><div class="aside-list-item"><a class="thumbnail" href="/posts/490575ab.html" title="24工厂模式俗话解释"><img src="/bg/Image00024.webp" onerror="this.onerror=null;this.src='/img/404.jpg'" alt="24工厂模式俗话解释"/></a><div class="content"><a class="title" href="/posts/490575ab.html" title="24工厂模式俗话解释">24工厂模式俗话解释</a><time datetime="2025-07-09T17:28:46.000Z" title="发表于 2025-07-09 17:28:46">2025-07-09</time></div></div><div class="aside-list-item"><a class="thumbnail" href="/posts/364ea8cc.html" title="设计模式"><img src="/bg/Image00014.webp" onerror="this.onerror=null;this.src='/img/404.jpg'" alt="设计模式"/></a><div class="content"><a class="title" href="/posts/364ea8cc.html" title="设计模式">设计模式</a><time datetime="2025-07-09T17:28:46.000Z" title="发表于 2025-07-09 17:28:46">2025-07-09</time></div></div></div></div></div></div></main><footer id="footer"><div class="footer-other"><div class="footer-copyright"><span class="copyright">&copy;2020 - 2025 By 蓝桉</span><span class="framework-info"><span>框架 </span><a target="_blank" rel="noopener" href="https://hexo.io">Hexo 7.3.0</a><span class="footer-separator">|</span><span>主题 </span><a target="_blank" rel="noopener" href="https://github.com/jerryc127/hexo-theme-butterfly">Butterfly 5.4.2</a></span></div></div></footer></div><div id="rightside"><div id="rightside-config-hide"><button id="readmode" type="button" title="阅读模式"><i class="fas fa-book-open"></i></button><button id="darkmode" type="button" title="日间和夜间模式切换"><i class="fas fa-adjust"></i></button><button id="hide-aside-btn" type="button" title="单栏和双栏切换"><i class="fas fa-arrows-alt-h"></i></button></div><div id="rightside-config-show"><button id="rightside-config" type="button" title="设置"><i class="fas fa-cog fa-spin"></i></button><button class="close" id="mobile-toc-button" type="button" title="目录"><i class="fas fa-list-ul"></i></button><button id="go-up" type="button" title="回到顶部"><span class="scroll-percent"></span><i class="fas fa-arrow-up"></i></button></div></div><div><script src="/js/utils.js"></script><script src="/js/main.js"></script><div class="js-pjax"></div><div class="aplayer no-destroy" data-id="8152976493" data-server="netease" data-type="playlist"   data-order="list" data-fixed="true" data-preload="auto" data-autoplay="false" data-mutex="true" ></div><script async src="//at.alicdn.com/t/c/font_4379924_273fk05h86zi.js"></script><link rel="stylesheet" href="https://cdn.jsdelivr.net/gh/l-lin/font-awesome-animation/dist/font-awesome-animation.min.css"  media="defer" onload="this.media='all'"><script async src="//npm.elemecdn.com/pace-js@1.2.4/pace.min.js"></script><script defer src="https://npm.elemecdn.com/jquery@latest/dist/jquery.min.js"></script><script defer data-pjax src="/js/cat/cat.js"></script><script async data-pjax src="/js/meting/music_lanan.min.js"></script><script defer type="text/javascript" src="https://cdn1.tianli0.top/npm/sweetalert2@8.19.0/dist/sweetalert2.all.js"></script><script defer src="/js/day/lunar.js"></script><script defer src="/js/day/day.js"></script><script async data-pjax src="//busuanzi.ibruce.info/busuanzi/2.3/busuanzi.pure.mini.js"></script></div><!-- hexo injector body_end start --><script data-pjax>
+  function butterfly_clock_anzhiyu_injector_config(){
+    var parent_div_git = document.getElementsByClassName('sticky_layout')[0];
+    var item_html = '<div class="card-widget card-clock"><div class="card-glass"><div class="card-background"><div class="card-content"><div id="hexo_electric_clock"><img class="entered loading" id="card-clock-loading" src="https://cdn.cbd.int/hexo-butterfly-clock-anzhiyu/lib/loading.gif" style="height: 120px; width: 100%;" data-ll-status="loading"/></div></div></div></div></div>';
+    console.log('已挂载butterfly_clock_anzhiyu')
+    if(parent_div_git) {
+      parent_div_git.insertAdjacentHTML("afterbegin",item_html)
+    }
+  }
+  var elist = 'null'.split(',');
+  var cpage = location.pathname;
+  var epage = '/';
+  var qweather_key = '10a7db1c41b6489db9c830c668a18304';
+  var gaud_map_key = '82a64bc994fb6494830f157f319f9f69';
+  var baidu_ak_key = 'undefined';
+  var flag = 0;
+  var clock_rectangle = '113.34532,23.15624';
+  var clock_default_rectangle_enable = 'false';
+
+  for (var i=0;i<elist.length;i++){
+    if (cpage.includes(elist[i])){
+      flag++;
+    }
+  }
+
+  if ((epage ==='all')&&(flag == 0)){
+    butterfly_clock_anzhiyu_injector_config();
+  }
+  else if (epage === cpage){
+    butterfly_clock_anzhiyu_injector_config();
+  }
+  </script><script src="https://widget.qweather.net/simple/static/js/he-simple-common.js?v=2.0"></script><script data-pjax src="https://cdn.cbd.int/hexo-butterfly-clock-anzhiyu/lib/clock.min.js"></script><script data-pjax>
+  function butterfly_footer_beautify_injector_config(){
+    var parent_div_git = document.getElementById('footer-wrap');
+    var item_html = '<div id="workboard"></div><p id="ghbdages"><a class="github-badge" target="_blank" href="https://hexo.io/" style="margin-inline:5px" data-title="博客框架为Hexo_v5.4.0" title=""><img src="https://img.shields.io/badge/Frame-Hexo-blue?style=flat&amp;logo=hexo" alt=""/></a><a class="github-badge" target="_blank" href="https://butterfly.js.org/" style="margin-inline:5px" data-title="主题版本Butterfly_v4.2.2" title=""><img src="https://img.shields.io/badge/Theme-Butterfly-6513df?style=flat&amp;logo=bitdefender" alt=""/></a><a class="github-badge" target="_blank" href="https://www.jsdelivr.com/" style="margin-inline:5px" data-title="本站使用JsDelivr为静态资源提供CDN加速" title=""><img src="https://img.shields.io/badge/CDN-jsDelivr-orange?style=flat&amp;logo=jsDelivr" alt=""/></a><a class="github-badge" target="_blank" href="https://github.com/" style="margin-inline:5px" data-title="本站项目由Github托管" title=""><img src="https://img.shields.io/badge/Source-Github-d021d6?style=flat&amp;logo=GitHub" alt=""/></a><a class="github-badge" target="_blank" href="http://creativecommons.org/licenses/by-nc-sa/4.0/" style="margin-inline:5px" data-title="本站采用知识共享署名-非商业性使用-相同方式共享4.0国际许可协议进行许可" title=""><img src="https://img.shields.io/badge/Copyright-BY--NC--SA%204.0-d42328?style=flat&amp;logo=Claris" alt=""/></a></p>';
+    console.log('已挂载butterfly_footer_beautify')
+    parent_div_git.insertAdjacentHTML("beforeend",item_html)
+    }
+  var elist = 'null'.split(',');
+  var cpage = location.pathname;
+  var epage = 'all';
+  var flag = 0;
+
+  for (var i=0;i<elist.length;i++){
+    if (cpage.includes(elist[i])){
+      flag++;
+    }
+  }
+
+  if ((epage ==='all')&&(flag == 0)){
+    butterfly_footer_beautify_injector_config();
+  }
+  else if (epage === cpage){
+    butterfly_footer_beautify_injector_config();
+  }
+  </script><script async src="/js/runtime/runtime.min.js"></script><script async src="/js/font/ali_font_all.js"></script><div class="js-pjax"><script async="async">var arr = document.getElementsByClassName('recent-post-item');
+for(var i = 0;i<arr.length;i++){
+    arr[i].classList.add('wow');
+    arr[i].classList.add('animate__zoomIn');
+    arr[i].setAttribute('data-wow-duration', '1.5s');
+    arr[i].setAttribute('data-wow-delay', '200ms');
+    arr[i].setAttribute('data-wow-offset', '30');
+    arr[i].setAttribute('data-wow-iteration', '1');
+  }</script><script async="async">var arr = document.getElementsByClassName('card-widget');
+for(var i = 0;i<arr.length;i++){
+    arr[i].classList.add('wow');
+    arr[i].classList.add('animate__zoomIn');
+    arr[i].setAttribute('data-wow-duration', '');
+    arr[i].setAttribute('data-wow-delay', '200ms');
+    arr[i].setAttribute('data-wow-offset', '');
+    arr[i].setAttribute('data-wow-iteration', '');
+  }</script><script async="async">var arr = document.getElementsByClassName('flink-list-card');
+for(var i = 0;i<arr.length;i++){
+    arr[i].classList.add('wow');
+    arr[i].classList.add('animate__flipInY');
+    arr[i].setAttribute('data-wow-duration', '3s');
+    arr[i].setAttribute('data-wow-delay', '');
+    arr[i].setAttribute('data-wow-offset', '');
+    arr[i].setAttribute('data-wow-iteration', '');
+  }</script><script async="async">var arr = document.getElementsByClassName('flink-list-card');
+for(var i = 0;i<arr.length;i++){
+    arr[i].classList.add('wow');
+    arr[i].classList.add('animate__animated');
+    arr[i].setAttribute('data-wow-duration', '3s');
+    arr[i].setAttribute('data-wow-delay', '');
+    arr[i].setAttribute('data-wow-offset', '');
+    arr[i].setAttribute('data-wow-iteration', '');
+  }</script><script async="async">var arr = document.getElementsByClassName('article-sort-item');
+for(var i = 0;i<arr.length;i++){
+    arr[i].classList.add('wow');
+    arr[i].classList.add('animate__slideInRight');
+    arr[i].setAttribute('data-wow-duration', '1.5s');
+    arr[i].setAttribute('data-wow-delay', '');
+    arr[i].setAttribute('data-wow-offset', '');
+    arr[i].setAttribute('data-wow-iteration', '');
+  }</script><script async="async">var arr = document.getElementsByClassName('site-card');
+for(var i = 0;i<arr.length;i++){
+    arr[i].classList.add('wow');
+    arr[i].classList.add('animate__flipInY');
+    arr[i].setAttribute('data-wow-duration', '3s');
+    arr[i].setAttribute('data-wow-delay', '');
+    arr[i].setAttribute('data-wow-offset', '');
+    arr[i].setAttribute('data-wow-iteration', '');
+  }</script><script async="async">var arr = document.getElementsByClassName('site-card');
+for(var i = 0;i<arr.length;i++){
+    arr[i].classList.add('wow');
+    arr[i].classList.add('animate__animated');
+    arr[i].setAttribute('data-wow-duration', '3s');
+    arr[i].setAttribute('data-wow-delay', '');
+    arr[i].setAttribute('data-wow-offset', '');
+    arr[i].setAttribute('data-wow-iteration', '');
+  }</script></div><script defer src="https://cdn.cbd.int/hexo-butterfly-wowjs/lib/wow.min.js"></script><script defer src="https://cdn.cbd.int/hexo-butterfly-wowjs/lib/wow_init.js"></script><!-- hexo injector body_end end --><script src="/live2dw/lib/L2Dwidget.min.js?094cbace49a39548bed64abff5988b05"></script><script>L2Dwidget.init({"pluginRootPath":"live2dw/","pluginJsPath":"lib/","pluginModelPath":"assets/","tagMode":false,"debug":false,"model":{"jsonPath":"/live2dw/assets/shizuku.model.json"},"display":{"position":"right","width":150,"height":300},"mobile":{"show":false},"log":false});</script></body></html>

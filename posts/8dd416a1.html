@@ -1,0 +1,967 @@
+<!DOCTYPE html><html lang="zh-CN" data-theme="light"><head><meta charset="UTF-8"><meta http-equiv="X-UA-Compatible" content="IE=edge"><meta name="viewport" content="width=device-width, initial-scale=1.0,viewport-fit=cover"><title>MySQL-体系架构 | 蓝桉`Blog</title><meta name="author" content="蓝桉,kt_zxh@163.com"><meta name="copyright" content="蓝桉"><meta name="format-detection" content="telephone=no"><meta name="theme-color" content="#ffffff"><meta name="description" content="1. MySQL 数据库概述MySQL 官网：https:&#x2F;&#x2F;www.mysql.com&#x2F;  MySQL 5.7 版本官方文档： https:&#x2F;&#x2F;dev.mysql.com&#x2F;doc&#x2F;refman&#x2F;5.7&#x2F;en&#x2F; MySQL 8.0 版本官方文档： https:&#x2F;&#x2F;dev.mysql.com&#x2F;doc&#x2F;refman&#x2F;8.0&#x2F;en&#x2F;  1.1. 相关版本说明MySQL官方提供了两种不同的版本：  社区版">
+<meta property="og:type" content="article">
+<meta property="og:title" content="MySQL-体系架构">
+<meta property="og:url" content="https://ktzxy.github.io/posts/8dd416a1.html">
+<meta property="og:site_name" content="蓝桉&#96;Blog">
+<meta property="og:description" content="1. MySQL 数据库概述MySQL 官网：https:&#x2F;&#x2F;www.mysql.com&#x2F;  MySQL 5.7 版本官方文档： https:&#x2F;&#x2F;dev.mysql.com&#x2F;doc&#x2F;refman&#x2F;5.7&#x2F;en&#x2F; MySQL 8.0 版本官方文档： https:&#x2F;&#x2F;dev.mysql.com&#x2F;doc&#x2F;refman&#x2F;8.0&#x2F;en&#x2F;  1.1. 相关版本说明MySQL官方提供了两种不同的版本：  社区版">
+<meta property="og:locale" content="zh_CN">
+<meta property="og:image" content="https://ktzxy.github.io/bg/Image00008.webp">
+<meta property="article:published_time" content="2025-07-09T17:28:46.000Z">
+<meta property="article:modified_time" content="2025-07-13T15:45:18.450Z">
+<meta property="article:author" content="蓝桉">
+<meta property="article:tag" content="数据库">
+<meta name="twitter:card" content="summary">
+<meta name="twitter:image" content="https://ktzxy.github.io/bg/Image00008.webp"><script type="application/ld+json">{
+  "@context": "https://schema.org",
+  "@type": "BlogPosting",
+  "headline": "MySQL-体系架构",
+  "url": "https://ktzxy.github.io/posts/8dd416a1.html",
+  "image": "https://ktzxy.github.io/bg/Image00008.webp",
+  "datePublished": "2025-07-09T17:28:46.000Z",
+  "dateModified": "2025-07-13T15:45:18.450Z",
+  "author": [
+    {
+      "@type": "Person",
+      "name": "蓝桉",
+      "url": "https://ktzxy.github.io"
+    }
+  ]
+}</script><link rel="shortcut icon" href="/img/favicon.png"><link rel="canonical" href="https://ktzxy.github.io/posts/8dd416a1.html"><link rel="preconnect" href="//cdn.jsdelivr.net"/><link rel="preconnect" href="//busuanzi.ibruce.info"/><link rel="stylesheet" href="/css/index.css"><link rel="stylesheet" href="https://cdn.jsdelivr.net/npm/@fortawesome/fontawesome-free/css/all.min.css"><script>
+    (() => {
+      
+    const saveToLocal = {
+      set: (key, value, ttl) => {
+        if (!ttl) return
+        const expiry = Date.now() + ttl * 86400000
+        localStorage.setItem(key, JSON.stringify({ value, expiry }))
+      },
+      get: key => {
+        const itemStr = localStorage.getItem(key)
+        if (!itemStr) return undefined
+        const { value, expiry } = JSON.parse(itemStr)
+        if (Date.now() > expiry) {
+          localStorage.removeItem(key)
+          return undefined
+        }
+        return value
+      }
+    }
+
+    window.btf = {
+      saveToLocal,
+      getScript: (url, attr = {}) => new Promise((resolve, reject) => {
+        const script = document.createElement('script')
+        script.src = url
+        script.async = true
+        Object.entries(attr).forEach(([key, val]) => script.setAttribute(key, val))
+        script.onload = script.onreadystatechange = () => {
+          if (!script.readyState || /loaded|complete/.test(script.readyState)) resolve()
+        }
+        script.onerror = reject
+        document.head.appendChild(script)
+      }),
+      getCSS: (url, id) => new Promise((resolve, reject) => {
+        const link = document.createElement('link')
+        link.rel = 'stylesheet'
+        link.href = url
+        if (id) link.id = id
+        link.onload = link.onreadystatechange = () => {
+          if (!link.readyState || /loaded|complete/.test(link.readyState)) resolve()
+        }
+        link.onerror = reject
+        document.head.appendChild(link)
+      }),
+      addGlobalFn: (key, fn, name = false, parent = window) => {
+        if (!false && key.startsWith('pjax')) return
+        const globalFn = parent.globalFn || {}
+        globalFn[key] = globalFn[key] || {}
+        globalFn[key][name || Object.keys(globalFn[key]).length] = fn
+        parent.globalFn = globalFn
+      }
+    }
+  
+      
+      const activateDarkMode = () => {
+        document.documentElement.setAttribute('data-theme', 'dark')
+        if (document.querySelector('meta[name="theme-color"]') !== null) {
+          document.querySelector('meta[name="theme-color"]').setAttribute('content', '#0d0d0d')
+        }
+      }
+      const activateLightMode = () => {
+        document.documentElement.setAttribute('data-theme', 'light')
+        if (document.querySelector('meta[name="theme-color"]') !== null) {
+          document.querySelector('meta[name="theme-color"]').setAttribute('content', '#ffffff')
+        }
+      }
+
+      btf.activateDarkMode = activateDarkMode
+      btf.activateLightMode = activateLightMode
+
+      const theme = saveToLocal.get('theme')
+    
+          theme === 'dark' ? activateDarkMode() : theme === 'light' ? activateLightMode() : null
+        
+      
+      const asideStatus = saveToLocal.get('aside-status')
+      if (asideStatus !== undefined) {
+        document.documentElement.classList.toggle('hide-aside', asideStatus === 'hide')
+      }
+    
+      
+    const detectApple = () => {
+      if (/iPad|iPhone|iPod|Macintosh/.test(navigator.userAgent)) {
+        document.documentElement.classList.add('apple')
+      }
+    }
+    detectApple()
+  
+    })()
+  </script><script>const GLOBAL_CONFIG = {
+  root: '/',
+  algolia: undefined,
+  localSearch: undefined,
+  translate: undefined,
+  highlight: {"plugin":"highlight.js","highlightCopy":true,"highlightLang":true,"highlightHeightLimit":false,"highlightFullpage":false,"highlightMacStyle":false},
+  copy: {
+    success: '复制成功',
+    error: '复制失败',
+    noSupport: '浏览器不支持'
+  },
+  relativeDate: {
+    homepage: false,
+    post: false
+  },
+  runtime: '',
+  dateSuffix: {
+    just: '刚刚',
+    min: '分钟前',
+    hour: '小时前',
+    day: '天前',
+    month: '个月前'
+  },
+  copyright: undefined,
+  lightbox: 'null',
+  Snackbar: undefined,
+  infinitegrid: {
+    js: 'https://cdn.jsdelivr.net/npm/@egjs/infinitegrid/dist/infinitegrid.min.js',
+    buttonText: '加载更多'
+  },
+  isPhotoFigcaption: false,
+  islazyloadPlugin: false,
+  isAnchor: false,
+  percent: {
+    toc: true,
+    rightside: false,
+  },
+  autoDarkmode: false
+}</script><script id="config-diff">var GLOBAL_CONFIG_SITE = {
+  title: 'MySQL-体系架构',
+  isHighlightShrink: false,
+  isToc: true,
+  pageType: 'post'
+}</script><link rel="stylesheet" href="/css/custom.css" media="defer" onload="this.media='all'"><link rel="stylesheet" href="//at.alicdn.com/t/c/font_4379924_273fk05h86zi.css" media="defer" onload="this.media='all'"><link rel="stylesheet" href="/css/progress_bar/progress_bar.css" media="defer" onload="this.media='all'"><link rel="stylesheet" href="/css/windmill/windmill.css"><link rel="stylesheet" href="/css/cat.css"><link rel="stylesheet" href="/css/meting/music_lanan.css"><div id="myscoll"></div><!-- hexo injector head_end start --><link rel="stylesheet" href="https://cdn.jsdelivr.net/gh/Zfour/Butterfly-double-row-display@1.00/cardlistpost.min.css"/>
+<style>#recent-posts > .recent-post-item >.recent-post-info > .article-meta-wrap > .tags:before {content:"\A";
+  white-space: pre;}#recent-posts > .recent-post-item >.recent-post-info > .article-meta-wrap > .tags > .article-meta__separator{display:none}</style>
+<link rel="stylesheet" href="https://cdn.cbd.int/hexo-butterfly-clock-anzhiyu/lib/clock.min.css" /><link rel="stylesheet" href="/css/runtime/runtime.min.css" media="print" onload="this.media='all'"><link rel="stylesheet" href="https://cdn.cbd.int/hexo-butterfly-tag-plugins-plus@latest/lib/assets/font-awesome-animation.min.css" media="defer" onload="this.media='all'"><link rel="stylesheet" href="https://npm.elemecdn.com/hexo-butterfly-tag-plugins-plus@latest/lib/tag_plugins.css" media="defer" onload="this.media='all'"><script src="https://npm.elemecdn.com/hexo-butterfly-tag-plugins-plus@latest/lib/assets/carousel-touch.js"></script><link rel="stylesheet" href="https://cdn.cbd.int/hexo-butterfly-wowjs/lib/animate.min.css" media="print" onload="this.media='screen'"><!-- hexo injector head_end end --><meta name="generator" content="Hexo 7.3.0"><link rel="alternate" href="/atom.xml" title="蓝桉`Blog" type="application/atom+xml">
+</head><body><div id="loading-box"><div class="loading-left-bg"></div><div class="loading-right-bg"></div><div class="spinner-box"><div class="configure-border-1"><div class="configure-core"></div></div><div class="configure-border-2"><div class="configure-core"></div></div><div class="loading-word">加载中...</div></div></div><script>(()=>{
+  const $loadingBox = document.getElementById('loading-box')
+  const $body = document.body
+  const preloader = {
+    endLoading: () => {
+      $body.style.overflow = ''
+      $loadingBox.classList.add('loaded')
+    },
+    initLoading: () => {
+      $body.style.overflow = 'hidden'
+      $loadingBox.classList.remove('loaded')
+    }
+  }
+
+  preloader.initLoading()
+  window.addEventListener('load', preloader.endLoading)
+
+  if (false) {
+    btf.addGlobalFn('pjaxSend', preloader.initLoading, 'preloader_init')
+    btf.addGlobalFn('pjaxComplete', preloader.endLoading, 'preloader_end')
+  }
+})()</script><div id="web_bg" style="background-image: url(/img/bg.webp);"></div><div id="an_music_bg"></div><div id="sidebar"><div id="menu-mask"></div><div id="sidebar-menus"><div class="avatar-img text-center"><img src="/img/avatar.webp" onerror="this.onerror=null;this.src='/img/friend_404.gif'" alt="avatar"/></div><div class="site-data text-center"><a href="/archives/"><div class="headline">文章</div><div class="length-num">264</div></a><a href="/tags/"><div class="headline">标签</div><div class="length-num">38</div></a><a href="/categories/"><div class="headline">分类</div><div class="length-num">37</div></a></div><div class="menus_items"><div class="menus_item"><a class="site-page faa-parent animated-hover" href="/"><i class="fa-fw icon-zhuye-"></i><svg class="icon faa-tada" aria-hidden="true"><use xlink:href="#icon-zhuye-"></use></svg><span> 首页</span></a></div><div class="menus_item"><a class="site-page faa-parent animated-hover" href="/archives/"><i class="fa-fw icon-shijianzhou"></i><svg class="icon faa-tada" aria-hidden="true"><use xlink:href="#icon-shijianzhou"></use></svg><span> 时间轴</span></a></div><div class="menus_item"><a class="site-page faa-parent animated-hover" href="/essay/"><i class="fa-fw icon-xiaoxi"></i><svg class="icon faa-tada" aria-hidden="true"><use xlink:href="#icon-xiaoxi"></use></svg><span> 闲言碎语</span></a></div><div class="menus_item"><a class="site-page faa-parent animated-hover" href="/music/"><i class="fa-fw icon-music"></i><svg class="icon faa-tada" aria-hidden="true"><use xlink:href="#icon-music"></use></svg><span> 音乐馆</span></a></div><div class="menus_item"><a class="site-page faa-parent animated-hover" href="/categories/"><i class="fa-fw icon-fenlei"></i><svg class="icon faa-tada" aria-hidden="true"><use xlink:href="#icon-fenlei"></use></svg><span> 分类</span></a></div><div class="menus_item"><a class="site-page faa-parent animated-hover" href="/fcircle/"><i class="fa-fw icon-pengyouquan"></i><svg class="icon faa-tada" aria-hidden="true"><use xlink:href="#icon-pengyouquan"></use></svg><span> 朋友圈</span></a></div><div class="menus_item"><a class="site-page faa-parent animated-hover" href="/comments/"><i class="fa-fw icon-xinfeng"></i><svg class="icon faa-tada" aria-hidden="true"><use xlink:href="#icon-xinfeng"></use></svg><span> 留言板</span></a></div><div class="menus_item"><a class="site-page faa-parent animated-hover" href="/link/"><i class="fa-fw icon-lianjie"></i><svg class="icon faa-tada" aria-hidden="true"><use xlink:href="#icon-lianjie"></use></svg><span> 友人帐</span></a></div><div class="menus_item"><a class="site-page faa-parent animated-hover" href="javascript:randomPost();"><i class="fa-fw icon-wodezhuifan"></i><svg class="icon faa-tada" aria-hidden="true"><use xlink:href="#icon-wodezhuifan"></use></svg><span> 随机访问</span></a></div><div class="menus_item"><a class="site-page faa-parent animated-hover" href="/about/"><i class="fa-fw icon-guanyuwomen2"></i><svg class="icon faa-tada" aria-hidden="true"><use xlink:href="#icon-guanyuwomen2"></use></svg><span> 关于</span></a></div></div></div></div><div class="post" id="body-wrap"><header class="post-bg" id="page-header" style="background-image: url(/bg/Image00008.webp);"><nav id="nav"><span id="blog-info"><a class="nav-site-title" href="/"><span class="site-name">蓝桉`Blog</span></a><a class="nav-page-title" href="/"><span class="site-name">MySQL-体系架构</span><span class="site-name"><i class="fa-solid fa-circle-arrow-left"></i><span>  返回首页</span></span></a></span><div id="menus"><div class="menus_items"><div class="menus_item"><a class="site-page faa-parent animated-hover" href="/"><i class="fa-fw icon-zhuye-"></i><svg class="icon faa-tada" aria-hidden="true"><use xlink:href="#icon-zhuye-"></use></svg><span> 首页</span></a></div><div class="menus_item"><a class="site-page faa-parent animated-hover" href="/archives/"><i class="fa-fw icon-shijianzhou"></i><svg class="icon faa-tada" aria-hidden="true"><use xlink:href="#icon-shijianzhou"></use></svg><span> 时间轴</span></a></div><div class="menus_item"><a class="site-page faa-parent animated-hover" href="/essay/"><i class="fa-fw icon-xiaoxi"></i><svg class="icon faa-tada" aria-hidden="true"><use xlink:href="#icon-xiaoxi"></use></svg><span> 闲言碎语</span></a></div><div class="menus_item"><a class="site-page faa-parent animated-hover" href="/music/"><i class="fa-fw icon-music"></i><svg class="icon faa-tada" aria-hidden="true"><use xlink:href="#icon-music"></use></svg><span> 音乐馆</span></a></div><div class="menus_item"><a class="site-page faa-parent animated-hover" href="/categories/"><i class="fa-fw icon-fenlei"></i><svg class="icon faa-tada" aria-hidden="true"><use xlink:href="#icon-fenlei"></use></svg><span> 分类</span></a></div><div class="menus_item"><a class="site-page faa-parent animated-hover" href="/fcircle/"><i class="fa-fw icon-pengyouquan"></i><svg class="icon faa-tada" aria-hidden="true"><use xlink:href="#icon-pengyouquan"></use></svg><span> 朋友圈</span></a></div><div class="menus_item"><a class="site-page faa-parent animated-hover" href="/comments/"><i class="fa-fw icon-xinfeng"></i><svg class="icon faa-tada" aria-hidden="true"><use xlink:href="#icon-xinfeng"></use></svg><span> 留言板</span></a></div><div class="menus_item"><a class="site-page faa-parent animated-hover" href="/link/"><i class="fa-fw icon-lianjie"></i><svg class="icon faa-tada" aria-hidden="true"><use xlink:href="#icon-lianjie"></use></svg><span> 友人帐</span></a></div><div class="menus_item"><a class="site-page faa-parent animated-hover" href="javascript:randomPost();"><i class="fa-fw icon-wodezhuifan"></i><svg class="icon faa-tada" aria-hidden="true"><use xlink:href="#icon-wodezhuifan"></use></svg><span> 随机访问</span></a></div><div class="menus_item"><a class="site-page faa-parent animated-hover" href="/about/"><i class="fa-fw icon-guanyuwomen2"></i><svg class="icon faa-tada" aria-hidden="true"><use xlink:href="#icon-guanyuwomen2"></use></svg><span> 关于</span></a></div></div><div id="toggle-menu"><span class="site-page"><i class="fas fa-bars fa-fw"></i></span></div></div></nav><div id="post-info"><h1 class="post-title">MySQL-体系架构</h1><div id="post-meta"><div class="meta-firstline"><span class="post-meta-date"><i class="far fa-calendar-alt fa-fw post-meta-icon"></i><span class="post-meta-label">发表于</span><time class="post-meta-date-created" datetime="2025-07-09T17:28:46.000Z" title="发表于 2025-07-09 17:28:46">2025-07-09</time><span class="post-meta-separator">|</span><i class="fas fa-history fa-fw post-meta-icon"></i><span class="post-meta-label">更新于</span><time class="post-meta-date-updated" datetime="2025-07-13T15:45:18.450Z" title="更新于 2025-07-13 15:45:18">2025-07-13</time></span><span class="post-meta-categories"><span class="post-meta-separator">|</span><i class="fas fa-inbox fa-fw post-meta-icon"></i><a class="post-meta-categories" href="/categories/%E6%95%B0%E6%8D%AE%E5%BA%93/">数据库</a></span></div><div class="meta-secondline"><span class="post-meta-separator">|</span><span class="post-meta-pv-cv" id="" data-flag-title=""><i class="far fa-eye fa-fw post-meta-icon"></i><span class="post-meta-label">浏览量:</span><span id="busuanzi_value_page_pv"><i class="fa-solid fa-spinner fa-spin"></i></span></span></div></div></div></header><main class="layout" id="content-inner"><div id="post"><article class="container post-content" id="article-container"><h2 id="1-MySQL-数据库概述"><a href="#1-MySQL-数据库概述" class="headerlink" title="1. MySQL 数据库概述"></a>1. MySQL 数据库概述</h2><p>MySQL 官网：<a target="_blank" rel="noopener" href="https://www.mysql.com/">https://www.mysql.com/</a></p>
+<ul>
+<li>MySQL 5.7 版本官方文档： <a target="_blank" rel="noopener" href="https://dev.mysql.com/doc/refman/5.7/en/">https://dev.mysql.com/doc/refman/5.7/en/</a></li>
+<li>MySQL 8.0 版本官方文档： <a target="_blank" rel="noopener" href="https://dev.mysql.com/doc/refman/8.0/en/">https://dev.mysql.com/doc/refman/8.0/en/</a></li>
+</ul>
+<h3 id="1-1-相关版本说明"><a href="#1-1-相关版本说明" class="headerlink" title="1.1. 相关版本说明"></a>1.1. 相关版本说明</h3><p>MySQL官方提供了两种不同的版本：</p>
+<ul>
+<li>社区版本（MySQL Community Server）：免费， MySQL不提供任何技术支持</li>
+<li>商业版本（MySQL Enterprise Edition）：收费，可以使用30天，官方提供技术支持</li>
+</ul>
+<h3 id="1-2-MySQL-安装"><a href="#1-2-MySQL-安装" class="headerlink" title="1.2. MySQL 安装"></a>1.2. MySQL 安装</h3><p>MySQL 下载地址：<a target="_blank" rel="noopener" href="https://downloads.mysql.com/archives/community/">https://downloads.mysql.com/archives/community/</a></p>
+<p>此部分内容详见<a href="/数据库/MySQL/MySQL-安装与部署">《MySQL 安装与部署》文档</a></p>
+<h3 id="1-3-MySQL-数据库特点"><a href="#1-3-MySQL-数据库特点" class="headerlink" title="1.3. MySQL 数据库特点"></a>1.3. MySQL 数据库特点</h3><ul>
+<li>MySQL数据库是用C和C++语言编写的，以保证源码的可移植性</li>
+<li>支持多个操作系统例如：Windows、Linux、Mac OS等等</li>
+<li>支持多线程，可以充分的利用CPU资源</li>
+<li>为多种编程语言提供API，包括C语言，Java，PHP。Python语言等</li>
+<li>MySQL优化了SQL算法，有效的提高了查询速度</li>
+<li>MySQL开放源代码且无版权制约，自主性强、使用成本低。</li>
+<li>MySQL历史悠久、社区及用户非常活跃，遇到问题，可以很快获取到帮助。</li>
+</ul>
+<h2 id="2-MySQL-体系架构"><a href="#2-MySQL-体系架构" class="headerlink" title="2. MySQL 体系架构"></a>2. MySQL 体系架构</h2><h3 id="2-1-架构概述"><a href="#2-1-架构概述" class="headerlink" title="2.1. 架构概述"></a>2.1. 架构概述</h3><p><img src="https://gitee.com/Bluetom/img2/raw/master/img20240905/202410251028282.png" alt=""></p>
+<p>从上图可以看出，MySQL 最上层是连接组件。<font color=red><strong>服务器层是由连接池、管理工具和服务、SQL 接口、解析器、优化器、缓存、存储引擎、文件系统组成</strong></font></p>
+<ul>
+<li>连接池：由于每次建立建立需要消耗很多时间，连接池的作用就是将这些连接缓存下来，下次可以直接用已经建立好的连接，提升服务器性能。</li>
+<li>管理工具和服务：系统管理和控制工具，例如备份恢复、Mysql 复制、集群等</li>
+<li>SQL 接口：接受用户的 SQL 命令，并且返回用户需要查询的结果。比如 <code>select from xx</code> 语句就是调用 SQL Interface</li>
+<li>解析器: SQL 命令传递到解析器的时候会被解析器验证和解析。解析器主要功能：<ul>
+<li>将 SQL 语句分解成数据结构，并将这个结构传递到后续步骤，以后 SQL 语句的传递和处理就是基于这个结构的</li>
+<li>如果在分解构成中遇到错误，那么就说明这个 sql 语句是不合理的</li>
+</ul>
+</li>
+<li>优化器：查询优化器，SQL 语句在查询之前会使用查询优化器对查询进行优化</li>
+<li>缓存器：查询缓存，如果查询缓存有命中的查询结果，查询语句就可以直接去查询缓存中取数据。这个缓存机制是由一系列小缓存组成的。比如表缓存，记录缓存，key 缓存，权限缓存等。</li>
+<li>存储引擎：存储引擎是底层物理结构和实际文件读写的实现。MySQL 数据库其中一个特点就是其<strong>插件式的表存储引擎</strong>。</li>
+<li>文件系统：即存储数据的地方</li>
+</ul>
+<h3 id="2-2-SQL-语句的执行流程"><a href="#2-2-SQL-语句的执行流程" class="headerlink" title="2.2. SQL 语句的执行流程"></a>2.2. SQL 语句的执行流程</h3><h4 id="2-2-1-查询语句执行流程"><a href="#2-2-1-查询语句执行流程" class="headerlink" title="2.2.1. 查询语句执行流程"></a>2.2.1. 查询语句执行流程</h4><p>查询语句的执行流程如下：</p>
+<ol>
+<li>客户端请求连接器，验证用户身份，权限校验</li>
+<li>查询缓存，存在缓存则直接返回，不存在则执行后续操作</li>
+<li>分析器，对 SQL 进行词法分析和语法分析操作</li>
+<li>优化器，主要对执行的 SQL 优化选择最优的执行方案方法</li>
+<li>权限校验，在执行时会先看用户是否有执行权限，有才去使用相应引擎提供的接口</li>
+<li>执行器，操作引擎层获取数据返回。如果开启查询缓存则会缓存查询结果</li>
+</ol>
+<p>例如有查询语句如下：</p>
+<figure class="highlight sql"><table><tr><td class="gutter"><pre><span class="line">1</span><br></pre></td><td class="code"><pre><span class="line"><span class="keyword">select</span> <span class="operator">*</span> <span class="keyword">from</span> <span class="keyword">user</span> <span class="keyword">where</span> id <span class="operator">&gt;</span> <span class="number">1</span> <span class="keyword">and</span> name <span class="operator">=</span> <span class="string">&#x27;MooNkirA&#x27;</span>;</span><br></pre></td></tr></table></figure>
+<ol>
+<li>首先检查权限，没有权限则返回错误；</li>
+<li>MySQL 8.0 以前会查询缓存，缓存命中则直接返回，没有则执行下一步；</li>
+<li>词法分析和语法分析。提取表名、查询条件，检查语法是否有错误；</li>
+<li>两种执行方案，先查 <code>id &gt; 1</code> 还是 <code>name = &#39;MooNkirA&#39;</code>，优化器根据自己的优化算法选择执行效率最好的方案；</li>
+<li>校验权限，有权限就调用数据库引擎接口，返回引擎的执行结果。</li>
+</ol>
+<h4 id="2-2-2-更新语句执行过程"><a href="#2-2-2-更新语句执行过程" class="headerlink" title="2.2.2. 更新语句执行过程"></a>2.2.2. 更新语句执行过程</h4><p>更新语句执行流程如下：分析器 -&gt; 权限校验 -&gt; 执行器 -&gt; 引擎 -&gt; redo log(prepare 状态) -&gt; binlog -&gt; redo log(commit 状态)。例如有更新语句如下：</p>
+<figure class="highlight sql"><table><tr><td class="gutter"><pre><span class="line">1</span><br></pre></td><td class="code"><pre><span class="line"><span class="keyword">update</span> <span class="keyword">user</span> <span class="keyword">set</span> name <span class="operator">=</span> <span class="string">&#x27;MooNkirA&#x27;</span> <span class="keyword">where</span> id <span class="operator">=</span> <span class="number">1</span>;</span><br></pre></td></tr></table></figure>
+<ol>
+<li>先查询到 id 为 1 的记录，有缓存会使用缓存。</li>
+<li>拿到查询结果，将 name 更新为『MooNkirA』，然后调用引擎接口，写入更新数据，innodb 引擎将数据保存在内存中，同时记录 redo log，此时 redo log 进入 prepare 状态。</li>
+<li>执行器收到通知后记录 binlog，然后调用引擎接口，提交 redo log 为 commit 状态。</li>
+<li>更新完成。</li>
+</ol>
+<blockquote>
+<p>Tips: 执行更新语句时，在记录完 redo log，不直接提交，而是先进入 prepare 状态。这是因为假设先写 redo log 直接提交，然后写 binlog，如果在写完 redo log 后，服务器挂了，此时 binlog 日志没有被写入，那么服务器重启后，会通过 redo log 恢复数据，但是此时 binlog 并没有记录该数据，后续进行机器备份的时候，就会丢失这一条数据，同时主从同步也会丢失这一条数据。</p>
+</blockquote>
+<h4 id="2-2-3-SQL-执行流程图"><a href="#2-2-3-SQL-执行流程图" class="headerlink" title="2.2.3. SQL 执行流程图"></a>2.2.3. SQL 执行流程图</h4><p><img src="https://gitee.com/Bluetom/img2/raw/master/img20240905/202410251028283.jpg" alt=""></p>
+<p><img src="https://gitee.com/Bluetom/img2/raw/master/img20240905/202410251028284.jpg" alt=""></p>
+<h3 id="2-3-连接层"><a href="#2-3-连接层" class="headerlink" title="2.3. 连接层"></a>2.3. 连接层</h3><p><img src="https://gitee.com/Bluetom/img2/raw/master/img20240905/202410251028285.png" alt=""></p>
+<p>最上层是一些客户端和链接服务，包含本地 sock 通信和大多数基于客户端/服务端工具实现的类似于 TCP/IP 的通信。主要完成一些类似于连接处理、授权认证、及相关的安全方案。在该层上引入了线程池的概念，为通过认证安全接入的客户端提供线程。同样在该层上可以实现基于 SSL 的安全链接。</p>
+<p>当 MySQL 启动（MySQL 服务器就是一个进程），等待客户端连接，每一个客户端连接请求，服务器都会新建一个线程处理（如果是线程池的话，则是分配一个空的线程），每个线程独立，拥有各自的内存处理空间。通过查询系统参数<code>max_connections</code>可以知道服务器最大的连接数。</p>
+<figure class="highlight sql"><table><tr><td class="gutter"><pre><span class="line">1</span><br><span class="line">2</span><br><span class="line">3</span><br><span class="line">4</span><br><span class="line">5</span><br><span class="line">6</span><br><span class="line">7</span><br></pre></td><td class="code"><pre><span class="line">mysql<span class="operator">&gt;</span> <span class="keyword">show</span> VARIABLES <span class="keyword">like</span> <span class="string">&#x27;%max_connections%&#x27;</span>;</span><br><span class="line"><span class="operator">+</span><span class="comment">-----------------+-------+</span></span><br><span class="line"><span class="operator">|</span> Variable_name   <span class="operator">|</span> <span class="keyword">Value</span> <span class="operator">|</span></span><br><span class="line"><span class="operator">+</span><span class="comment">-----------------+-------+</span></span><br><span class="line"><span class="operator">|</span> max_connections <span class="operator">|</span> <span class="number">151</span>   <span class="operator">|</span></span><br><span class="line"><span class="operator">+</span><span class="comment">-----------------+-------+</span></span><br><span class="line"><span class="number">1</span> <span class="type">row</span> <span class="keyword">in</span> <span class="keyword">set</span> (<span class="number">0.02</span> sec)</span><br></pre></td></tr></table></figure>
+<p><img src="https://gitee.com/Bluetom/img2/raw/master/img20240905/202410251028286.png" alt=""></p>
+<p>连接到服务器，服务器也会为安全接入的每个客户端验证它所具有的操作权限。即用户名、IP、密码验证，一旦连接成功，连接器会到权限表里面查询，并验证是否具有执行某个特定查询的权限（例如，是否允许客户端对某个数据库某个表的某个操作）。这就意味着，一个用户成功建立连接后，即使再使用管理员账号修改该用户的权限，也不会影响已经存在连接的权限。修改完成后，只有再新建的连接才会使用新的权限设置。</p>
+<h3 id="2-4-Server-层-SQL-处理层"><a href="#2-4-Server-层-SQL-处理层" class="headerlink" title="2.4. Server 层(SQL 处理层)"></a>2.4. Server 层(SQL 处理层)</h3><h4 id="2-4-1-Server-层功能作用"><a href="#2-4-1-Server-层功能作用" class="headerlink" title="2.4.1. Server 层功能作用"></a>2.4.1. Server 层功能作用</h4><p><img src="https://gitee.com/Bluetom/img2/raw/master/img20240905/202410251028287.png" alt=""></p>
+<p>第二层架构（Server 层）主要完成大多数的<strong>核心服务功能</strong>，如 SQL 接口，并完成缓存的查询，SQL 语句的解析和优化，部分内置函数的执行，所有跨存储引擎的功能（所谓跨存储引擎就是说每个引擎都需提供的功能（引擎需对外提供接口））如：存储过程、函数、触发器、视图等。该层具体的操作如下：</p>
+<ol>
+<li>如果是查询语句（<code>select</code>语句），首先会查询缓存是否已有相应结果，有则返回结果，无则进行下一步（如果不是查询语句，同样调到下一步）</li>
+<li>解析查询，创建一个内部数据结构（解析树），这个解析树主要用来SQL语句的语义与语法解析；</li>
+<li>优化 SQL 语句：例如重写查询，决定表的读取顺序，以及选择需要的索引等。这一阶段用户是可以查询的，查询服务器优化器是如何进行优化的，便于用户重构查询和修改相关配置，达到最优化。这一阶段还涉及到存储引擎，优化器会询问存储引擎，比如某个操作的开销信息、是否对特定索引有查询优化等。</li>
+</ol>
+<h4 id="2-4-2-查询缓存"><a href="#2-4-2-查询缓存" class="headerlink" title="2.4.2. 查询缓存"></a>2.4.2. 查询缓存</h4><p>当连接建立后执行查询语句时，会先查询缓存。<strong>QC（query cache） 严格要求 2 次 SQL 请求要完全一样，包括 SQL 语句，连接的数据库、协议版本、字符集等因素都会影响</strong>。之前执行过的语句及其结果可能会以 key-value 对的形式，被直接缓存在内存中。key 是查询的语句，value 是查询的结果。如果查询能够直接在这个缓存中找到 key，那么这个 value 就会被直接返回给客户端。</p>
+<h5 id="2-4-2-1-查询相关缓存的参数"><a href="#2-4-2-1-查询相关缓存的参数" class="headerlink" title="2.4.2.1. 查询相关缓存的参数"></a>2.4.2.1. 查询相关缓存的参数</h5><figure class="highlight sql"><table><tr><td class="gutter"><pre><span class="line">1</span><br><span class="line">2</span><br><span class="line">3</span><br><span class="line">4</span><br></pre></td><td class="code"><pre><span class="line"><span class="comment">-- 默认不开启</span></span><br><span class="line"><span class="keyword">show</span> variables <span class="keyword">like</span> <span class="string">&#x27;%query_cache_type%&#x27;</span>;</span><br><span class="line"><span class="comment">-- 默认值 1M</span></span><br><span class="line"><span class="keyword">show</span> variables <span class="keyword">like</span> <span class="string">&#x27;%query_cache_size%&#x27;</span>;</span><br></pre></td></tr></table></figure>
+<h5 id="2-4-2-2-查询缓存参数配置"><a href="#2-4-2-2-查询缓存参数配置" class="headerlink" title="2.4.2.2. 查询缓存参数配置"></a>2.4.2.2. 查询缓存参数配置</h5><p><code>query_cache_type</code>只能配置在 my.cnf 文件中，这大大限制了 qc 的作用。在生产环境建议不开启，除非经常有 sql 完全一模一样的查询。</p>
+<figure class="highlight sql"><table><tr><td class="gutter"><pre><span class="line">1</span><br><span class="line">2</span><br></pre></td><td class="code"><pre><span class="line"><span class="comment">-- 会报错,query_cache_type 只能配置在 my.cnf 文件中</span></span><br><span class="line"><span class="keyword">SET</span> <span class="keyword">GLOBAL</span> query_cache_type <span class="operator">=</span> <span class="number">1</span>;</span><br></pre></td></tr></table></figure>
+<p>一般建议只在更新频率极低的表里使用查询缓存，比如系统配置表、字典表等。在 MySQL 手动指定是否开启缓存的功能，只需要将 my.cnf 参数 <code>query_cache_type</code> 设置成 DEMAND。具体配置如下：</p>
+<figure class="highlight properties"><table><tr><td class="gutter"><pre><span class="line">1</span><br><span class="line">2</span><br></pre></td><td class="code"><pre><span class="line"><span class="comment"># query_cache_type 有3个值 0-关闭查询缓存OFF，1-开启ON，2-（DEMAND）代表当sql语句中有SQL_CACHE关键词时才缓存</span></span><br><span class="line"><span class="attr">query_cache_type</span>=<span class="string">2</span></span><br></pre></td></tr></table></figure>
+<p>以上配置默认的 SQL 语句都不使用查询缓存。而对于确定要使用查询缓存的语句，可以用 <code>SQL_CACHE</code> 关键字显式指定，例如：</p>
+<figure class="highlight sql"><table><tr><td class="gutter"><pre><span class="line">1</span><br></pre></td><td class="code"><pre><span class="line"><span class="keyword">select</span> SQL_CACHE <span class="operator">*</span> <span class="keyword">from</span> test <span class="keyword">where</span> ID<span class="operator">=</span><span class="number">5</span>；</span><br></pre></td></tr></table></figure>
+<h5 id="2-4-2-3-MySQL-8-0-移除查询缓存功能"><a href="#2-4-2-3-MySQL-8-0-移除查询缓存功能" class="headerlink" title="2.4.2.3. MySQL 8.0 移除查询缓存功能"></a>2.4.2.3. MySQL 8.0 移除查询缓存功能</h5><p>从 8.0 开始，MySQL 已经移除查询缓存功能。MySQL 的工程团队发现启用缓存的好处并不多。</p>
+<ol>
+<li>查询缓存的效果取决于缓存的命中率，只有命中缓存的查询效果才能有改善，因此无法预测其性能。</li>
+<li>查询缓存的另一个大问题是它受到单个互斥锁的保护。在具有多个内核的服务器上，大量查询会导致大量的互斥锁争用。</li>
+<li>查询缓存的失效非常频繁，只要有对一个表的更新，这个表上所有的查询缓存都会被清空。</li>
+</ol>
+<p>通过基准测试发现，大多数工作负载最好禁用查询缓存(5.6 的默认设置)：按照官方所说的：造成的问题比它解决问题要多的多，弊大于利就直接砍掉了</p>
+<h4 id="2-4-3-分析器"><a href="#2-4-3-分析器" class="headerlink" title="2.4.3. 分析器"></a>2.4.3. 分析器</h4><p>分析器会对 SQL 语句进行“词法分析”，即识别 SQL 语句中字符串分别是什么，代表什么操作。根据词法分析的结果，语法分析器会根据语法规则，判断输入的 SQL 语句是否满足 MySQL 语法。如果语句不对则提示“You have an error in your SQL syntax”的错误，比如下面这个语句 from 写成了 “rom”。</p>
+<figure class="highlight sql"><table><tr><td class="gutter"><pre><span class="line">1</span><br><span class="line">2</span><br></pre></td><td class="code"><pre><span class="line">mysql<span class="operator">&gt;</span> <span class="keyword">select</span> <span class="operator">*</span> fro test <span class="keyword">where</span> id<span class="operator">=</span><span class="number">1</span>;</span><br><span class="line">ERROR <span class="number">1064</span> (<span class="number">42000</span>): You have an error <span class="keyword">in</span> your <span class="keyword">SQL</span> syntax; <span class="keyword">check</span> the manual that corresponds <span class="keyword">to</span> your MySQL server version <span class="keyword">for</span> the <span class="keyword">right</span> syntax <span class="keyword">to</span> use near <span class="string">&#x27;fro test where id=1&#x27;</span> <span class="keyword">at</span> line <span class="number">1</span></span><br></pre></td></tr></table></figure>
+<p>分析器对sql的分析过程步骤如下图：</p>
+<p><img src="https://gitee.com/Bluetom/img2/raw/master/img20240905/202410251028288.jpg" alt=""></p>
+<p>SQL 语句经过分析器分析之后，会生成一个这样的语法树</p>
+<p><img src="https://gitee.com/Bluetom/img2/raw/master/img20240905/202410251028289.jpg" alt=""></p>
+<h4 id="2-4-4-优化器"><a href="#2-4-4-优化器" class="headerlink" title="2.4.4. 优化器"></a>2.4.4. 优化器</h4><p>经过了分析器，MySQL 知道了语句是执行什么操作。在开始执行之前，还要先经过优化器的处理。</p>
+<p>优化器是在表里面有多个索引的时候，决定使用哪个索引；或者在一个语句有多表关联（join）的时候，决定各个表的连接顺序；以及一些mysql自己内部的优化机制。</p>
+<h4 id="2-4-5-执行器"><a href="#2-4-5-执行器" class="headerlink" title="2.4.5. 执行器"></a>2.4.5. 执行器</h4><p>开始执行的时候，要先判断一下当前登陆的用户对该表是否有执行查询的权限。如果没有，就会返回没有权限的错误(在工程实现上，如果命中查询缓存，会在查询缓存返回结果的时候，做权限验证)；如果有权限，就打开表继续执行。打开表的时候，执行器就会根据表的引擎定义，去使用这个引擎提供的接口。</p>
+<h3 id="2-5-存储引擎层"><a href="#2-5-存储引擎层" class="headerlink" title="2.5. 存储引擎层"></a>2.5. 存储引擎层</h3><p>MySQL 数据库区别于其他数据库的最重要的一个特点就是其插件式的表存储引擎。MySQL 插件式的存储引擎架构提供了一系列标准的管理和服务支持，这些标准与存储引擎本身无关，可能是每个数据库系统本身都必需的，如 SQL 分析器和优化器等，而存储引擎是底层物理结构和实际文件读写的实现，服务器通过API和存储引擎进行通信。</p>
+<p>每个存储引擎开发者可以按照自己的意愿来进行开发。<strong>不同的存储引擎具有不同的存储机制、索引技巧、锁定水平等功能</strong>，这样使用者也可以根据自己的需要，来选取合适的存储引擎。存储引擎可以分为 MySQL 官方存储引擎和第三方存储引擎</p>
+<blockquote>
+<p>Tips: <strong>数据库中的索引是在存储引擎层实现的</strong>。</p>
+</blockquote>
+<p>插件式存储引擎的好处是，每个存储引擎都有各自的特点，能够根据具体的应用建立不同存储引擎表。由于 MySQL 数据库的开源特性，用户可以根据 MySQL 预定义的存储引擎接口编写自己的存储引擎。若用户对某一种存储引擎的性能或功能不满意，可以通过修改源码来得到想要的特性。</p>
+<blockquote>
+<p>Notes: <font color=red><strong>MySQL 的核心就是存储引擎。值得注意的是，存储引擎是针对表！！</strong></font>官方建议在同一个数据库中，尽量所有表都使用同一个存储引擎，否则会出现一些奇怪的问题。</p>
+</blockquote>
+<h4 id="2-5-1-MySQL-官方引擎概要"><a href="#2-5-1-MySQL-官方引擎概要" class="headerlink" title="2.5.1. MySQL 官方引擎概要"></a>2.5.1. MySQL 官方引擎概要</h4><h5 id="2-5-1-1-InnoDB-存储引擎"><a href="#2-5-1-1-InnoDB-存储引擎" class="headerlink" title="2.5.1.1. InnoDB 存储引擎"></a>2.5.1.1. InnoDB 存储引擎</h5><p>InnoDB 是 MySQL 的默认事务型存储引擎，有行级锁定和外键约束。也是最重要、使用最广泛的存储引擎。它被设计用来处理大量的短期(short-lived)事务，短期事务大部分情况是正常提交的，很少会被回滚。InnoDB 的性能和自动崩溃恢复特性，使得它在非事务型存储的需求中也很流行。</p>
+<p>在 MySQL 5.5 之后，InnoDB 是默认的 MySQL 存储引擎。主要特点：</p>
+<ul>
+<li>DML操作遵循ACID模型，支持事务；</li>
+<li>行级锁，提高并发访问性能；</li>
+<li>支持外键FOREIGN KEY约束，保证数据的完整性和正确性；</li>
+</ul>
+<h5 id="2-5-1-2-MyISAM-存储引擎"><a href="#2-5-1-2-MyISAM-存储引擎" class="headerlink" title="2.5.1.2. MyISAM 存储引擎"></a>2.5.1.2. MyISAM 存储引擎</h5><p>在 MySQL 5.1 及之前的版本，MyISAM 是默认的存储引擎。MyISAM 提供了大量的特性，包括全文索引、压缩、空间函数（GIS）等，但 MyISAM 不支持事务、行级锁和外键，而且有一个毫无疑问的缺陷就是崩溃后无法安全恢复。但有插入数据快，空间和内存使用比较低等优点。</p>
+<p>尽管MyISAM引擎不支持事务、不支持崩溃后的安全恢复，但它绝不是一无是处的。对于只读的数据，或者表比较小、可以忍受修复（repair）操作，则依然可以继续使用 MyISAM（但请不要默认使用 MyISAM，而是应当默认使用 InnoDB)。但是 MyISAM 对整张表加锁，而不是针对行。读取时会对需要读到的所有表加共享锁，写入时则对表加排他锁。MyISAM 很容易因为表锁的问题导致典型的的性能问题。</p>
+<h5 id="2-5-1-3-Mrg-MyISAM-存储引擎"><a href="#2-5-1-3-Mrg-MyISAM-存储引擎" class="headerlink" title="2.5.1.3. Mrg_MyISAM 存储引擎"></a>2.5.1.3. Mrg_MyISAM 存储引擎</h5><p>Merge 存储引擎，是一组 MyIsam 的组合，也就是说，他将 MyIsam 引擎的多个表聚合起来，但是他的内部没有数据，真正的数据依然是 MyIsam 引擎的表中，但是可以直接进行查询、删除更新等操作。</p>
+<h5 id="2-5-1-4-Archive-存储引擎"><a href="#2-5-1-4-Archive-存储引擎" class="headerlink" title="2.5.1.4. Archive 存储引擎"></a>2.5.1.4. Archive 存储引擎</h5><p>Archive 存储引擎只支持 <code>INSERT</code> 和 <code>SELECT</code> 操作，在 MySQL 5.1 之前也不支持索引。Archive 引擎会缓存所有的写并利用 zlib 对插入的行进行压缩，所以比 MyISAM 表的磁盘 I/O 更少。但是每次 <code>SELECT</code> 查询都需要执行全表扫描。所以 Archive 表适合日志和数据采集类应用，这类应用做数据分析时往往需要全表扫描。或者在一些需要更快速的 <code>INSERT</code> 操作的场合下也可以使用。</p>
+<p>Archive 引擎不是一个事务型的引擎，而是一个针对高速插入和压缩做了优化的简单引擎。</p>
+<h5 id="2-5-1-5-Blackhole-存储引擎"><a href="#2-5-1-5-Blackhole-存储引擎" class="headerlink" title="2.5.1.5. Blackhole 存储引擎"></a>2.5.1.5. Blackhole 存储引擎</h5><p>Blackhole 引擎没有实现任何的存储机制，它会丢弃所有插入的数据，不做任何存储，Select 语句的内容永远是空。但是服务器会记录 Blackhole 表的日志，所以可以用于复制数据到备份数据库，或者只是简单地记录到日志。这种特殊的存储引擎可以在一些特殊的复制架构和日志审核时发挥作用。但这种引擎在应用方式上有很多问题，因此并不推荐。其使用场景有：</p>
+<ol>
+<li>验证 dump file 语法的正确性</li>
+<li>以使用 blackhole 引擎来检测 binlog 功能所需要的额外负载</li>
+</ol>
+<figure class="highlight sql"><table><tr><td class="gutter"><pre><span class="line">1</span><br><span class="line">2</span><br><span class="line">3</span><br><span class="line">4</span><br><span class="line">5</span><br><span class="line">6</span><br><span class="line">7</span><br><span class="line">8</span><br></pre></td><td class="code"><pre><span class="line"><span class="keyword">CREATE TABLE</span> `Blackhole` (</span><br><span class="line">	`id` <span class="type">BIGINT</span> (<span class="number">20</span>) UNSIGNED <span class="keyword">NOT NULL</span>,</span><br><span class="line">	`fname` <span class="type">VARCHAR</span> (<span class="number">100</span>) <span class="keyword">NOT NULL</span>,</span><br><span class="line">	`lname` <span class="type">VARCHAR</span> (<span class="number">100</span>) <span class="keyword">NOT NULL</span>,</span><br><span class="line">	`age` TINYINT (<span class="number">3</span>) UNSIGNED <span class="keyword">NOT NULL</span>,</span><br><span class="line">	`sex` TINYINT (<span class="number">1</span>) UNSIGNED <span class="keyword">NOT NULL</span>,</span><br><span class="line">	<span class="keyword">PRIMARY KEY</span> (`id`)</span><br><span class="line">) ENGINE <span class="operator">=</span> Blackhole <span class="keyword">DEFAULT</span> CHARSET <span class="operator">=</span> utf8</span><br></pre></td></tr></table></figure>
+<h5 id="2-5-1-6-CSV-引存储擎"><a href="#2-5-1-6-CSV-引存储擎" class="headerlink" title="2.5.1.6. CSV 引存储擎"></a>2.5.1.6. CSV 引存储擎</h5><p>CSV 引擎可以将普通的 CSV 文件(逗号分割值的文件）作为 MySQL 的表来处理，但这种表不支持索引。CSV 引擎可以在数据库运行时拷入或者拷出文件。可以将 Excel 等的数据存储为 CSV 文件，然后复制到 MySQL 数据目录下，就能在MySQL 中打开使用。同样，如果将数据写入到一个 CSV 引擎表，其他的外部程序也能立即从表的数据文件中读取 CSV 格式的数据。因此 CSV 引擎可以作为一种数据交换的机制，非常有用。</p>
+<h5 id="2-5-1-7-Federated-存储引擎"><a href="#2-5-1-7-Federated-存储引擎" class="headerlink" title="2.5.1.7. Federated 存储引擎"></a>2.5.1.7. Federated 存储引擎</h5><p>Federated 引擎是访问其他 MySQL 服务器的一个代理，它会创建一个到远程 MySQL 服务器的客户端连接，并将查询传输到远程服务器执行，然后提取或者发送需要的数据。最初设计该存储引擎是为了和企业级数据库如 Microsoft SQL Server 和 Oracle 的类似特性竞争的，可以说更多的是一种市场行为。尽管该引擎看起来提供了一种很好的跨服务器的灵活性，但也经常带来问题，因此默认是禁用的。</p>
+<h5 id="2-5-1-8-Memory-存储引擎"><a href="#2-5-1-8-Memory-存储引擎" class="headerlink" title="2.5.1.8. Memory 存储引擎"></a>2.5.1.8. Memory 存储引擎</h5><p>MEMORY 存储引擎的所有数据都在内存中，数据的处理速度快，但安全性不高。</p>
+<p>如果需要快速地访问数据，并且这些数据不会被修改，重启以后丢失也没有关系，那么使用 Memory 表(以前也叫做 HEAP 表）是非常有用的。Memory 表至少比 MyISAM 表要快一个数量级，因为每个基于 MEMORY 存储引擎的表实际对应一个磁盘文件。该文件的文件名与表名相同，类型为 frm 类型。该文件中只存储表的结构。而其数据文件，都是存储在内存中，这样有利于数据的快速处理，提高整个表的效率，不需要进行磁盘 I/O。所以 Memory 表的结构在重启以后还会保留，但数据会丢失。Memroy 表在很多场景可以发挥好的作用:</p>
+<ul>
+<li>用于查找(lookup）或者映射(mapping）表，例如将邮编和州名映射的表。</li>
+<li>用于缓存周期性聚合数据(periodically aggregated data)的结果。</li>
+<li>用于保存数据分析中产生的中间数据。</li>
+</ul>
+<p>Memory 表支持 Hash 索引，因此查找操作非常快。虽然 Memory 表的速度非常快，但还是无法取代传统的基于磁盘的表。Memroy 表是表级锁，因此并发写入的性能较低。它不支持 BLOB 或 TEXT 类型的列，并且每行的长度是固定的，所以即使指定了 VARCHAR 列，实际存储时也会转换成 CHAR，这可能导致部分内存的浪费。</p>
+<p><strong>优点</strong>：</p>
+<p>访问速度较快。</p>
+<p><strong>缺点</strong>：</p>
+<ol>
+<li>哈希索引数据不是按照索引值顺序存储，无法用于排序。</li>
+<li>不支持部分索引匹配查找，因为哈希索引是使用索引列的全部内容来计算哈希值的。</li>
+<li>只支持等值比较，不支持范围查询。</li>
+<li>当出现哈希冲突时，存储引擎需要遍历链表中所有的行指针，逐行进行比较，直到找到符合条件的行。</li>
+</ol>
+<h5 id="2-5-1-9-NDB-集群引擎"><a href="#2-5-1-9-NDB-集群引擎" class="headerlink" title="2.5.1.9. NDB 集群引擎"></a>2.5.1.9. NDB 集群引擎</h5><p>使用 MySQL 服务器、NDB 集群存储引擎，以及分布式的、share-nothing 的、容灾的、高可用的 NDB 数据库的组合，被称为 MySQL 集群（(MySQL Cluster)。</p>
+<h4 id="2-5-2-值得了解的第三方引擎"><a href="#2-5-2-值得了解的第三方引擎" class="headerlink" title="2.5.2. 值得了解的第三方引擎"></a>2.5.2. 值得了解的第三方引擎</h4><h5 id="2-5-2-1-Percona-的-XtraDB-存储引擎"><a href="#2-5-2-1-Percona-的-XtraDB-存储引擎" class="headerlink" title="2.5.2.1. Percona 的 XtraDB 存储引擎"></a>2.5.2.1. Percona 的 XtraDB 存储引擎</h5><p>基于 InnoDB 引擎的一个改进版本，已经包含在 Percona Server 和 MariaDB 中，它的改进点主要集中在性能、可测量性和操作灵活性方面。XtraDB 可以作为 InnoDB 的一个完全的替代产品，甚至可以兼容地读写 InnoDB 的数据文件，并支持 InnoDB 的所有查询。</p>
+<h5 id="2-5-2-2-TokuDB-引擎"><a href="#2-5-2-2-TokuDB-引擎" class="headerlink" title="2.5.2.2. TokuDB 引擎"></a>2.5.2.2. TokuDB 引擎</h5><p>TokuDB 存储引擎使用了一种新的叫做分形树(Fractal Trees)的索引数据结构。该结构是缓存无关的，与 B+树有些类似，在 Fractal Tree中，每一个 child 指针除了需要指向一个 child 节点外，还会带有一个 Message Buffer（FIFO 的队列），用来缓存更新操作。</p>
+<p><img src="https://gitee.com/Bluetom/img2/raw/master/img20240905/202410251028290.png" alt=""></p>
+<p>例如，一次插入操作只需要落在某节点的 Message Buffer 就可以马上返回了，并不需要搜索到叶子节点。这些缓存的更新会在查询时或后台异步合并应用到对应的节点中。</p>
+<p>因此 Fractal Trees 结构即使其大小超过内存性能也不会下降，也就没有内存生命周期和碎片的问题。TokuDB 是一种大数据（Big Data)存储引擎，因为其拥有很高的压缩比，可以在很大的数据量上创建大量索引。现在该引擎也被 Percona 公司收购。</p>
+<blockquote>
+<p>Tips：分形树，是一种写优化的磁盘索引数据结构。在一般情况下，分形树的写操作（Insert/Update/Delete）性能比较好，同时它还能保证读操作近似于B+树的读性能。据测试结果显示，TokuDB 分形树的写性能优于 InnoDB 的 B+树，读性能略低于 B+树。分形树核心思想是利用节点的 Message Buffer 缓存更新操作，充分利用数据局部性原理，将随机写转换为顺序写，这样极大的提高了随机写的效率。Fractal-tree 在事务实现上有优势，它主要适用于访问频率不高的数据或历史数据归档。</p>
+</blockquote>
+<h5 id="2-5-2-3-Infobright"><a href="#2-5-2-3-Infobright" class="headerlink" title="2.5.2.3. Infobright"></a>2.5.2.3. Infobright</h5><p>MySQL 默认是面向行的，每一行的数据是一起存储的，服务器的查询也是以行为单位处理的。而在大数据量处理时，面向列的方式可能效率更高，比如 HBASE 就是面向列存储的。</p>
+<p>Infobright 是最有名的面向列的存储引擎。在非常大的数据量（数十 TB)时，该引擎工作良好。Infobright 是为数据分析和数据仓库应用设计的。数据高度压缩，按照块进行排序，每个块都对应有一组元数据。在处理查询时，访问元数据可决定跳过该块，甚至可能只需要元数据即可满足查询的需求。但该引擎不支持索引，不过在这么大的数据量级，即使有索引也很难发挥作用，而且块结构也是一种准索引 (quasi-index)。Infobright 需要对 MySQL 服务器做定制，因为一些地方需要修改以适应面向列存储的需要。如果查询无法在存储层使用面向列的模式执行，则需要在服务器层转换成按行处理，这个过程会很慢。Infobright 有社区版和商业版两个版本。</p>
+<h4 id="2-5-3-指定表的存储引擎"><a href="#2-5-3-指定表的存储引擎" class="headerlink" title="2.5.3. 指定表的存储引擎"></a>2.5.3. 指定表的存储引擎</h4><p>在创建表的时候，通过<code>engine</code>关键字指定存储引擎。语法结构如下：</p>
+<figure class="highlight sql"><table><tr><td class="gutter"><pre><span class="line">1</span><br></pre></td><td class="code"><pre><span class="line"><span class="keyword">create table</span> xxx(...) engine<span class="operator">=</span>存储引擎名称;</span><br></pre></td></tr></table></figure>
+<h4 id="2-5-4-表的存储引擎转换"><a href="#2-5-4-表的存储引擎转换" class="headerlink" title="2.5.4. 表的存储引擎转换"></a>2.5.4. 表的存储引擎转换</h4><p>有很多种方法可以将表的存储引擎转换成另外一种引擎。每种方法都有其优点和缺点。常用的有三种方法：</p>
+<h5 id="2-5-4-1-ALTER-TABLE"><a href="#2-5-4-1-ALTER-TABLE" class="headerlink" title="2.5.4.1. ALTER TABLE"></a>2.5.4.1. ALTER TABLE</h5><p>将表从一个引擎修改为另一个引擎最简单的办法是使用 <code>ALTER TABLE</code> 语句。</p>
+<figure class="highlight sql"><table><tr><td class="gutter"><pre><span class="line">1</span><br></pre></td><td class="code"><pre><span class="line"><span class="keyword">ALTER TABLE</span> mytable ENGINE <span class="operator">=</span> InnoDB;</span><br></pre></td></tr></table></figure>
+<p>上面语句将 mytable 的引擎修改为 InnoDB。该语法可以适用任何存储引擎。但需要执行很长时间，在实现上，MySQL 会按行将数据从原表复制到一张新的表中，在复制期间可能会消耗系统所有的I/O 能力，同时原表上会加上读锁。所以，在繁忙的表上执行此操作要特别小心。如果转换表的存储引擎，将会失去和原引擎相关的所有特性。</p>
+<h5 id="2-5-4-2-导出与导入"><a href="#2-5-4-2-导出与导入" class="headerlink" title="2.5.4.2. 导出与导入"></a>2.5.4.2. 导出与导入</h5><p>还可以使用 mysqldump 工具将数据导出到文件，然后修改文件中 <code>CREATE TABLE</code> 语句的存储引擎选项，注意同时修改表名，因为同一个数据库中不能存在相同的表名，即使它们使用的是不同的存储引擎。</p>
+<h5 id="2-5-4-3-CREATE-和-SELECT"><a href="#2-5-4-3-CREATE-和-SELECT" class="headerlink" title="2.5.4.3. CREATE 和 SELECT"></a>2.5.4.3. CREATE 和 SELECT</h5><p>先创建一个新的存储引擎的表，然后利用 <code>INSERT…SELECT</code> 语法来导数据:</p>
+<figure class="highlight sql"><table><tr><td class="gutter"><pre><span class="line">1</span><br><span class="line">2</span><br><span class="line">3</span><br></pre></td><td class="code"><pre><span class="line"><span class="keyword">CREATE TABLE</span> innodb_table <span class="keyword">LIKE</span> myisam_table;</span><br><span class="line"><span class="keyword">ALTER TABLE</span> innodb_table ENGINE<span class="operator">=</span>InnoDB;</span><br><span class="line"><span class="keyword">INSERT INTO</span> innodb_table <span class="keyword">SELECT</span> <span class="operator">*</span> <span class="keyword">FROM</span> myisam_table;</span><br></pre></td></tr></table></figure>
+<p>如果数据量很大，则可以考虑做分批处理，针对每一段数据执行事务提交操作。</p>
+<h4 id="2-5-5-检查-MySQL-的引擎"><a href="#2-5-5-检查-MySQL-的引擎" class="headerlink" title="2.5.5. 检查 MySQL 的引擎"></a>2.5.5. 检查 MySQL 的引擎</h4><ul>
+<li>查询 MySQL 已提供哪些存储引擎</li>
+</ul>
+<figure class="highlight sql"><table><tr><td class="gutter"><pre><span class="line">1</span><br><span class="line">2</span><br><span class="line">3</span><br><span class="line">4</span><br><span class="line">5</span><br><span class="line">6</span><br><span class="line">7</span><br><span class="line">8</span><br><span class="line">9</span><br><span class="line">10</span><br><span class="line">11</span><br><span class="line">12</span><br><span class="line">13</span><br><span class="line">14</span><br></pre></td><td class="code"><pre><span class="line">mysql<span class="operator">&gt;</span> <span class="keyword">show</span> engines;</span><br><span class="line"><span class="operator">+</span><span class="comment">--------------------+---------+----------------------------------------------------------------+--------------+------+------------+</span></span><br><span class="line"><span class="operator">|</span> Engine             <span class="operator">|</span> Support <span class="operator">|</span> Comment                                                        <span class="operator">|</span> Transactions <span class="operator">|</span> XA   <span class="operator">|</span> Savepoints <span class="operator">|</span></span><br><span class="line"><span class="operator">+</span><span class="comment">--------------------+---------+----------------------------------------------------------------+--------------+------+------------+</span></span><br><span class="line"><span class="operator">|</span> InnoDB             <span class="operator">|</span> <span class="keyword">DEFAULT</span> <span class="operator">|</span> Supports transactions, <span class="type">row</span><span class="operator">-</span>level locking, <span class="keyword">and</span> <span class="keyword">foreign</span> keys     <span class="operator">|</span> YES          <span class="operator">|</span> YES  <span class="operator">|</span> YES        <span class="operator">|</span></span><br><span class="line"><span class="operator">|</span> MRG_MYISAM         <span class="operator">|</span> YES     <span class="operator">|</span> Collection <span class="keyword">of</span> identical MyISAM tables                          <span class="operator">|</span> <span class="keyword">NO</span>           <span class="operator">|</span> <span class="keyword">NO</span>   <span class="operator">|</span> <span class="keyword">NO</span>         <span class="operator">|</span></span><br><span class="line"><span class="operator">|</span> MEMORY             <span class="operator">|</span> YES     <span class="operator">|</span> Hash based, stored <span class="keyword">in</span> memory, useful <span class="keyword">for</span> temporary tables      <span class="operator">|</span> <span class="keyword">NO</span>           <span class="operator">|</span> <span class="keyword">NO</span>   <span class="operator">|</span> <span class="keyword">NO</span>         <span class="operator">|</span></span><br><span class="line"><span class="operator">|</span> BLACKHOLE          <span class="operator">|</span> YES     <span class="operator">|</span> <span class="operator">/</span>dev<span class="operator">/</span><span class="keyword">null</span> storage engine (anything you write <span class="keyword">to</span> it disappears) <span class="operator">|</span> <span class="keyword">NO</span>           <span class="operator">|</span> <span class="keyword">NO</span>   <span class="operator">|</span> <span class="keyword">NO</span>         <span class="operator">|</span></span><br><span class="line"><span class="operator">|</span> MyISAM             <span class="operator">|</span> YES     <span class="operator">|</span> MyISAM storage engine                                          <span class="operator">|</span> <span class="keyword">NO</span>           <span class="operator">|</span> <span class="keyword">NO</span>   <span class="operator">|</span> <span class="keyword">NO</span>         <span class="operator">|</span></span><br><span class="line"><span class="operator">|</span> CSV                <span class="operator">|</span> YES     <span class="operator">|</span> CSV storage engine                                             <span class="operator">|</span> <span class="keyword">NO</span>           <span class="operator">|</span> <span class="keyword">NO</span>   <span class="operator">|</span> <span class="keyword">NO</span>         <span class="operator">|</span></span><br><span class="line"><span class="operator">|</span> ARCHIVE            <span class="operator">|</span> YES     <span class="operator">|</span> Archive storage engine                                         <span class="operator">|</span> <span class="keyword">NO</span>           <span class="operator">|</span> <span class="keyword">NO</span>   <span class="operator">|</span> <span class="keyword">NO</span>         <span class="operator">|</span></span><br><span class="line"><span class="operator">|</span> PERFORMANCE_SCHEMA <span class="operator">|</span> YES     <span class="operator">|</span> Performance Schema                                             <span class="operator">|</span> <span class="keyword">NO</span>           <span class="operator">|</span> <span class="keyword">NO</span>   <span class="operator">|</span> <span class="keyword">NO</span>         <span class="operator">|</span></span><br><span class="line"><span class="operator">|</span> FEDERATED          <span class="operator">|</span> <span class="keyword">NO</span>      <span class="operator">|</span> Federated MySQL storage engine                                 <span class="operator">|</span> <span class="keyword">NULL</span>         <span class="operator">|</span> <span class="keyword">NULL</span> <span class="operator">|</span> <span class="keyword">NULL</span>       <span class="operator">|</span></span><br><span class="line"><span class="operator">+</span><span class="comment">--------------------+---------+----------------------------------------------------------------+--------------+------+------------+</span></span><br></pre></td></tr></table></figure>
+<ul>
+<li>查询 MySQL 当前默认的存储引擎</li>
+</ul>
+<figure class="highlight sql"><table><tr><td class="gutter"><pre><span class="line">1</span><br><span class="line">2</span><br><span class="line">3</span><br><span class="line">4</span><br><span class="line">5</span><br><span class="line">6</span><br><span class="line">7</span><br><span class="line">8</span><br><span class="line">9</span><br></pre></td><td class="code"><pre><span class="line">mysql<span class="operator">&gt;</span> <span class="keyword">show</span> variables <span class="keyword">like</span> <span class="string">&#x27;%storage_engine%&#x27;</span>;</span><br><span class="line"><span class="operator">+</span><span class="comment">----------------------------------+--------+</span></span><br><span class="line"><span class="operator">|</span> Variable_name                    <span class="operator">|</span> <span class="keyword">Value</span>  <span class="operator">|</span></span><br><span class="line"><span class="operator">+</span><span class="comment">----------------------------------+--------+</span></span><br><span class="line"><span class="operator">|</span> default_storage_engine           <span class="operator">|</span> InnoDB <span class="operator">|</span></span><br><span class="line"><span class="operator">|</span> default_tmp_storage_engine       <span class="operator">|</span> InnoDB <span class="operator">|</span></span><br><span class="line"><span class="operator">|</span> disabled_storage_engines         <span class="operator">|</span>        <span class="operator">|</span></span><br><span class="line"><span class="operator">|</span> internal_tmp_disk_storage_engine <span class="operator">|</span> InnoDB <span class="operator">|</span></span><br><span class="line"><span class="operator">+</span><span class="comment">----------------------------------+--------+</span></span><br></pre></td></tr></table></figure>
+<h4 id="2-5-6-MyISAM、InnoDB-与-Memory-比较"><a href="#2-5-6-MyISAM、InnoDB-与-Memory-比较" class="headerlink" title="2.5.6. MyISAM、InnoDB 与 Memory 比较"></a>2.5.6. MyISAM、InnoDB 与 Memory 比较</h4><p>MyISAM、InnoDB 与 Memory 区别汇总：</p>
+<div class="table-container">
+<table>
+<thead>
+<tr>
+<th>功能</th>
+<th style="text-align:center">InnoDB</th>
+<th style="text-align:center">MyISAM</th>
+<th style="text-align:center">Memory</th>
+</tr>
+</thead>
+<tbody>
+<tr>
+<td>存储限制</td>
+<td style="text-align:center">64TB</td>
+<td style="text-align:center">256TB</td>
+<td style="text-align:center">依赖RAM的大小</td>
+</tr>
+<tr>
+<td>事务</td>
+<td style="text-align:center">√</td>
+<td style="text-align:center">-</td>
+<td style="text-align:center">-</td>
+</tr>
+<tr>
+<td>锁机制</td>
+<td style="text-align:center">行锁/表锁</td>
+<td style="text-align:center">表锁</td>
+<td style="text-align:center">表锁</td>
+</tr>
+<tr>
+<td>B+tree索引</td>
+<td style="text-align:center">√</td>
+<td style="text-align:center">√</td>
+<td style="text-align:center">√</td>
+</tr>
+<tr>
+<td>Hash索引</td>
+<td style="text-align:center">-</td>
+<td style="text-align:center">-</td>
+<td style="text-align:center">√</td>
+</tr>
+<tr>
+<td>全文索引</td>
+<td style="text-align:center">√(5.6版本后支持)</td>
+<td style="text-align:center">√</td>
+<td style="text-align:center">-</td>
+</tr>
+<tr>
+<td>集群索引</td>
+<td style="text-align:center">√</td>
+<td style="text-align:center">-</td>
+<td style="text-align:center">-</td>
+</tr>
+<tr>
+<td>数据索引</td>
+<td style="text-align:center">√</td>
+<td style="text-align:center">-</td>
+<td style="text-align:center">√</td>
+</tr>
+<tr>
+<td>数据压缩</td>
+<td style="text-align:center">-</td>
+<td style="text-align:center">√</td>
+<td style="text-align:center">-</td>
+</tr>
+<tr>
+<td>空间使用率</td>
+<td style="text-align:center">高</td>
+<td style="text-align:center">低</td>
+<td style="text-align:center">-</td>
+</tr>
+<tr>
+<td>内存使用</td>
+<td style="text-align:center">高</td>
+<td style="text-align:center">低</td>
+<td style="text-align:center">中等</td>
+</tr>
+<tr>
+<td>批量插入速度</td>
+<td style="text-align:center">低</td>
+<td style="text-align:center">高</td>
+<td style="text-align:center">高</td>
+</tr>
+<tr>
+<td>支持外键</td>
+<td style="text-align:center">√</td>
+<td style="text-align:center">-</td>
+<td style="text-align:center">-</td>
+</tr>
+</tbody>
+</table>
+</div>
+<p><strong>MyISAM 与 InnoDB 的一些其他区别说明</strong>：</p>
+<ul>
+<li><strong>是否支持行级锁</strong>：MyISAM 支持表级锁，即使操作一条记录也会锁住整个表，<font color=red><strong>不适合高并发的操作</strong></font>；InnoDB 支持行级锁和表级锁，默认是行级锁，操作时只锁某一行，不对其它行有影响，<font color=red><strong>适合高并发的操作</strong></font>。</li>
+<li><strong>缓存内容</strong>：MyISAM 只缓存索引，不缓存真实数据；InnoDB 不仅缓存索引还要缓存真实数据，对内存要求较高，而且内存大小对性能有决定性影响。</li>
+<li><strong>是否支持事务和崩溃后的安全恢复</strong>：MyISAM 不提供事务支持。而 InnoDB 提供事务支持，具有事务、回滚和崩溃修复能力。</li>
+<li><strong>是否支持外键</strong>：MyISAM 不支持，而 InnoDB 支持。</li>
+<li><strong>是否支持 MVCC</strong>：MyISAM 不支持，InnoDB 支持。应对高并发事务，MVCC 比单纯的加锁更高效。</li>
+<li><strong>是否有聚集索引</strong>：MyISAM 不支持聚集索引；InnoDB 支持聚集索引。</li>
+<li><strong>数据存储的结构</strong>：MyISAM 数据与索引分开文件存储，索引保存的是数据文件的指针；InnoDB 的聚集索引是数据和索引保存在同一个文件中。</li>
+<li><strong>查询全表总记录数的效率</strong>：MyISAM 用一个变量保存了整个表的行数，查询表记录数时只需要读出该变量即可，速度很快；InnoDB 不保存表的具体行数，查询表总记录数时需要全表扫描。</li>
+</ul>
+<h4 id="2-5-7-选择合适的引擎"><a href="#2-5-7-选择合适的引擎" class="headerlink" title="2.5.7. 选择合适的引擎"></a>2.5.7. 选择合适的引擎</h4><p>大部分情况下，InnoDB 都是正确的选择，所以在 MySQL 5.5 版本将 InnoDB 作为默认的存储引擎了。对于如何选择存储引擎，可以简单地归纳为一句话：“除非需要用到某些 InnoDB 不具备的特性，并且没有其他办法可以替代，否则都应该优先选择 InnoDB 引擎”。比如，MySQL 中只有 MyISAM 支持地理空间搜索。</p>
+<p>如果不需要用到 InnoDB 的特性，同时其他引擎的特性能够更好地满足需求，也可以考虑一下其他存储引擎。举个例子，如果不在乎可扩展能力和并发能力，也不在乎崩溃后的数据丢失问题，却对 InnoDB 的空间占用过多比较敏感，这种场合下选择 MyISAM 就比较合适。</p>
+<p>小结如下：</p>
+<ul>
+<li>InnoDB：是 Mysql 的默认存储引擎，支持事务、外键。如果应用对事务的完整性有比较高的要求，在并发条件下要求数据的一致性，数据操作除了插入和查询之外，还包含很多的更新、删除操作，那么 InnoDB 存储引擎是比较合适的选择。</li>
+<li>MyISAM：如果应用是以读操作和插入操作为主，只有很少的更新和删除操作，并且对事务的完整性、并发性要求不是很高，那么选择这个存储引擎是非常合适的。</li>
+<li>MEMORY：将所有数据保存在内存中，访问速度快，通常用于临时表及缓存。MEMORY 的缺陷就是对表的大小有限制，太大的表无法缓存在内存中，而且无法保障数据的安全性。</li>
+</ul>
+<font color=red>**建议不要混合使用多种存储引擎**</font>，否则可能带来一系列复杂的问题，以及一些潜在的 bug 和边界问题。存储引擎层和服务器层的交互已经比较复杂，更不用说混合多个存储引擎了。至少，混合存储对一致性备份和服务器参数配置都带来了一些困难。
+
+## 3. 启动选项和参数
+
+### 3.1. 配置参数文件
+
+当 MySQL 实例启动时，数据库会先去读一个配置参数文件，用来寻找数据库的各种文件所在位置以及指定某些初始化参数。在默认情况下，MySQL 实例会在按一定的顺序中的指定位置读取配置，用户只需通过命令即可查看到相应的配置位置读取顺序。
+
+<figure class="highlight bash"><table><tr><td class="gutter"><pre><span class="line">1</span><br></pre></td><td class="code"><pre><span class="line">mysql --<span class="built_in">help</span> | grep my.cnf</span><br></pre></td></tr></table></figure>
+
+![](https://gitee.com/Bluetom/img2/raw/master/img20240905/202410251028291.png)
+
+> <font color=red>**注：都是后面配置文件中的配置项会覆盖前面配置文件中的相同的配置项**</font>
+
+<p>MySQL 实例可以不需要参数文件，这时所有的参数值取决于编译 MySQL 时指定的默认值和源代码中指定参数的默认值。MySQL 数据库的参数文件是以文本方式进行存储的。通过文本编辑软件即可进行参数的修改</p>
+<h3 id="3-2-参数的查看和修改"><a href="#3-2-参数的查看和修改" class="headerlink" title="3.2. 参数的查看和修改"></a>3.2. 参数的查看和修改</h3><p>在命令行中输入以下命令可查看数据库中的所有参数。</p>
+<figure class="highlight sql"><table><tr><td class="gutter"><pre><span class="line">1</span><br><span class="line">2</span><br><span class="line">3</span><br><span class="line">4</span><br><span class="line">5</span><br></pre></td><td class="code"><pre><span class="line"><span class="comment">-- 查询数据库中的所有参数</span></span><br><span class="line"><span class="keyword">SHOW</span> VARIABLES;</span><br><span class="line"></span><br><span class="line"><span class="comment">-- 模糊查询数据库参数</span></span><br><span class="line"><span class="keyword">SHOW</span> VARIABLES <span class="keyword">LIKE</span> <span class="string">&#x27;%xxx%&#x27;</span>;</span><br></pre></td></tr></table></figure>
+<blockquote>
+<p>从 MySQL 5.1 版本开始，还可以通过 information_schema 架构下的 <code>GLOBAL_VARIABLES</code> 视图来进行查找，推荐使用命令<code>show variables</code>，使用更为简单，且各版本的 MySQL 数据库都支持。</p>
+</blockquote>
+<h4 id="3-2-1-MySQL-数据库中的参数的分类"><a href="#3-2-1-MySQL-数据库中的参数的分类" class="headerlink" title="3.2.1. MySQL 数据库中的参数的分类"></a>3.2.1. MySQL 数据库中的参数的分类</h4><p>从不同的角度来说，主要分成两类</p>
+<p>从类型上：动态(dynamic)参数和静态(static)参数</p>
+<ul>
+<li>动态参数意味着可以在 MySQL 实例运行中进行更改</li>
+<li>静态参数说明在整个实例生命周期内都不得进行更改，即只读(read only)</li>
+</ul>
+<p>从作用范围上：全局变量(GLOBAL)和会话变量(SESSION/LOCAL)</p>
+<ul>
+<li>全局变量（GLOBAL）影响服务器的整体操作。</li>
+<li>会话变量（SESSION/LOCAL）影响某个客户端连接的操作。</li>
+</ul>
+<p>用 default_storage_engine 来作为示例说明，在服务器启动时会初始化一个名为 default_storage_engine，作用范围为 <code>GLOBAL</code> 的系统变量。之后每当有一个客户端连接到该服务器时，服务器都会单独为该客户端分配一个名为<code>default_storage_engine</code>，作用范围为<code>SESSION</code>的系统变量，该作用范围为<code>SESSION</code>的系统变量值按照当前作用范围为<code>GLOBAL</code>的同名系统变量值进行初始化。</p>
+<h4 id="3-2-2-动态参数值的修改"><a href="#3-2-2-动态参数值的修改" class="headerlink" title="3.2.2. 动态参数值的修改"></a>3.2.2. 动态参数值的修改</h4><p>通过 <code>SET</code> 命令对动态的参数值进行修改。语法如下：</p>
+<figure class="highlight bash"><table><tr><td class="gutter"><pre><span class="line">1</span><br><span class="line">2</span><br></pre></td><td class="code"><pre><span class="line">SET [global | session ] system_var_name= <span class="built_in">expr</span></span><br><span class="line">SET [@@global. | @@session.] system_var_name= <span class="built_in">expr</span></span><br></pre></td></tr></table></figure>
+<p>示例：</p>
+<figure class="highlight bash"><table><tr><td class="gutter"><pre><span class="line">1</span><br><span class="line">2</span><br></pre></td><td class="code"><pre><span class="line">SET read_ buffer_size=524288;</span><br><span class="line">SET @@global.read_ buffer_size=524288;</span><br></pre></td></tr></table></figure>
+<h3 id="3-3-MySQL官方手册（系统参数部分）"><a href="#3-3-MySQL官方手册（系统参数部分）" class="headerlink" title="3.3. MySQL官方手册（系统参数部分）"></a>3.3. MySQL官方手册（系统参数部分）</h3><p>官方文档（5.7版本）地址：<a target="_blank" rel="noopener" href="https://dev.mysql.com/doc/refman/5.7/en/server-system-variables.html">https://dev.mysql.com/doc/refman/5.7/en/server-system-variables.html</a></p>
+<h2 id="4-MySQL-数据目录结构分析"><a href="#4-MySQL-数据目录结构分析" class="headerlink" title="4. MySQL 数据目录结构分析"></a>4. MySQL 数据目录结构分析</h2><p>像 InnoDB、MyIASM 这样的存储引擎都是把表存储在磁盘上。</p>
+<h3 id="4-1-数据目录的位置"><a href="#4-1-数据目录的位置" class="headerlink" title="4.1. 数据目录的位置"></a>4.1. 数据目录的位置</h3><p>通过以下命令可以查看当前 MySql 数据库存储数据的目录位置</p>
+<figure class="highlight sql"><table><tr><td class="gutter"><pre><span class="line">1</span><br><span class="line">2</span><br><span class="line">3</span><br><span class="line">4</span><br><span class="line">5</span><br><span class="line">6</span><br></pre></td><td class="code"><pre><span class="line">mysql<span class="operator">&gt;</span> <span class="keyword">show</span> variables <span class="keyword">like</span> <span class="string">&#x27;datadir&#x27;</span>;</span><br><span class="line"><span class="operator">+</span><span class="comment">---------------+----------------+</span></span><br><span class="line"><span class="operator">|</span> Variable_name <span class="operator">|</span> <span class="keyword">Value</span>          <span class="operator">|</span></span><br><span class="line"><span class="operator">+</span><span class="comment">---------------+----------------+</span></span><br><span class="line"><span class="operator">|</span> datadir       <span class="operator">|</span> <span class="operator">/</span>var<span class="operator">/</span>lib<span class="operator">/</span>mysql <span class="operator">|</span></span><br><span class="line"><span class="operator">+</span><span class="comment">---------------+----------------+</span></span><br></pre></td></tr></table></figure>
+<blockquote>
+<p>Notes: 存储目录位置可以通过配置文件进行修改。</p>
+</blockquote>
+<h3 id="4-2-数据目录的文件"><a href="#4-2-数据目录的文件" class="headerlink" title="4.2. 数据目录的文件"></a>4.2. 数据目录的文件</h3><p><strong>数据目录中包含创建的数据库、表、视图和触发器等用户数据</strong>，除了这些用户数据，为了程序更好的运行，MySQL 也会创建一些其他的额外数据</p>
+<h4 id="4-2-1-数据库的存储"><a href="#4-2-1-数据库的存储" class="headerlink" title="4.2.1. 数据库的存储"></a>4.2.1. 数据库的存储</h4><p>在使用 <code>CREATE DATABASE</code> 语句创建一个数据库时，MySQL 会进行以下的处理：</p>
+<ol>
+<li>在数据目录下创建一个和数据库名同名的子目录（文件夹)</li>
+<li>在该与数据库名同名的子目录下创建一个名为<code>db.opt</code>的文件，这个文件中包含了该数据库的各种属性，例如该数据库的字符集和比较规则等等。</li>
+</ol>
+<p><img src="https://gitee.com/Bluetom/img2/raw/master/img20240905/202410251028292.png" alt=""></p>
+<p>进入<code>datadir</code>数据目录查看，除了 <code>information_schema</code> 这个系统数据库（<em>比较特殊</em>）外，其他的数据库在数据目录下都有对应的子目录。</p>
+<h4 id="4-2-2-表的存储"><a href="#4-2-2-表的存储" class="headerlink" title="4.2.2. 表的存储"></a>4.2.2. 表的存储</h4><p>MySQL 数据库表的信息可以分成：</p>
+<ol>
+<li><strong>表结构的定义</strong>：是定义了表每列的数据类型、约束条件、索引、字符集等等信息。InnoDB 和 MyIASM 这两种存储引擎都在数据目录下对应的数据库子目录下创建了一个专门用于存储描述表结构信息的文件，其文件名是：<code>表名.frm</code></li>
+<li><strong>表中的数据</strong>：就是实际每个表的存储的数据。而不同的存储引擎保存的文件格式、数量也不一样。</li>
+</ol>
+<p><img src="https://gitee.com/Bluetom/img2/raw/master/img20240905/202410251028294.png" alt=""></p>
+<h4 id="4-2-3-InnoDB-表数据的存储"><a href="#4-2-3-InnoDB-表数据的存储" class="headerlink" title="4.2.3. InnoDB 表数据的存储"></a>4.2.3. InnoDB 表数据的存储</h4><p>InnoDB 的数据会放在一个表空间或者文件空间（英文名: table space 或者 filespace)的概念，这个表空间是一个抽象的概念，它可以对应文件系统上一个或多个真实文件〈不同表空间对应的文件数量可能不同)。每一个表空间可以被划分为很多个页，表数据就存放在某个表空间下的某些页里。表空间有好几种类型。</p>
+<ul>
+<li><strong>系统表空间(system tablespace)</strong></li>
+</ul>
+<p>系统表空间可以对应文件系统上一个或多个实际的文件，默认情况下，InnoDB 会在数据目录下创建一个名为 ibdata1(在数据目录下)、大小为 12M 的文件，这个文件就是对应的系纳表空间在文件系统上的表示。</p>
+<p><img src="https://gitee.com/Bluetom/img2/raw/master/img20240905/202410251028295.png" alt=""></p>
+<p>此文件是自扩展文件，即存储空间不够用时，它会自己增加文件大小。如果想让系统表空间对应文件系统上多个实际文件，可以在 MySQL 启动时配置对应的文件路径以及它们的大小，也可以把系统表空间对应的文件路径不配置到数据目录下，甚至可以配置到单独的磁盘分区上</p>
+<font color=red>**需要注意的一点是：在一个 MySQL 服务器中，系统表空间只有一份。从 MySQL5.5.7 到 MySQL5.6.6 之间的各个版本中，表中的数据都会被默认存储到这个系统表空间。**</font>
+
+<ul>
+<li><strong>独立表空间(file-per-table tablespace)</strong></li>
+</ul>
+<p>在 MySQL5.6.6 以及之后的版本中，InnoB 并不会默认的把各个表的数据存储到系统表空间中，而是为<font color=red><strong>每一个表建立一个独立表空间</strong></font>，也就是说用户创建了多少个表，就有多少个独立表空间。</p>
+<p>使用独立表空间来存储表数据的话，会在该表所属数据库对应的子目录下创建一个表示该独立表空间的文件，文件名和表名相同，文件的扩展名是<code>.ibd</code>，即：<code>表名.ibd</code></p>
+<p><img src="https://gitee.com/Bluetom/img2/raw/master/img20240905/202410251028296.png" alt=""></p>
+<p>如上例，<code>consult_content.ibd</code>文件就用来存储<code>consult_content</code>表中的数据和索引。也可以指定使用系统表空间还是独立表空间来存储数据，这个功能由启动参数<code>innodb_file_per_table</code>控制。配置示例如下：</p>
+<figure class="highlight plaintext"><table><tr><td class="gutter"><pre><span class="line">1</span><br><span class="line">2</span><br></pre></td><td class="code"><pre><span class="line">[server]</span><br><span class="line">innodb_file_per_table=0</span><br></pre></td></tr></table></figure>
+<p>上面的配置意思是：当<code>imodb_file_per table</code>的值为0时，代表使用系统表空间；当<code>innodb_file pertable</code>的值为1时，代表使用独立表空间。需要注意的是<code>inmodb_file_per_table</code>参数只对新建的表起作用，对于已经分配了表空间的表并不起作用。</p>
+<p>可以直接通过命令查询：</p>
+<figure class="highlight sql"><table><tr><td class="gutter"><pre><span class="line">1</span><br><span class="line">2</span><br><span class="line">3</span><br><span class="line">4</span><br><span class="line">5</span><br><span class="line">6</span><br><span class="line">7</span><br></pre></td><td class="code"><pre><span class="line">mysql<span class="operator">&gt;</span> <span class="keyword">show</span> variables <span class="keyword">like</span> <span class="string">&#x27;innodb_file_per_table&#x27;</span>;</span><br><span class="line"><span class="operator">+</span><span class="comment">-----------------------+-------+</span></span><br><span class="line"><span class="operator">|</span> Variable_name         <span class="operator">|</span> <span class="keyword">Value</span> <span class="operator">|</span></span><br><span class="line"><span class="operator">+</span><span class="comment">-----------------------+-------+</span></span><br><span class="line"><span class="operator">|</span> innodb_file_per_table <span class="operator">|</span> <span class="keyword">ON</span>    <span class="operator">|</span></span><br><span class="line"><span class="operator">+</span><span class="comment">-----------------------+-------+</span></span><br><span class="line"><span class="number">1</span> <span class="type">row</span> <span class="keyword">in</span> <span class="keyword">set</span> (<span class="number">0.04</span> sec)</span><br></pre></td></tr></table></figure>
+<ul>
+<li><strong>其他类型的表空间</strong></li>
+</ul>
+<p>随着 MySQL 的发展，除了上述两种老牌表空间之外，现在还新提出了一些不同类型的表空间，比如通用表空间(general tablespace)，undo 表空间(undotablespace)、临时表空间（temporary tablespace)等。</p>
+<h4 id="4-2-4-MyIASM-表数据的存储"><a href="#4-2-4-MyIASM-表数据的存储" class="headerlink" title="4.2.4. MyIASM 表数据的存储"></a>4.2.4. MyIASM 表数据的存储</h4><p>在 MyISAM 存储引擎表中的数据和索引是分开存放的。所以在文件系统中也是使用不同的文件来存储数据文件和索引文件。与 InnoDB 不同的是，MyISAM 并没有表空间的概念，表数据都存放到对应的数据库子目录下。</p>
+<figure class="highlight sql"><table><tr><td class="gutter"><pre><span class="line">1</span><br><span class="line">2</span><br></pre></td><td class="code"><pre><span class="line"><span class="comment">-- 创建不同的是，MyISAM的表</span></span><br><span class="line"><span class="keyword">create table</span> a_myisam(c1 <span class="type">int</span>) engine<span class="operator">=</span>MyISAM;</span><br></pre></td></tr></table></figure>
+<p><img src="https://gitee.com/Bluetom/img2/raw/master/img20240905/202410251028297.png" alt=""></p>
+<p>如上例所示：<code>a_myisam.MYD</code>是表的数据文件；<code>a_myisam.MYI</code>是表的索引文件；<code>a_myisam.frm</code>是存储表结构定义。</p>
+<h3 id="4-3-日志文件"><a href="#4-3-日志文件" class="headerlink" title="4.3. 日志文件"></a>4.3. 日志文件</h3><p>服务器运行过程中，会产生各种各样的日志，比如常规的查询日志、错误日志、二进制日志、redo日志、Undo日志等等，日志文件记录了影响 MySQL 数据库的各种类型活动。</p>
+<p>MySQL 常见的日志文件有：错误日志（error log）、慢查询日志（slow query log）、查询日志（query log）、二进制文件（bin log）。</p>
+<h4 id="4-3-1-错误日志"><a href="#4-3-1-错误日志" class="headerlink" title="4.3.1. 错误日志"></a>4.3.1. 错误日志</h4><p>错误日志文件对 MySQL 的启动、运行、关闭过程进行了记录。遇到问题时应该首先查看该文件以便定位问题。该文件不仅记录了所有的错误信息，也记录一些警告信息或正确的信息。通过下面命令来查看错误日志文件的位置：</p>
+<figure class="highlight sql"><table><tr><td class="gutter"><pre><span class="line">1</span><br></pre></td><td class="code"><pre><span class="line"><span class="keyword">show</span> variables <span class="keyword">like</span> <span class="string">&#x27;log_error&#x27;</span>;</span><br></pre></td></tr></table></figure>
+<p>默认日志文件名称：<code>主机名.err</code></p>
+<blockquote>
+<p>Tips: 错误日志功能是默认开启的，而且无法被关闭。当 MySQL 不能正常启动时，第一个必须查找的文件应该就是错误日志文件</p>
+</blockquote>
+<h4 id="4-3-2-慢查询日志"><a href="#4-3-2-慢查询日志" class="headerlink" title="4.3.2. 慢查询日志"></a>4.3.2. 慢查询日志</h4><p>慢查询日志可以帮助定位可能存在问题的 SQL 语句，从而进行 SQL 语句层面的优化。</p>
+<p>慢查询日志记录了所有执行时间超过参数 <code>long_query_time</code> 设置值并且扫描记录数不小于 <code>min_examined_row_limit</code> 的所有的SQL语句的日志。<code>long_query_time</code> 默认为 10 秒，最小为 0， 精度可以到微秒。</p>
+<p>慢查询日志相关配置</p>
+<figure class="highlight properties"><table><tr><td class="gutter"><pre><span class="line">1</span><br><span class="line">2</span><br><span class="line">3</span><br><span class="line">4</span><br><span class="line">5</span><br><span class="line">6</span><br><span class="line">7</span><br><span class="line">8</span><br></pre></td><td class="code"><pre><span class="line"><span class="comment"># 该参数用来控制慢查询日志是否开启，可取值：1|0，1 代表开启， 0 代表关闭</span></span><br><span class="line"><span class="attr">slow_query_log</span>=<span class="string">1</span></span><br><span class="line"><span class="comment"></span></span><br><span class="line"><span class="comment"> # 该参数用来指定慢查询日志的文件名。日志文件名称：`主机名-slow.log`</span></span><br><span class="line"><span class="attr">slow_query_log_file</span>=<span class="string">slow_query.log</span></span><br><span class="line"><span class="comment"></span></span><br><span class="line"><span class="comment"># 该选项用来配置查询的时间限制，超过这个时间将认为值慢查询，将需要进行日志记录，默认10s</span></span><br><span class="line"><span class="attr">long_query_time</span>=<span class="string">10</span></span><br></pre></td></tr></table></figure>
+<h4 id="4-3-3-查询日志"><a href="#4-3-3-查询日志" class="headerlink" title="4.3.3. 查询日志"></a>4.3.3. 查询日志</h4><p>查询日志记录了用户对 MySQL 数据库的<strong>所有操作</strong>，包括启动和关闭 MySQL 服务、所有用户的连接开始时间和截止时间、发给 MySQL 数据库服务器的所有 SQL 指令等，如 select、show 等，无论 SQL 的语法正确还是错误、执行成功还是失败，MySQL 都会将其记录下来。<em>与之相比，二进制日志是不包含查询数据的SQL语句</em>。</p>
+<h5 id="4-3-3-1-查询日志配置"><a href="#4-3-3-1-查询日志配置" class="headerlink" title="4.3.3.1. 查询日志配置"></a>4.3.3.1. 查询日志配置</h5><p>默认情况下，查询日志是未开启的。如果需要开启查询日志，可以设置以下配置：</p>
+<figure class="highlight properties"><table><tr><td class="gutter"><pre><span class="line">1</span><br><span class="line">2</span><br><span class="line">3</span><br><span class="line">4</span><br><span class="line">5</span><br></pre></td><td class="code"><pre><span class="line"><span class="comment"># 该选项用来开启查询日志，可选值：0|1；0代表关闭，1代表开启</span></span><br><span class="line"><span class="attr">general_log</span>=<span class="string">1</span></span><br><span class="line"><span class="comment"></span></span><br><span class="line"><span class="comment"># 设置日志的文件名，如果没有指定， 默认日志文件名称：主机名.log</span></span><br><span class="line"><span class="attr">general_log_file</span>=<span class="string">file_name</span></span><br></pre></td></tr></table></figure>
+<p>命令配置：</p>
+<figure class="highlight sql"><table><tr><td class="gutter"><pre><span class="line">1</span><br><span class="line">2</span><br></pre></td><td class="code"><pre><span class="line"># 打开通用查询日志</span><br><span class="line"><span class="keyword">SET</span> <span class="keyword">GLOBAL</span> general_log<span class="operator">=</span><span class="keyword">on</span>;</span><br></pre></td></tr></table></figure>
+<h5 id="4-3-3-2-查询日志参数查看"><a href="#4-3-3-2-查询日志参数查看" class="headerlink" title="4.3.3.2. 查询日志参数查看"></a>4.3.3.2. 查询日志参数查看</h5><p>查看 MySQL 是否开启了查询日志</p>
+<figure class="highlight sql"><table><tr><td class="gutter"><pre><span class="line">1</span><br><span class="line">2</span><br><span class="line">3</span><br><span class="line">4</span><br><span class="line">5</span><br><span class="line">6</span><br><span class="line">7</span><br></pre></td><td class="code"><pre><span class="line">mysql<span class="operator">&gt;</span> <span class="keyword">show</span> variables <span class="keyword">like</span> <span class="string">&#x27;%general_log%&#x27;</span>;</span><br><span class="line"><span class="operator">+</span><span class="comment">------------------+--------------+</span></span><br><span class="line"><span class="operator">|</span> Variable_name    <span class="operator">|</span> <span class="keyword">Value</span>        <span class="operator">|</span></span><br><span class="line"><span class="operator">+</span><span class="comment">------------------+--------------+</span></span><br><span class="line"><span class="operator">|</span> general_log      <span class="operator">|</span> OFF          <span class="operator">|</span></span><br><span class="line"><span class="operator">|</span> general_log_file <span class="operator">|</span> MOONKIRA.log <span class="operator">|</span></span><br><span class="line"><span class="operator">+</span><span class="comment">------------------+--------------+</span></span><br></pre></td></tr></table></figure>
+<p>参数说明：</p>
+<ul>
+<li><code>general_log</code>：是否开启日志参数，默认为OFF，处于关闭状态，因为开启会消耗系统资源并且占用磁盘空间。一般不建议开启，只在需要调试查询问题时开启。</li>
+<li><code>general_log_file</code>：通用查询日志记录的位置参数。</li>
+</ul>
+<p>从 MySQL 5.1 开始，可以将查询日志的记录放入 mysql 架构下的 <code>general_log</code> 表中</p>
+<figure class="highlight sql"><table><tr><td class="gutter"><pre><span class="line">1</span><br></pre></td><td class="code"><pre><span class="line"><span class="keyword">SELECT</span> <span class="operator">*</span> <span class="keyword">FROM</span> general_log;</span><br></pre></td></tr></table></figure>
+<h4 id="4-3-4-binlog（二进制归档日志）"><a href="#4-3-4-binlog（二进制归档日志）" class="headerlink" title="4.3.4. binlog（二进制归档日志）"></a>4.3.4. binlog（二进制归档日志）</h4><blockquote>
+<p>详见后面章节</p>
+</blockquote>
+<h4 id="4-3-5-redo-log（重做日志）、undo-log（撤销日志）"><a href="#4-3-5-redo-log（重做日志）、undo-log（撤销日志）" class="headerlink" title="4.3.5. redo log（重做日志）、undo log（撤销日志）"></a>4.3.5. redo log（重做日志）、undo log（撤销日志）</h4><blockquote>
+<p>redo log（重做日志）、undo log（撤销日志）是 Innodb 引擎级别的日志，主要用于实现事务，此部分内容详见<a href="/数据库/MySQL/MySQL-事务">《MySQL数据库-事务》笔记</a></p>
+</blockquote>
+<h3 id="4-4-其他数据文件"><a href="#4-4-其他数据文件" class="headerlink" title="4.4. 其他数据文件"></a>4.4. 其他数据文件</h3><p>MySQL数据目录除了以上的数据文件之外，还有运行程序的额外文件。<em>这些额外的文件可以在配置文件或者启动时另外指定存放目录</em>。主要包括这几种类型的文件：</p>
+<ul>
+<li><strong>服务器进程文件</strong>：每运行一个 MySQL 服务器程序，都意味着启动一个进程。MySQL 服务器会把自己的进程 ID 写入到一个 pid 文件中。</li>
+<li><strong>socket文件</strong></li>
+<li><strong>默认/自动生成的 SSL 和 RSA 证书和密钥文件</strong></li>
+</ul>
+<p><img src="https://gitee.com/Bluetom/img2/raw/master/img20240905/202410251028298.png" alt=""></p>
+<h2 id="5-bin-log（二进制归档日志）"><a href="#5-bin-log（二进制归档日志）" class="headerlink" title="5. bin log（二进制归档日志）"></a>5. bin log（二进制归档日志）</h2><p>binlog 二进制日志记录了对 MySQL 数据库所有执行过的修改操作，若操作本身没有导致数据库发生变化，该操作可能也会写入二进制文件。但是不包括 <code>select</code> 和 <code>show</code> 这类操作语句（因为这些操作对数据本身不会进行修改）。如果 MySQL 服务意外停止，可通过二进制日志文件排查，用户操作或表结构操作，从而来恢复数据库数据。</p>
+<blockquote>
+<p>Tips: 开启 binlog 记录功能，会对 MySQL 的性能造成影响，但是性能损失十分有限。根据 MySQL 官方手册中的测试指明，开启二进制日志会使性能下降 1%。但如果需要恢复数据或主从复制功能，则好处则大于对服务器的影响。</p>
+</blockquote>
+<h3 id="5-1-二进制日志的作用"><a href="#5-1-二进制日志的作用" class="headerlink" title="5.1. 二进制日志的作用"></a>5.1. 二进制日志的作用</h3><ul>
+<li>恢复（recovery）：某些数据的恢复需要二进制日志，例如，在一个数据库全备文件恢复后，用户可以通过二进制文件进行 point-in-time 的恢复</li>
+<li>复制（replication）：其原理与恢复类似，通过复制和执行二进制日志使一台远程的 MySQL 数据库（一般称为 slave 或 standby）与一台 MySQL 数据库（一般称为 master 或 primary）进行实时同步</li>
+<li>审计（audit）：用户可以通过二进制日志中的信息来进行审计，判断是否有对数据库进行注入的攻击</li>
+</ul>
+<h3 id="5-2-binlog-相关参数"><a href="#5-2-binlog-相关参数" class="headerlink" title="5.2. binlog 相关参数"></a>5.2. binlog 相关参数</h3><h4 id="5-2-1-查询-binlog-参数"><a href="#5-2-1-查询-binlog-参数" class="headerlink" title="5.2.1. 查询 binlog 参数"></a>5.2.1. 查询 binlog 参数</h4><p><code>log-bin</code> 参数用来控制是否开启二进制日志。通过以下命令可以查询相关二进制日志的参数：</p>
+<figure class="highlight sql"><table><tr><td class="gutter"><pre><span class="line">1</span><br><span class="line">2</span><br><span class="line">3</span><br><span class="line">4</span><br><span class="line">5</span><br><span class="line">6</span><br><span class="line">7</span><br><span class="line">8</span><br><span class="line">9</span><br><span class="line">10</span><br><span class="line">11</span><br></pre></td><td class="code"><pre><span class="line">mysql<span class="operator">&gt;</span> <span class="keyword">show</span> variables <span class="keyword">like</span> <span class="string">&#x27;%log_bin%&#x27;</span>;</span><br><span class="line"><span class="operator">+</span><span class="comment">---------------------------------+------------------------------------------------------------+</span></span><br><span class="line"><span class="operator">|</span> Variable_name                   <span class="operator">|</span> <span class="keyword">Value</span>                                                      <span class="operator">|</span></span><br><span class="line"><span class="operator">+</span><span class="comment">---------------------------------+------------------------------------------------------------+</span></span><br><span class="line"><span class="operator">|</span> log_bin                         <span class="operator">|</span> <span class="keyword">ON</span>                                                         <span class="operator">|</span></span><br><span class="line"><span class="operator">|</span> log_bin_basename                <span class="operator">|</span> D:\development\MySQL\MySQL Server <span class="number">8.0</span>\Data\mysql<span class="operator">-</span>bin       <span class="operator">|</span></span><br><span class="line"><span class="operator">|</span> log_bin_index                   <span class="operator">|</span> D:\development\MySQL\MySQL Server <span class="number">8.0</span>\Data\mysql<span class="operator">-</span>bin.index <span class="operator">|</span></span><br><span class="line"><span class="operator">|</span> log_bin_trust_function_creators <span class="operator">|</span> OFF                                                        <span class="operator">|</span></span><br><span class="line"><span class="operator">|</span> log_bin_use_v1_row_events       <span class="operator">|</span> OFF                                                        <span class="operator">|</span></span><br><span class="line"><span class="operator">|</span> sql_log_bin                     <span class="operator">|</span> <span class="keyword">ON</span>                                                         <span class="operator">|</span></span><br><span class="line"><span class="operator">+</span><span class="comment">---------------------------------+------------------------------------------------------------+</span></span><br></pre></td></tr></table></figure>
+<p>参数说明：</p>
+<ul>
+<li><code>log_bin：binlog</code>：日志是否打开状态</li>
+<li><code>log_bin_basename</code>：是 binlog 日志的基本文件名，后面会追加标识来表示每一个文件，binlog 日志文件会滚动增加</li>
+<li><code>log_bin_index</code>：指定的是 binlog 文件的索引文件，这个文件管理了所有的 binlog 文件的目录。</li>
+<li><code>sql_log_bin</code>：sql 语句是否写入 binlog 文件，ON 代表需要写入；OFF 代表不需要写入。如果想在主库上执行一些操作，但不复制到 slave 库上，可以通过修改参数 sql_log_bin 来实现。比如，模拟主从同步复制异常。</li>
+</ul>
+<h4 id="5-2-2-配置-binlog-参数"><a href="#5-2-2-配置-binlog-参数" class="headerlink" title="5.2.2. 配置 binlog 参数"></a>5.2.2. 配置 binlog 参数</h4><p>在 MySQL 5.7 版本中，binlog 默认是关闭的；8.0 版本默认是打开的。如果想要开启二进制日志的功能，需要修改 MySQL 的配置文件 my.ini(windows) 或 my.cnf(linux) 手动指定参数来启动，并重启数据库。</p>
+<p>在配置文件中的[mysqld]部分增加如下配置：</p>
+<figure class="highlight properties"><table><tr><td class="gutter"><pre><span class="line">1</span><br><span class="line">2</span><br><span class="line">3</span><br><span class="line">4</span><br><span class="line">5</span><br><span class="line">6</span><br><span class="line">7</span><br><span class="line">8</span><br><span class="line">9</span><br><span class="line">10</span><br><span class="line">11</span><br></pre></td><td class="code"><pre><span class="line"><span class="comment"># 开启日志 log-bin 设置 binlog 的存放位置，可以是绝对路径，也可以是相对路径，此示例是相对路径，则binlog文件默认会放在data数据目录下</span></span><br><span class="line"><span class="attr">log-bin</span>=<span class="string">mysql-bin</span></span><br><span class="line"><span class="comment"># Server Id 是数据库服务器id，随便写一个数都可以，这个id用来在mysql集群环境中标记唯一mysql服务器，集群环境中每台mysql服务器的id不能一样，不加启动会报错</span></span><br><span class="line"><span class="attr">server-id</span>=<span class="string">1</span></span><br><span class="line"><span class="comment"># 其他配置</span></span><br><span class="line"><span class="comment"># 日志文件格式</span></span><br><span class="line"><span class="attr">binlog_format</span>=<span class="string">row</span></span><br><span class="line"><span class="comment"># 执行自动删除距离当前以前N天的binlog日志文件，默认为0，表示不自动删除</span></span><br><span class="line"><span class="attr">expire_logs_days</span>=<span class="string">15 </span></span><br><span class="line"><span class="comment"># 单个binlog日志文件的大小限制，默认为 1GB</span></span><br><span class="line"><span class="attr">max_binlog_size</span>=<span class="string">200M</span></span><br></pre></td></tr></table></figure>
+<p>配置说明：</p>
+<ul>
+<li><code>log-bin</code>：是否开启二进制日志。需要注意，该值是指定二进制日志文件的名称。如果不提供指定名称，那么数据库会使用默认的日志文件名（文件名为主机名，后缀名为二进制日志的序列号），且文件保存在数据库所在的目录（datadir下）。配置以后，就会在数据目录下产生类似于：bin_log.00001 即为二进制日志文件；bin_log.index 为二进制的索引文件，用来存储过往产生的二进制日志序号，通常情况下，不建议手动修改这个文件。</li>
+<li><code>binlog_format</code>：设置日志文件格式。<em>可选值详见下面章节</em></li>
+<li><code>expire_logs_days</code>：设置执行自动删除距离当前以前该值的天数的 binlog 日志文件，默认值是0，表示不自动删除</li>
+<li><code>max_binlog_size</code>：设置单个 binlog 日志文件的大小限制，默认值为 1GB</li>
+</ul>
+<h4 id="5-2-3-binlog-format-日志记录格式"><a href="#5-2-3-binlog-format-日志记录格式" class="headerlink" title="5.2.3. binlog_format 日志记录格式"></a>5.2.3. binlog_format 日志记录格式</h4><p>查看 binlog 日志的格式</p>
+<figure class="highlight sql"><table><tr><td class="gutter"><pre><span class="line">1</span><br><span class="line">2</span><br><span class="line">3</span><br><span class="line">4</span><br><span class="line">5</span><br><span class="line">6</span><br></pre></td><td class="code"><pre><span class="line">mysql<span class="operator">&gt;</span> <span class="keyword">show</span> variables <span class="keyword">like</span> <span class="string">&#x27;binlog_format&#x27;</span>;</span><br><span class="line"><span class="operator">+</span><span class="comment">---------------+-------+</span></span><br><span class="line"><span class="operator">|</span> Variable_name <span class="operator">|</span> <span class="keyword">Value</span> <span class="operator">|</span></span><br><span class="line"><span class="operator">+</span><span class="comment">---------------+-------+</span></span><br><span class="line"><span class="operator">|</span> binlog_format <span class="operator">|</span> <span class="type">ROW</span>   <span class="operator">|</span></span><br><span class="line"><span class="operator">+</span><span class="comment">---------------+-------+</span></span><br></pre></td></tr></table></figure>
+<ul>
+<li><code>STATEMENT</code>（默认）：该日志格式在日志文件中记录的都是 SQL 语句（statement），每一条对数据进行修改的 SQL 都会记录在日志文件中，通过 Mysql 提供的 mysqlbinlog 工具，可以清晰的查看到每条语句的文本。主从复制的时候，从库（slave）会将日志解析为原文本，并在从库重新执行一次。这种方式日志量小，节约IO开销，提高性能，但是对于一些执行过程中才能确定结果的函数，比如<code>UUID()</code>、<code>SYSDATE()</code>等函数如果随 sql 同步到 slave 机器去执行，则结果跟 master 机器执行的不一样。</li>
+<li><code>ROW</code>：该日志格式在日志文件中记录的是每一行的数据变更，而不是记录 SQL 语句。比如执行 SQL 语句 <code>update tb_book set status=&#39;1&#39;</code>，如果是 STATEMENT 日志格式，在日志中会记录一行 SQL 文件；如果是 ROW，由于是对全表进行更新，也就是每一行记录都会发生变更，ROW 格式的日志中会记录每一行的数据变更。但是由于很多操作，会导致大量行的改动(比如 <code>alter table</code>)，因此这种模式的文件保存的信息太多，日志量太大。这种方式可以解决函数、存储过程等在 slave 机器的复制问题，但性能不如Statement。<blockquote>
+<p>Tips: 新版的 MySQL 中对 row 级别也做了一些优化，当表结构发生变化的时候，会记录语句而不是逐行记录。</p>
+</blockquote>
+</li>
+<li><code>MIXED</code>：混合了 STATEMENT 和 ROW 两种格式。在 MIXED 模式下，MySQL 会根据执行的每一条具体的 sql 语句来区分对待记录的日志形式，也就是在 Statement 和 Row 之间选择一种，如果 sql 里有函数或一些在执行时才知道结果的情况，会选择 Row，其它情况选择 Statement。<font color=red><strong>推荐使用此方式</strong></font></li>
+</ul>
+<h4 id="5-2-4-sync-binlog-写入磁盘机制"><a href="#5-2-4-sync-binlog-写入磁盘机制" class="headerlink" title="5.2.4. sync_binlog 写入磁盘机制"></a>5.2.4. sync_binlog 写入磁盘机制</h4><p>binlog 写入磁盘机制主要通过 <code>sync_binlog</code> 参数控制，默认值是 0。</p>
+<figure class="highlight sql"><table><tr><td class="gutter"><pre><span class="line">1</span><br><span class="line">2</span><br><span class="line">3</span><br><span class="line">4</span><br><span class="line">5</span><br><span class="line">6</span><br></pre></td><td class="code"><pre><span class="line">mysql<span class="operator">&gt;</span> <span class="keyword">show</span> variables <span class="keyword">like</span> <span class="string">&#x27;%sync_binlog%&#x27;</span>;</span><br><span class="line"><span class="operator">+</span><span class="comment">---------------+-------+</span></span><br><span class="line"><span class="operator">|</span> Variable_name <span class="operator">|</span> <span class="keyword">Value</span> <span class="operator">|</span></span><br><span class="line"><span class="operator">+</span><span class="comment">---------------+-------+</span></span><br><span class="line"><span class="operator">|</span> sync_binlog   <span class="operator">|</span> <span class="number">1</span>     <span class="operator">|</span></span><br><span class="line"><span class="operator">+</span><span class="comment">---------------+-------+</span></span><br></pre></td></tr></table></figure>
+<p>参数配置说明：</p>
+<ul>
+<li>0：表示每次提交事务都只写到 page cache，由系统自行判断什么时候执行 fsync 系统函数写入磁盘。虽然性能得到提升，但是机器宕机时 page cache 里面的 binlog 会丢失。</li>
+<li>1：表示每次提交事务都会执行 fsync 系统函数写入磁盘，这种方式最安全，<strong>是强一致的选择</strong>。</li>
+<li>还可以设置为N(N&gt;1)，是一种折中方式。表示每次提交事务都写到 page cache，但累积 N 个事务后才 fsync 写入磁盘，这种如果机器宕机会丢失 N 个事务的 binlog。</li>
+</ul>
+<h3 id="5-3-删除-binlog-日志文件"><a href="#5-3-删除-binlog-日志文件" class="headerlink" title="5.3. 删除 binlog 日志文件"></a>5.3. 删除 binlog 日志文件</h3><p>语法：</p>
+<figure class="highlight sql"><table><tr><td class="gutter"><pre><span class="line">1</span><br><span class="line">2</span><br><span class="line">3</span><br><span class="line">4</span><br><span class="line">5</span><br><span class="line">6</span><br></pre></td><td class="code"><pre><span class="line"><span class="comment">-- 删除当前所有的 binlog 文件</span></span><br><span class="line">reset master;</span><br><span class="line"><span class="comment">-- 删除指定日志文件之前的所有日志文件，下面这个是删除6之前的所有日志文件，当前这个文件不删除</span></span><br><span class="line">purge master logs <span class="keyword">to</span> <span class="string">&#x27;mysql-binlog.000006&#x27;</span>;</span><br><span class="line"><span class="comment">-- 删除指定日期前的日志索引中binlog日志文件</span></span><br><span class="line">purge master logs before <span class="string">&#x27;2023-01-21 14:00:00&#x27;</span>;</span><br></pre></td></tr></table></figure>
+<h3 id="5-4-binlog-日志文件的重新生成"><a href="#5-4-binlog-日志文件的重新生成" class="headerlink" title="5.4. binlog 日志文件的重新生成"></a>5.4. binlog 日志文件的重新生成</h3><p>发生以下任一情况时，binlog 日志文件会重新生成：</p>
+<ul>
+<li>服务器启动或重新启动</li>
+<li>服务器刷新日志，执行命令 <code>flush logs</code></li>
+<li>日志文件大小达到 <code>max_binlog_size</code> 值，默认值为 1GB</li>
+</ul>
+<h3 id="5-5-查看-binlog-日志文件"><a href="#5-5-查看-binlog-日志文件" class="headerlink" title="5.5. 查看 binlog 日志文件"></a>5.5. 查看 binlog 日志文件</h3><h4 id="5-5-1-查询日志文件情况"><a href="#5-5-1-查询日志文件情况" class="headerlink" title="5.5.1. 查询日志文件情况"></a>5.5.1. 查询日志文件情况</h4><figure class="highlight sql"><table><tr><td class="gutter"><pre><span class="line">1</span><br><span class="line">2</span><br><span class="line">3</span><br><span class="line">4</span><br><span class="line">5</span><br></pre></td><td class="code"><pre><span class="line"><span class="comment">-- 查看所有日志</span></span><br><span class="line"><span class="keyword">show</span> binlog events;</span><br><span class="line"></span><br><span class="line"><span class="comment">-- 查看最新的日志</span></span><br><span class="line"><span class="keyword">show</span> master status;</span><br></pre></td></tr></table></figure>
+<p>查看当前有多少 binlog 文件</p>
+<figure class="highlight sql"><table><tr><td class="gutter"><pre><span class="line">1</span><br><span class="line">2</span><br><span class="line">3</span><br><span class="line">4</span><br><span class="line">5</span><br><span class="line">6</span><br></pre></td><td class="code"><pre><span class="line">mysql<span class="operator">&gt;</span> <span class="keyword">show</span> <span class="type">binary</span> logs;</span><br><span class="line"><span class="operator">+</span><span class="comment">------------------+-----------+-----------+</span></span><br><span class="line"><span class="operator">|</span> Log_name         <span class="operator">|</span> File_size <span class="operator">|</span> Encrypted <span class="operator">|</span></span><br><span class="line"><span class="operator">+</span><span class="comment">------------------+-----------+-----------+</span></span><br><span class="line"><span class="operator">|</span> mysql<span class="operator">-</span>bin<span class="number">.000001</span> <span class="operator">|</span>       <span class="number">157</span> <span class="operator">|</span> <span class="keyword">No</span>        <span class="operator">|</span></span><br><span class="line"><span class="operator">+</span><span class="comment">------------------+-----------+-----------+</span></span><br></pre></td></tr></table></figure>
+<h4 id="5-5-2-查看日志内容"><a href="#5-5-2-查看日志内容" class="headerlink" title="5.5.2. 查看日志内容"></a>5.5.2. 查看日志内容</h4><p>可以用 mysql 自带的命令工具 <code>mysqlbinlog</code> 查看 binlog 日志内容。<strong>注：不需要登录 mysql，如果在对应的命令工具所在目录，则需要配置系统变量</strong></p>
+<figure class="highlight sql"><table><tr><td class="gutter"><pre><span class="line">1</span><br><span class="line">2</span><br><span class="line">3</span><br><span class="line">4</span><br><span class="line">5</span><br></pre></td><td class="code"><pre><span class="line"># 查看bin<span class="operator">-</span>log二进制文件</span><br><span class="line">mysqlbinlog <span class="comment">--no-defaults -v --base64-output=decode-rows D:/dev/mysql-5.7.25-winx64/data/mysql-binlog.000007 </span></span><br><span class="line"></span><br><span class="line"># 查看bin<span class="operator">-</span>log二进制文件（带查询条件）</span><br><span class="line">mysqlbinlog <span class="comment">--no-defaults -v --base64-output=decode-rows D:/dev/mysql-5.7.25-winx64/data/mysql-binlog.000007 start-datetime=&quot;2023-01-21 00:00:00&quot; stop-datetime=&quot;2023-02-01 00:00:00&quot; start-position=&quot;5000&quot; stop-position=&quot;20000&quot;</span></span><br></pre></td></tr></table></figure>
+<p>查出来的 binlog 日志文件内容如下：</p>
+<figure class="highlight plaintext"><table><tr><td class="gutter"><pre><span class="line">1</span><br><span class="line">2</span><br><span class="line">3</span><br><span class="line">4</span><br><span class="line">5</span><br><span class="line">6</span><br><span class="line">7</span><br><span class="line">8</span><br><span class="line">9</span><br><span class="line">10</span><br><span class="line">11</span><br><span class="line">12</span><br><span class="line">13</span><br><span class="line">14</span><br><span class="line">15</span><br><span class="line">16</span><br><span class="line">17</span><br><span class="line">18</span><br><span class="line">19</span><br><span class="line">20</span><br><span class="line">21</span><br><span class="line">22</span><br><span class="line">23</span><br><span class="line">24</span><br><span class="line">25</span><br><span class="line">26</span><br><span class="line">27</span><br><span class="line">28</span><br><span class="line">29</span><br><span class="line">30</span><br><span class="line">31</span><br><span class="line">32</span><br><span class="line">33</span><br><span class="line">34</span><br><span class="line">35</span><br><span class="line">36</span><br><span class="line">37</span><br><span class="line">38</span><br><span class="line">39</span><br><span class="line">40</span><br><span class="line">41</span><br><span class="line">42</span><br><span class="line">43</span><br><span class="line">44</span><br><span class="line">45</span><br><span class="line">46</span><br></pre></td><td class="code"><pre><span class="line">/*!50530 SET @@SESSION.PSEUDO_SLAVE_MODE=1*/;</span><br><span class="line">/*!50003 SET @OLD_COMPLETION_TYPE=@@COMPLETION_TYPE,COMPLETION_TYPE=0*/;</span><br><span class="line">DELIMITER /*!*/;</span><br><span class="line"># at 4</span><br><span class="line">#230127 21:13:51 server id 1  end_log_pos 123 CRC32 0x084f390f  Start: binlog v 4, server v 5.7.25-log created 230127 21:13:51 at startup</span><br><span class="line"># Warning: this binlog is either in use or was not closed properly.</span><br><span class="line">ROLLBACK/*!*/;</span><br><span class="line"># at 123</span><br><span class="line">#230127 21:13:51 server id 1  end_log_pos 154 CRC32 0x672ba207  Previous-GTIDs</span><br><span class="line"># [empty]</span><br><span class="line"># at 154</span><br><span class="line">#230127 21:22:48 server id 1  end_log_pos 219 CRC32 0x8349d010  Anonymous_GTID  last_committed=0        sequence_number=1       rbr_only=yes</span><br><span class="line">/*!50718 SET TRANSACTION ISOLATION LEVEL READ COMMITTED*//*!*/;</span><br><span class="line">SET @@SESSION.GTID_NEXT= &#x27;ANONYMOUS&#x27;/*!*/;</span><br><span class="line"># at 219</span><br><span class="line">#230127 21:22:48 server id 1  end_log_pos 291 CRC32 0xbf49de02  Query   thread_id=3     exec_time=0     error_code=0</span><br><span class="line">SET TIMESTAMP=1674825768/*!*/;</span><br><span class="line">SET @@session.pseudo_thread_id=3/*!*/;</span><br><span class="line">SET @@session.foreign_key_checks=1, @@session.sql_auto_is_null=0, @@session.unique_checks=1, @@session.autocommit=1/*!*/;</span><br><span class="line">SET @@session.sql_mode=1342177280/*!*/;</span><br><span class="line">SET @@session.auto_increment_increment=1, @@session.auto_increment_offset=1/*!*/;</span><br><span class="line">/*!\C utf8 *//*!*/;</span><br><span class="line">SET @@session.character_set_client=33,@@session.collation_connection=33,@@session.collation_server=33/*!*/;</span><br><span class="line">SET @@session.lc_time_names=0/*!*/;</span><br><span class="line">SET @@session.collation_database=DEFAULT/*!*/;</span><br><span class="line">BEGIN</span><br><span class="line">/*!*/;</span><br><span class="line"># at 291</span><br><span class="line">#230127 21:22:48 server id 1  end_log_pos 345 CRC32 0xc4ab653e  Table_map: `test`.`account` mapped to number 99</span><br><span class="line"># at 345</span><br><span class="line">#230127 21:22:48 server id 1  end_log_pos 413 CRC32 0x54a124bd  Update_rows: table id 99 flags: STMT_END_F</span><br><span class="line">### UPDATE `test`.`account`</span><br><span class="line">### WHERE</span><br><span class="line">###   @1=1</span><br><span class="line">###   @2=&#x27;lilei&#x27;</span><br><span class="line">###   @3=1000</span><br><span class="line">### SET</span><br><span class="line">###   @1=1</span><br><span class="line">###   @2=&#x27;lilei&#x27;</span><br><span class="line">###   @3=2000</span><br><span class="line"># at 413</span><br><span class="line">#230127 21:22:48 server id 1  end_log_pos 444 CRC32 0x23355595  Xid = 10</span><br><span class="line">COMMIT/*!*/;</span><br><span class="line"># at 444</span><br><span class="line"></span><br><span class="line">.... 省略</span><br></pre></td></tr></table></figure>
+<h3 id="5-6-binlog-日志文件恢复数据"><a href="#5-6-binlog-日志文件恢复数据" class="headerlink" title="5.6. binlog 日志文件恢复数据"></a>5.6. binlog 日志文件恢复数据</h3><p>用 binlog 日志文件恢复数据本质是，重新执行之前记录在 binlog 文件里的 sql。示例如下：</p>
+<p>先执行刷新日志的命令生成一个新的 binlog 文件 mysql-binlog.000008，从而让后续的修改操作日志都会记录在最新的这个文件里。</p>
+<figure class="highlight sql"><table><tr><td class="gutter"><pre><span class="line">1</span><br></pre></td><td class="code"><pre><span class="line">flush logs;</span><br></pre></td></tr></table></figure>
+<p>执行两条插入语句</p>
+<figure class="highlight sql"><table><tr><td class="gutter"><pre><span class="line">1</span><br><span class="line">2</span><br><span class="line">3</span><br><span class="line">4</span><br></pre></td><td class="code"><pre><span class="line"><span class="keyword">INSERT INTO</span> `test`.`account` (`id`, `name`, `balance`) <span class="keyword">VALUES</span> (<span class="string">&#x27;4&#x27;</span>, <span class="string">&#x27;MooN&#x27;</span>, <span class="string">&#x27;666&#x27;</span>);</span><br><span class="line"><span class="keyword">INSERT INTO</span> `test`.`account` (`id`, `name`, `balance`) <span class="keyword">VALUES</span> (<span class="string">&#x27;5&#x27;</span>, <span class="string">&#x27;MoonZero&#x27;</span>, <span class="string">&#x27;888&#x27;</span>);</span><br><span class="line"><span class="comment">-- 假设现在误操作执行了一条删除语句把刚新增的两条数据删掉了</span></span><br><span class="line"><span class="keyword">delete</span> <span class="keyword">from</span> account <span class="keyword">where</span> id <span class="operator">&gt;</span> <span class="number">3</span>;</span><br></pre></td></tr></table></figure>
+<p>现在需要恢复被删除的两条数据，先查看binlog日志文件</p>
+<figure class="highlight sql"><table><tr><td class="gutter"><pre><span class="line">1</span><br></pre></td><td class="code"><pre><span class="line">mysqlbinlog <span class="comment">--no-defaults -v --base64-output=decode-rows D:/dev/mysql-5.7.25-winx64/data/mysql-binlog.000008</span></span><br></pre></td></tr></table></figure>
+<p>文件内容如下：</p>
+<figure class="highlight plaintext"><table><tr><td class="gutter"><pre><span class="line">1</span><br><span class="line">2</span><br><span class="line">3</span><br><span class="line">4</span><br><span class="line">5</span><br><span class="line">6</span><br><span class="line">7</span><br><span class="line">8</span><br><span class="line">9</span><br><span class="line">10</span><br><span class="line">11</span><br><span class="line">12</span><br><span class="line">13</span><br><span class="line">14</span><br><span class="line">15</span><br><span class="line">16</span><br><span class="line">17</span><br><span class="line">18</span><br><span class="line">19</span><br><span class="line">20</span><br><span class="line">21</span><br><span class="line">22</span><br><span class="line">23</span><br><span class="line">24</span><br><span class="line">25</span><br><span class="line">26</span><br><span class="line">27</span><br><span class="line">28</span><br><span class="line">29</span><br><span class="line">30</span><br><span class="line">31</span><br><span class="line">32</span><br><span class="line">33</span><br><span class="line">34</span><br><span class="line">35</span><br><span class="line">36</span><br><span class="line">37</span><br><span class="line">38</span><br><span class="line">39</span><br><span class="line">40</span><br><span class="line">41</span><br><span class="line">42</span><br><span class="line">43</span><br><span class="line">44</span><br><span class="line">45</span><br><span class="line">46</span><br><span class="line">47</span><br><span class="line">48</span><br><span class="line">49</span><br><span class="line">50</span><br><span class="line">51</span><br><span class="line">52</span><br><span class="line">53</span><br><span class="line">54</span><br><span class="line">55</span><br><span class="line">56</span><br><span class="line">57</span><br><span class="line">58</span><br><span class="line">59</span><br><span class="line">60</span><br><span class="line">61</span><br><span class="line">62</span><br><span class="line">63</span><br><span class="line">64</span><br><span class="line">65</span><br><span class="line">66</span><br><span class="line">67</span><br><span class="line">68</span><br><span class="line">69</span><br><span class="line">70</span><br><span class="line">71</span><br><span class="line">72</span><br><span class="line">73</span><br><span class="line">74</span><br><span class="line">75</span><br><span class="line">76</span><br></pre></td><td class="code"><pre><span class="line">SET @@SESSION.GTID_NEXT= &#x27;ANONYMOUS&#x27;/*!*/;</span><br><span class="line"># at 219</span><br><span class="line">#230127 23:32:24 server id 1  end_log_pos 291 CRC32 0x4528234f  Query   thread_id=5     exec_time=0     error_code=0</span><br><span class="line">SET TIMESTAMP=1674833544/*!*/;</span><br><span class="line">SET @@session.pseudo_thread_id=5/*!*/;</span><br><span class="line">SET @@session.foreign_key_checks=1, @@session.sql_auto_is_null=0, @@session.unique_checks=1, @@session.autocommit=1/*!*/;</span><br><span class="line">SET @@session.sql_mode=1342177280/*!*/;</span><br><span class="line">SET @@session.auto_increment_increment=1, @@session.auto_increment_offset=1/*!*/;</span><br><span class="line">/*!\C utf8 *//*!*/;</span><br><span class="line">SET @@session.character_set_client=33,@@session.collation_connection=33,@@session.collation_server=33/*!*/;</span><br><span class="line">SET @@session.lc_time_names=0/*!*/;</span><br><span class="line">SET @@session.collation_database=DEFAULT/*!*/;</span><br><span class="line">BEGIN</span><br><span class="line">/*!*/;</span><br><span class="line"># at 291</span><br><span class="line">#230127 23:32:24 server id 1  end_log_pos 345 CRC32 0x7482741d  Table_map: `test`.`account` mapped to number 99</span><br><span class="line"># at 345</span><br><span class="line">#230127 23:32:24 server id 1  end_log_pos 396 CRC32 0x5e443cf0  Write_rows: table id 99 flags: STMT_END_F</span><br><span class="line">### INSERT INTO `test`.`account`</span><br><span class="line">### SET</span><br><span class="line">###   @1=4</span><br><span class="line">###   @2=&#x27;MooN&#x27;</span><br><span class="line">###   @3=666</span><br><span class="line"># at 396</span><br><span class="line">#230127 23:32:24 server id 1  end_log_pos 427 CRC32 0x8a0d8a3c  Xid = 56</span><br><span class="line">COMMIT/*!*/;</span><br><span class="line"># at 427</span><br><span class="line">#230127 23:32:40 server id 1  end_log_pos 492 CRC32 0x5261a37e  Anonymous_GTID  last_committed=1        sequence_number=2       rbr_only=yes</span><br><span class="line">/*!50718 SET TRANSACTION ISOLATION LEVEL READ COMMITTED*//*!*/;</span><br><span class="line">SET @@SESSION.GTID_NEXT= &#x27;ANONYMOUS&#x27;/*!*/;</span><br><span class="line"># at 492</span><br><span class="line">#230127 23:32:40 server id 1  end_log_pos 564 CRC32 0x01086643  Query   thread_id=5     exec_time=0     error_code=0</span><br><span class="line">SET TIMESTAMP=1674833560/*!*/;</span><br><span class="line">BEGIN</span><br><span class="line">/*!*/;</span><br><span class="line"># at 564</span><br><span class="line">#230127 23:32:40 server id 1  end_log_pos 618 CRC32 0xc26b6719  Table_map: `test`.`account` mapped to number 99</span><br><span class="line"># at 618</span><br><span class="line">#230127 23:32:40 server id 1  end_log_pos 670 CRC32 0x8e272176  Write_rows: table id 99 flags: STMT_END_F</span><br><span class="line">### INSERT INTO `test`.`account`</span><br><span class="line">### SET</span><br><span class="line">###   @1=5</span><br><span class="line">###   @2=&#x27;MoonZero&#x27;</span><br><span class="line">###   @3=888</span><br><span class="line"># at 670</span><br><span class="line">#230127 23:32:40 server id 1  end_log_pos 701 CRC32 0xb5e63d00  Xid = 58</span><br><span class="line">COMMIT/*!*/;</span><br><span class="line"># at 701</span><br><span class="line">#230127 23:34:23 server id 1  end_log_pos 766 CRC32 0xa0844501  Anonymous_GTID  last_committed=2        sequence_number=3       rbr_only=yes</span><br><span class="line">/*!50718 SET TRANSACTION ISOLATION LEVEL READ COMMITTED*//*!*/;</span><br><span class="line">SET @@SESSION.GTID_NEXT= &#x27;ANONYMOUS&#x27;/*!*/;</span><br><span class="line"># at 766</span><br><span class="line">#230127 23:34:23 server id 1  end_log_pos 838 CRC32 0x687bdf88  Query   thread_id=7     exec_time=0     error_code=0</span><br><span class="line">SET TIMESTAMP=1674833663/*!*/;</span><br><span class="line">BEGIN</span><br><span class="line">/*!*/;</span><br><span class="line"># at 838</span><br><span class="line">#230127 23:34:23 server id 1  end_log_pos 892 CRC32 0x4f7b7d6a  Table_map: `test`.`account` mapped to number 99</span><br><span class="line"># at 892</span><br><span class="line">#230127 23:34:23 server id 1  end_log_pos 960 CRC32 0xc47ac777  Delete_rows: table id 99 flags: STMT_END_F</span><br><span class="line">### DELETE FROM `test`.`account`</span><br><span class="line">### WHERE</span><br><span class="line">###   @1=4</span><br><span class="line">###   @2=&#x27;MooN&#x27;</span><br><span class="line">###   @3=666</span><br><span class="line">### DELETE FROM `test`.`account`</span><br><span class="line">### WHERE</span><br><span class="line">###   @1=5</span><br><span class="line">###   @2=&#x27;MoonZero&#x27;</span><br><span class="line">###   @3=888</span><br><span class="line"># at 960</span><br><span class="line">#230127 23:34:23 server id 1  end_log_pos 991 CRC32 0x386699fe  Xid = 65</span><br><span class="line">COMMIT/*!*/;</span><br><span class="line">SET @@SESSION.GTID_NEXT= &#x27;AUTOMATIC&#x27; /* added by mysqlbinlog */ /*!*/;</span><br><span class="line">DELIMITER ;</span><br><span class="line"># End of log file</span><br></pre></td></tr></table></figure>
+<p>找到两条插入数据的 sql，每条 sql 的上下都有 BEGIN 和 COMMIT，找到第一条 sql BEGIN 前面的文件位置标识 at 219(这是文件的位置标识)，再找到第二条 sql COMMIT 后面的文件位置标识 at 701，则可以根据文件位置标识来恢复数据，执行如下sql：</p>
+<figure class="highlight bash"><table><tr><td class="gutter"><pre><span class="line">1</span><br></pre></td><td class="code"><pre><span class="line">mysqlbinlog --no-defaults --start-position=219 --stop-position=701 --database=<span class="built_in">test</span> D:/dev/mysql-5.7.25-winx64/data/mysql-binlog.000009 | mysql -uroot -p123456 -v <span class="built_in">test</span></span><br></pre></td></tr></table></figure>
+<p>补充：根据时间来恢复数据的命令，找到第一条sql BEGIN前面的时间戳标记 SET TIMESTAMP=1674833544，再找到第二条sql COMMIT后面的时间戳标记 SET TIMESTAMP=1674833663，转成 datetime 格式，就可以恢复指定的时间段之间的数据：</p>
+<figure class="highlight bash"><table><tr><td class="gutter"><pre><span class="line">1</span><br></pre></td><td class="code"><pre><span class="line">mysqlbinlog --no-defaults --start-datetime=<span class="string">&quot;2023-1-27 23:32:24&quot;</span> --stop-datetime=<span class="string">&quot;2023-1-27 23:34:23&quot;</span> --database=<span class="built_in">test</span> D:/dev/mysql-5.7.25-winx64/data/mysql-binlog.000009 | mysql -uroot -p123456 -v <span class="built_in">test</span></span><br></pre></td></tr></table></figure>
+<h3 id="5-7-MySQL-binlog-典型的业务应用场景"><a href="#5-7-MySQL-binlog-典型的业务应用场景" class="headerlink" title="5.7. MySQL binlog 典型的业务应用场景"></a>5.7. MySQL binlog 典型的业务应用场景</h3><p>binlog 的业务应用主要是：<strong>构建一个中间件系统，“伪装”成 master 的一个 slave 节点，从而感知数据的变化。当读取了 binlog 中的数据变化后，根据相应的业务场景做各种业务处理</strong>。</p>
+<h4 id="5-7-1-数据异构"><a href="#5-7-1-数据异构" class="headerlink" title="5.7.1. 数据异构"></a>5.7.1. 数据异构</h4><p>一般系统会拆分多个模块，可能有一些表是各个业务都会关注，但是对相关的字段的运用场景不同，所以这样一份元数据怎样更好的为各个系统服务就成了问题。当然，多写或者读写分离可以从物理节点上减少对数据服务器的压力，但是对业务并没有做到足够的支持，因为这些表都是一样的。因此可以通过 binlog 进行数据异构。</p>
+<p><img src="https://gitee.com/Bluetom/img2/raw/master/img20240905/202410251028299.png" alt=""></p>
+<p>如图所示，订单系统生成订单后，通过 binlog 可以解析生成用户维度的订单信息供用户中心查询、商户维度订单表供运营管理，以及搜索系统的搜索数据，提供全文搜索功能。通过原始的订单数据异构到三个系统中，提供了丰富的数据访问功能。不仅从节点上降低了数据服务器的压力，数据表现形式也更贴近自己的服务，减少不必要的字段冗余。</p>
+<h4 id="5-7-2-缓存数据的补充"><a href="#5-7-2-缓存数据的补充" class="headerlink" title="5.7.2. 缓存数据的补充"></a>5.7.2. 缓存数据的补充</h4><p>对于高并发的系统，数据库往往是系统性能的瓶颈，毕竟 IO 响应速度是远远小于 CPU 的运算速度的。因此，很多查询类服务都会在 CPU 与数据库之间加上一层缓存。即现从缓存获取，命中后直接返回，否则从 DB 中获取并存入缓存后返回。而如果原始数据变化了但缓存尚未超时，则缓存中的数据就是过时的数据。所以当数据有变更的时候需要主动修改缓存数据。</p>
+<p><img src="https://gitee.com/Bluetom/img2/raw/master/img20240905/202410251028300.png" alt=""></p>
+<p>当客户端更改了数据之后，中间件系统通过 binlog 获得数据变更，并同步到缓存中。这样就保证了缓存中数据有效性，减少了对数据库的调用，从而提高整体性能。</p>
+<h4 id="5-7-3-基于数据的任务分发"><a href="#5-7-3-基于数据的任务分发" class="headerlink" title="5.7.3. 基于数据的任务分发"></a>5.7.3. 基于数据的任务分发</h4><p>有时很多系统都依赖同一块重要数据，当这些数据发生变化的时候，需要调用其他相关系统的通知接口同步数据变化，或者 mq 消息告知变化并等待其主动同步。这两种情况都对原始系统造成了侵入。此时可以通过 binlog 进行任务分发。</p>
+<p><img src="https://gitee.com/Bluetom/img2/raw/master/img20240905/202410251028301.png" alt=""></p>
+<p>当原始业务系统修改数据后，不需要进行其他的业务关联。由调度系统读取 binlog 进行相应的任务分发、消息发送以及同步其他业务状态。这样可以将其他业务与原始业务系统解耦，并从数据的角度将所有管理功能放在了同一个调度系统中，责任清晰。</p>
+<h3 id="5-8-扩展知识"><a href="#5-8-扩展知识" class="headerlink" title="5.8. 扩展知识"></a>5.8. 扩展知识</h3><h4 id="5-8-1-bin-log-和-redo-log-的区别"><a href="#5-8-1-bin-log-和-redo-log-的区别" class="headerlink" title="5.8.1. bin log 和 redo log 的区别"></a>5.8.1. bin log 和 redo log 的区别</h4><ol>
+<li>bin log 会记录所有日志记录，包括 InnoDB、MyISAM 等存储引擎的日志；而 redo log 只记录 innoDB 自身的事务日志。</li>
+<li>bin log 只在事务提交前写入到磁盘，一个事务只写一次；而在事务进行过程，会有 redo log 不断写入磁盘。</li>
+<li>bin log 是逻辑日志，记录的是SQL语句的原始逻辑；而 redo log 是物理日志，记录的是在某个数据页上做了什么修改。</li>
+</ol>
+<h4 id="5-8-2-关于数据库备份与恢复配置建议"><a href="#5-8-2-关于数据库备份与恢复配置建议" class="headerlink" title="5.8.2. 关于数据库备份与恢复配置建议"></a>5.8.2. 关于数据库备份与恢复配置建议</h4><p>假设不小心将数据库所有数据都删除后要恢复数据，如果数据库之前没有备份，而所有的 binlog 日志都在的话，就从 binlog 第一个文件开始逐个恢复每个 binlog 文件里的数据。但这种一般不太可能实现，因为 binlog 日志比较大，通常都会定期删除的指定时间以前的 binlog 文件，所以一般不可能用 binlog 文件恢复整个数据库的。</p>
+<font color=red>**一般推荐的是每天(在凌晨后)需要做一次全量数据库备份，那么恢复数据库可以用最近的一次全量备份再加上备份时间点之后的 binlog 来恢复数据。**</font>
+
+<p>备份数据库一般可以使用 mysqldump 命令工具（<em>具体的使用及其参数作用详见后面章节</em>）。示例如下：</p>
+<figure class="highlight sql"><table><tr><td class="gutter"><pre><span class="line">1</span><br><span class="line">2</span><br><span class="line">3</span><br><span class="line">4</span><br><span class="line">5</span><br><span class="line">6</span><br></pre></td><td class="code"><pre><span class="line"># 备份整个数据库</span><br><span class="line">mysqldump <span class="operator">-</span>u root 数据库名<span class="operator">&gt;</span>备份文件名;</span><br><span class="line"># 备份整个表</span><br><span class="line">mysqldump <span class="operator">-</span>u root 数据库名 表名字<span class="operator">&gt;</span>备份文件名;</span><br><span class="line"># 恢复整个数据库，test 为数据库名称，需要先建一个数据库 test</span><br><span class="line">mysql <span class="operator">-</span>u root test <span class="operator">&lt;</span> 备份文件名</span><br></pre></td></tr></table></figure>
+<h2 id="6-MySQL-中的默认系统库（了解扩展）（TODO-mark-补充中…）"><a href="#6-MySQL-中的默认系统库（了解扩展）（TODO-mark-补充中…）" class="headerlink" title="6. MySQL 中的默认系统库（了解扩展）（TODO mark: 补充中…）"></a>6. MySQL 中的默认系统库（了解扩展）（TODO mark: 补充中…）</h2><p>MySQL 有几个系统数据库，这几个数据库包含了 MySQL 服务器运行过程中所需的一些信息以及一些运行状态信息</p>
+<ul>
+<li><strong>performance_schema</strong>：这个数据库里主要保存 MySQL 服务器运行过程中的一些状态信息，为 MySQL 服务器运行时状态的一个性能监控信息数据库。包括统计最近执行了哪些语句，在执行过程的每个阶段都花费了多长时间，内存的使用情况等等信息。</li>
+<li><strong>information_schema</strong>：这个数据库保存着 MySQL 服务器维护的所有其他数据库的信息元数据，包含了表、视图、触发器、列、索引字段类型及访问权限等等。这些信息并不是真实的用户数据，而是一些描述性信息。</li>
+<li><strong>sys</strong>：这个数据库主要是通过视图的形式把 information_schema 和 performance_schema 结合起来，让程序员可以更方便的了解 MySQL 服务器的一些性能信息，进行性能调优和诊断。</li>
+<li><strong>mysql</strong>：这个数据库核心，它存储了 MySQL 的用户账户和权限信息，一些存储过程、事件的定义信息，一些运行过程中产生的日志信息，一些帮助信息以及时区信息等。<br>-<strong>test</strong>：测试数据库。</li>
+</ul>
+<h3 id="6-1-performance-schema-系统库"><a href="#6-1-performance-schema-系统库" class="headerlink" title="6.1. performance_schema 系统库"></a>6.1. performance_schema 系统库</h3><h4 id="6-1-1-简介"><a href="#6-1-1-简介" class="headerlink" title="6.1.1. 简介"></a>6.1.1. 简介</h4><p>MySQL 的 <code>performance_schema</code> 系统库是运行在较低级别的用于监控 MySQL Server 运行过程中的资源消耗、资源等待等情况的一个功能特性，有以下的特点：</p>
+<h3 id="6-2-sys-系统库"><a href="#6-2-sys-系统库" class="headerlink" title="6.2. sys 系统库"></a>6.2. sys 系统库</h3><blockquote>
+<p>TODO: 待整理</p>
+</blockquote>
+<h3 id="6-3-information-schema-系统库"><a href="#6-3-information-schema-系统库" class="headerlink" title="6.3. information_schema 系统库"></a>6.3. information_schema 系统库</h3><blockquote>
+<p>TODO: 待整理</p>
+</blockquote>
+<h3 id="6-4-mysql-系统库（名称为mysql）"><a href="#6-4-mysql-系统库（名称为mysql）" class="headerlink" title="6.4. mysql 系统库（名称为mysql）"></a>6.4. mysql 系统库（名称为mysql）</h3><blockquote>
+<p>TODO: 待整理</p>
+</blockquote>
+<h2 id="7-InnoDB-存储引擎架构"><a href="#7-InnoDB-存储引擎架构" class="headerlink" title="7. InnoDB 存储引擎架构"></a>7. InnoDB 存储引擎架构</h2><h3 id="7-1-Innodb-底层原理流程图"><a href="#7-1-Innodb-底层原理流程图" class="headerlink" title="7.1. Innodb 底层原理流程图"></a>7.1. Innodb 底层原理流程图</h3><p><img src="https://gitee.com/Bluetom/img2/raw/master/img20240905/202410251028302.jpg" alt=""></p>
+<h3 id="7-2-InnoDB-整体架构概述"><a href="#7-2-InnoDB-整体架构概述" class="headerlink" title="7.2. InnoDB 整体架构概述"></a>7.2. InnoDB 整体架构概述</h3><h4 id="7-2-1-InnoDB-逻辑存储结构"><a href="#7-2-1-InnoDB-逻辑存储结构" class="headerlink" title="7.2.1. InnoDB 逻辑存储结构"></a>7.2.1. InnoDB 逻辑存储结构</h4><p>在 MySQL 默认的存储引擎 InnoDB 中，所有数据都被逻辑地存放在一个空间内，称为表空间（tablespace），而表空间则由段（sengment）、区（extent）、页（page）组成。InnoDB 的逻辑存储结构如下图所示：</p>
+<p><img src="https://gitee.com/Bluetom/img2/raw/master/img20240905/202410251028303.png" alt=""></p>
+<ul>
+<li>表空间：InnoDB 存储引擎逻辑结构的最高层，ibd 文件其实就是表空间文件，在表空间中可以包含多个 Segment 段。 如果用户启用了参数 <code>innodb_file_per_table</code>(在8.0版本中默认开启)，则每张表都会有一个表空间（xxx.ibd），一个 mysql 实例可以对应多个表空间，用于存储记录、索引等数据。</li>
+<li>段：表空间是由各个段组成的，分为数据段（Leaf node segment）、索引段（Non-leaf node segment）、回滚段（Rollback segment）等。InnoDB 是索引组织表，数据段就是 B+ 树的叶子节点， 索引段即为B+树的非叶子节点。段用来管理多个Extent（区）。InnoDB 中对于段的管理，都是引擎自身完成，不需要人为对其控制。</li>
+<li>区：是表空间的单元结构，每个区的大小为 1M。 默认情况下，InnoDB 存储引擎页大小为16K，即一个区中一共有64个连续的页。</li>
+<li>页：是组成区的最小单元，页也是 InnoDB 存储引擎磁盘管理的最小单元，每个页的大小默认为 16KB。为了保证页的连续性，InnoDB 存储引擎每次从磁盘申请 4-5 个区。</li>
+<li>行：InnoDB 存储引擎是面向行的，也就是说数据是按行进行存放的，在每一行中除了定义表时所指定的字段以外，还包含两个隐藏字段<ul>
+<li>Trx_id：每次对某条记录进行改动时，都会把对应的事务 id 赋值给 trx_id 隐藏列。</li>
+<li>Roll_pointer：每次对某条引记录进行改动时，都会把旧的版本写入到 undo 日志中，然后这个隐藏列就相当于一个指针，可以通过它来找到该记录修改前的信息。</li>
+</ul>
+</li>
+</ul>
+<blockquote>
+<p>表空间包含多个段，段包含多个区，区包含多个页。这种层次结构帮助 InnoDB 有效地管理存储空间，并提供高性能和可靠性的数据访问。</p>
+</blockquote>
+<h4 id="7-2-2-InnoDB-物理架构"><a href="#7-2-2-InnoDB-物理架构" class="headerlink" title="7.2.2. InnoDB 物理架构"></a>7.2.2. InnoDB 物理架构</h4><p>MySQL5.5 版本开始，默认使用 InnoDB 存储引擎，它擅长事务处理，具有崩溃恢复特性，在日常开发中使用非常广泛。下面是 InnoDB 架构图，左侧为内存结构，右侧为磁盘结构。</p>
+<p><img src="https://gitee.com/Bluetom/img2/raw/master/img20240905/202410251028304.png" alt=""></p>
+<h3 id="7-3-内存结构"><a href="#7-3-内存结构" class="headerlink" title="7.3. 内存结构"></a>7.3. 内存结构</h3><p>在左侧的内存结构中，主要分为四大块： Buffer Pool、Change Buffer、Adaptive Hash Index、Log Buffer。</p>
+<h4 id="7-3-1-Buffer-Pool"><a href="#7-3-1-Buffer-Pool" class="headerlink" title="7.3.1. Buffer Pool"></a>7.3.1. Buffer Pool</h4><p>InnoDB 存储引擎基于磁盘文件存储，访问物理硬盘和在内存中进行访问，速度相差很大，为了尽可能弥补这两者之间的 I/O 效率的差值，Innodb 存储引擎设计了一个<strong>缓冲池（Buffer Pool）</strong>，来提高数据库的读写性能。</p>
+<p>缓冲池 Buffer Pool，是主内存中的一个区域，里面可以缓存磁盘上经常操作的真实数据，在执行增删改查操作时，先操作缓冲池中的数据（若缓冲池没有数据，则从磁盘加载并缓存），然后再以一定频率刷新到磁盘，从而减少磁盘IO，加快处理速度。</p>
+<p><img src="https://gitee.com/Bluetom/img2/raw/master/img20240905/202410251028305.jpg" alt=""></p>
+<p>缓冲池以 Page 页为单位，底层采用链表数据结构管理 Page。根据状态，将 Page 分为三种类型：</p>
+<ul>
+<li>free page：空闲 page，未被使用。</li>
+<li>clean page：被使用 page，数据没有被修改过。</li>
+<li>dirty page：脏页，被使用 page，数据被修改过，也中数据与磁盘的数据产生了不一致。</li>
+</ul>
+<h5 id="7-3-1-1-Buffer-Pool-大小"><a href="#7-3-1-1-Buffer-Pool-大小" class="headerlink" title="7.3.1.1. Buffer Pool 大小"></a>7.3.1.1. Buffer Pool 大小</h5><p>Buffer Pool 是在 MySQL 启动的时候，向操作系统申请的一片连续的内存空间，默认配置下 Buffer Pool 只有 128MB。在专用服务器上，通常建议配置 60%~80% 的物理内存分配给缓冲池。相关参数设置：<code>innodb_buffer_pool_size</code></p>
+<figure class="highlight sql"><table><tr><td class="gutter"><pre><span class="line">1</span><br><span class="line">2</span><br><span class="line">3</span><br><span class="line">4</span><br><span class="line">5</span><br><span class="line">6</span><br></pre></td><td class="code"><pre><span class="line">mysql<span class="operator">&gt;</span> <span class="keyword">show</span> variables <span class="keyword">like</span> <span class="string">&#x27;innodb_buffer_pool_size&#x27;</span>;</span><br><span class="line"><span class="operator">+</span><span class="comment">-------------------------+---------+</span></span><br><span class="line"><span class="operator">|</span> Variable_name           <span class="operator">|</span> <span class="keyword">Value</span>   <span class="operator">|</span></span><br><span class="line"><span class="operator">+</span><span class="comment">-------------------------+---------+</span></span><br><span class="line"><span class="operator">|</span> innodb_buffer_pool_size <span class="operator">|</span> <span class="number">8388608</span> <span class="operator">|</span></span><br><span class="line"><span class="operator">+</span><span class="comment">-------------------------+---------+</span></span><br></pre></td></tr></table></figure>
+<h4 id="7-3-2-Change-Buffer"><a href="#7-3-2-Change-Buffer" class="headerlink" title="7.3.2. Change Buffer"></a>7.3.2. Change Buffer</h4><p>Change Buffer，更改缓冲区（针对于非唯一二级索引页），在执行 DML 语句时，如果这些数据 Page 没有在 Buffer Pool 中，不会直接操作磁盘，而会将数据变更存在更改缓冲区 Change Buffer 中，在未来数据被读取时，再将数据合并恢复到 Buffer Pool 中，再将合并后的数据刷新到磁盘中。</p>
+<p>以下是二级索引的结构图：</p>
+<p><img src="https://gitee.com/Bluetom/img2/raw/master/img20240905/202410251028306.png" alt=""></p>
+<p>与聚集索引不同，二级索引通常是非唯一的，并且以相对随机的顺序插入二级索引。同样，删除和更新可能会影响索引树中不相邻的二级索引页，如果每一次都操作磁盘，会造成大量的磁盘IO。有了 ChangeBuffer 之后，就可以在缓冲池中进行合并处理，减少磁盘IO。</p>
+<h4 id="7-3-3-Adaptive-Hash-Index"><a href="#7-3-3-Adaptive-Hash-Index" class="headerlink" title="7.3.3. Adaptive Hash Index"></a>7.3.3. Adaptive Hash Index</h4><p>自适应 hash 索引，用于优化对 Buffer Pool 数据的查询。MySQL 的 innoDB 引擎中虽然没有直接支持 hash 索引，但是给我们提供了一个功能就是这个自适应 hash 索引。因为前面我们讲到过，hash 索引在进行等值匹配时，一般性能是要高于B+树的，因为 hash 索引一般只需要一次IO即可，而B+树，可能需要几次匹配，所以 hash 索引的效率要高，但是 hash 索引又不适合做范围查询、模糊匹配等。</p>
+<p>InnoDB 存储引擎会监控对表上各索引页的查询，如果观察到在特定的条件下 hash 索引可以提升速度，则建立 hash 索引，称之为自适应 hash 索引。<strong>自适应哈希索引，无需人工干预，是系统根据情况自动完成。</strong></p>
+<h4 id="7-3-4-Log-Buffer"><a href="#7-3-4-Log-Buffer" class="headerlink" title="7.3.4. Log Buffer"></a>7.3.4. Log Buffer</h4><p>Log Buffer：日志缓冲区，用来保存要写入到磁盘中的log日志数据（redo log 、undo log），默认大小为 16MB，日志缓冲区的日志会定期刷新到磁盘中。如果需要更新、插入或删除许多行的事务，增加日志缓冲区的大小可以节省磁盘 I/O。</p>
+<p>日志缓冲区相关参数：</p>
+<ul>
+<li>innodb_log_buffer_size：缓冲区大小</li>
+<li>innodb_flush_log_at_trx_commit：日志刷新到磁盘时机，取值主要包含以下三个：<ul>
+<li>日志在每次事务提交时写入并刷新到磁盘，默认值。</li>
+<li>每秒将日志写入并刷新到磁盘一次。</li>
+<li>日志在每次事务提交后写入，并每秒刷新到磁盘一次。</li>
+</ul>
+</li>
+</ul>
+<figure class="highlight sql"><table><tr><td class="gutter"><pre><span class="line">1</span><br><span class="line">2</span><br><span class="line">3</span><br><span class="line">4</span><br><span class="line">5</span><br><span class="line">6</span><br></pre></td><td class="code"><pre><span class="line">mysql<span class="operator">&gt;</span> <span class="keyword">show</span> variables <span class="keyword">like</span> <span class="string">&#x27;innodb_flush_log_trx_commit&#x27;</span>;</span><br><span class="line"><span class="operator">+</span><span class="comment">-----------------------------+---------+</span></span><br><span class="line"><span class="operator">|</span> Variable_name               <span class="operator">|</span> <span class="keyword">Value</span>   <span class="operator">|</span></span><br><span class="line"><span class="operator">+</span><span class="comment">-----------------------------+---------+</span></span><br><span class="line"><span class="operator">|</span> innodb_flush_log_trx_commit <span class="operator">|</span> <span class="number">1</span>       <span class="operator">|</span></span><br><span class="line"><span class="operator">+</span><span class="comment">-----------------------------+---------+</span></span><br></pre></td></tr></table></figure>
+<h3 id="7-4-磁盘结构"><a href="#7-4-磁盘结构" class="headerlink" title="7.4. 磁盘结构"></a>7.4. 磁盘结构</h3><p>InnoDB 体系结构的右边部分，也就是磁盘结构：</p>
+<ol>
+<li>System Tablespace：系统表空间是更改缓冲区的存储区域。如果表是在系统表空间而不是每个表文件或通用表空间中创建的，它也可能包含表和索引数据。(在MySQL5.x版本中还包含InnoDB数据字典、undolog等)。相关参数：<code>innodb_data_file_path</code></li>
+</ol>
+<figure class="highlight sql"><table><tr><td class="gutter"><pre><span class="line">1</span><br><span class="line">2</span><br><span class="line">3</span><br><span class="line">4</span><br><span class="line">5</span><br><span class="line">6</span><br></pre></td><td class="code"><pre><span class="line">mysql<span class="operator">&gt;</span> <span class="keyword">show</span> variables <span class="keyword">like</span> <span class="string">&#x27;innodb_data_file_path&#x27;</span>;</span><br><span class="line"><span class="operator">+</span><span class="comment">-----------------------+------------------------+</span></span><br><span class="line"><span class="operator">|</span> Variable_name         <span class="operator">|</span> <span class="keyword">Value</span>                  <span class="operator">|</span></span><br><span class="line"><span class="operator">+</span><span class="comment">-----------------------+------------------------+</span></span><br><span class="line"><span class="operator">|</span> innodb_data_file_path <span class="operator">|</span> ibdata1:<span class="number">12</span>M:autoextend <span class="operator">|</span></span><br><span class="line"><span class="operator">+</span><span class="comment">-----------------------+------------------------+</span></span><br></pre></td></tr></table></figure>
+<p>系统表空间，默认的文件名叫 ibdata1。</p>
+<ol>
+<li>File-Per-Table Tablespaces：开关参数 <code>innodb_file_per_table</code>，该参数默认开启。如果开启该开关，则每个表的文件表空间包含单个InnoDB表的数据和索引，并存储在文件系统上的单个数据文件中。</li>
+</ol>
+<figure class="highlight sql"><table><tr><td class="gutter"><pre><span class="line">1</span><br><span class="line">2</span><br><span class="line">3</span><br><span class="line">4</span><br><span class="line">5</span><br><span class="line">6</span><br></pre></td><td class="code"><pre><span class="line">mysql<span class="operator">&gt;</span> <span class="keyword">show</span> variables <span class="keyword">like</span> <span class="string">&#x27;innodb_file_per_table&#x27;</span>;</span><br><span class="line"><span class="operator">+</span><span class="comment">-----------------------+-------+</span></span><br><span class="line"><span class="operator">|</span> Variable_name         <span class="operator">|</span> <span class="keyword">Value</span> <span class="operator">|</span></span><br><span class="line"><span class="operator">+</span><span class="comment">-----------------------+-------+</span></span><br><span class="line"><span class="operator">|</span> innodb_file_per_table <span class="operator">|</span> <span class="keyword">ON</span>    <span class="operator">|</span></span><br><span class="line"><span class="operator">+</span><span class="comment">-----------------------+-------+</span></span><br></pre></td></tr></table></figure>
+<p>即没创建一个表，都会产生一个表空间文件，如图：</p>
+<p><img src="https://gitee.com/Bluetom/img2/raw/master/img20240905/202410251028307.png" alt=""></p>
+<ol>
+<li>General Tablespaces：通用表空间，需要通过 <code>CREATE TABLESPACE</code> 语法创建通用表空间，在创建表时，可以指定该表空间。</li>
+</ol>
+<ul>
+<li>创建表空间</li>
+</ul>
+<figure class="highlight sql"><table><tr><td class="gutter"><pre><span class="line">1</span><br><span class="line">2</span><br><span class="line">3</span><br><span class="line">4</span><br><span class="line">5</span><br></pre></td><td class="code"><pre><span class="line"><span class="comment">-- 语法</span></span><br><span class="line"><span class="keyword">CREATE</span> TABLESPACE ts_name <span class="keyword">ADD</span> DATAFILE <span class="string">&#x27;file_name&#x27;</span> ENGINE <span class="operator">=</span> engine_name;</span><br><span class="line"></span><br><span class="line"><span class="comment">-- 示例</span></span><br><span class="line"><span class="keyword">create</span> tablespace ts_testdb <span class="keyword">add</span> datafile <span class="string">&#x27;mytest.ibd&#x27;</span> engine <span class="operator">=</span> innodb;</span><br></pre></td></tr></table></figure>
+<ul>
+<li>创建表时指定表空间</li>
+</ul>
+<figure class="highlight sql"><table><tr><td class="gutter"><pre><span class="line">1</span><br><span class="line">2</span><br><span class="line">3</span><br><span class="line">4</span><br><span class="line">5</span><br></pre></td><td class="code"><pre><span class="line"><span class="comment">-- 语法</span></span><br><span class="line"><span class="keyword">CREATE TABLE</span> xxx ... TABLESPACE ts_name;</span><br><span class="line"></span><br><span class="line"><span class="comment">-- 示例</span></span><br><span class="line"><span class="keyword">create table</span> a(id <span class="type">int</span> <span class="keyword">primary key</span> auto_increment, name <span class="type">varchar</span>(<span class="number">10</span>)) engine<span class="operator">=</span>innodb tablespace ts_testdb;</span><br></pre></td></tr></table></figure>
+<ol>
+<li>Undo Tablespaces：撤销表空间，MySQL实例在初始化时会自动创建两个默认的undo表空间（初始大小16M），用于存储 undo log日志。</li>
+<li>Temporary Tablespaces：InnoDB 使用会话临时表空间和全局临时表空间。存储用户创建的临时表等数据。</li>
+<li>Doublewrite Buffer Files：双写缓冲区，innoDB引擎将数据页从Buffer Pool刷新到磁盘前，先将数据页写入双写缓冲区文件中，便于系统异常时恢复数据。</li>
+</ol>
+<p><img src="https://gitee.com/Bluetom/img2/raw/master/img20240905/202410251028308.png" alt=""></p>
+<ol>
+<li>Redo Log：重做日志，是用来实现事务的持久性。该日志文件由两部分组成：重做日志缓冲（redo log buffer）以及重做日志文件（redo log）,前者是在内存中，后者在磁盘中。当事务提交之后会把所有修改信息都会存到该日志中，用于在刷新脏页到磁盘时，发生错误时，进行数据恢复使用。</li>
+</ol>
+<p>以循环方式写入重做日志文件，涉及两个文件：</p>
+<p><img src="https://gitee.com/Bluetom/img2/raw/master/img20240905/202410251028309.png" alt=""></p>
+<h3 id="7-5-后台线程"><a href="#7-5-后台线程" class="headerlink" title="7.5. 后台线程"></a>7.5. 后台线程</h3><p><img src="https://gitee.com/Bluetom/img2/raw/master/img20240905/202410251028310.png" alt=""></p>
+<p>在 InnoDB 的后台线程中，分为4类，分别是：Master Thread 、IO Thread、Purge Thread、Page Cleaner Thread。</p>
+<ol>
+<li>Master Thread：核心后台线程，负责调度其他线程，还负责将缓冲池中的数据异步刷新到磁盘中, 保持数据的一致性，还包括脏页的刷新、合并插入缓存、undo页的回收</li>
+<li>IO Thread：在 InnoDB 存储引擎中大量使用了AIO来处理IO请求，这样可以极大地提高数据库的性能，而IO Thread主要负责这些IO请求的回调</li>
+</ol>
+<div class="table-container">
+<table>
+<thead>
+<tr>
+<th>线程类型</th>
+<th>默认个数</th>
+<th>职责</th>
+</tr>
+</thead>
+<tbody>
+<tr>
+<td>Read thread</td>
+<td>4</td>
+<td>负责读操作</td>
+</tr>
+<tr>
+<td>Write thread</td>
+<td>4</td>
+<td>负责写操作</td>
+</tr>
+<tr>
+<td>Log thread</td>
+<td>1</td>
+<td>负责将日志缓冲区刷新到磁盘</td>
+</tr>
+<tr>
+<td>Insert buffer thread</td>
+<td>1</td>
+<td>负责将写缓冲区内容刷新到磁盘</td>
+</tr>
+</tbody>
+</table>
+</div>
+<p>通过以下的这条指令，查看到 InnoDB 的状态信息，其中就包含IO Thread信息。</p>
+<figure class="highlight sql"><table><tr><td class="gutter"><pre><span class="line">1</span><br></pre></td><td class="code"><pre><span class="line"><span class="keyword">show</span> engine innodb status \G;</span><br></pre></td></tr></table></figure>
+<p><img src="https://gitee.com/Bluetom/img2/raw/master/img20240905/202410251028311.png" alt=""></p>
+<ol>
+<li>Purge Thread：主要用于回收事务已经提交了的undo log，在事务提交之后，undo log可能不用了，就用它来回收</li>
+<li>Page Cleaner Thread：协助 Master Thread 刷新脏页到磁盘的线程，它可以减轻 Master Thread 的工作压力，减少阻塞</li>
+</ol>
+<h3 id="7-6-数据页结构"><a href="#7-6-数据页结构" class="headerlink" title="7.6. 数据页结构"></a>7.6. 数据页结构</h3><p>一个数据页大致划分七个部分</p>
+<ul>
+<li>File Header：表示页的一些通用信息，占固定的 38 字节。</li>
+<li>page Header：表示数据页专有信息，占固定的 56 字节。</li>
+<li>inimum+Supermum：两个虚拟的伪记录，分别表示页中的最小记录和最大记录，占固定的 26 字节。</li>
+<li>User Records：真正存储我们插入的数据，大小不固定。</li>
+<li>Free Space：页中尚未使用的部分，大小不固定。</li>
+<li>Page Directory：页中某些记录的相对位置，也就是各个槽对应的记录在页面中的地址偏移量。</li>
+<li>File Trailer：用于检验页是否完整，占固定大小 8 字节。</li>
+</ul>
+<h2 id="8-扩展内容"><a href="#8-扩展内容" class="headerlink" title="8. 扩展内容"></a>8. 扩展内容</h2><h3 id="8-1-为什么-Mysql-更新数据时不直接刷新到磁盘"><a href="#8-1-为什么-Mysql-更新数据时不直接刷新到磁盘" class="headerlink" title="8.1. 为什么 Mysql 更新数据时不直接刷新到磁盘"></a>8.1. 为什么 Mysql 更新数据时不直接刷新到磁盘</h3><p>为什么 Mysql 不能直接更新磁盘上的数据而设置这么一套复杂的机制来执行 SQL 了？</p>
+<p>当一个请求就直接对磁盘文件进行随机读写，然后更新磁盘文件里的数据性能可能相当差。因为磁盘随机读写的性能是非常差的，所以直接更新磁盘文件是不能让数据库抗住很高并发的。</p>
+<p>Mysql 这套机制看起来复杂，但它可以保证每个更新请求都是更新内存 BufferPool，然后顺序写日志文件，同时还能保证各种异常情况下的数据一致性。更新内存的性能是极高的，然后顺序写磁盘上的日志文件的性能也是非常高的，要远高于随机读写磁盘文件。正是通过这套机制，才能让 MySQL 数据库在较高配置的机器上每秒可以抗下几干甚至上万的读写请求。</p>
+</article><div class="post-copyright"><div class="post-copyright__author"><span class="post-copyright-meta"><i class="fas fa-circle-user fa-fw"></i>文章作者: </span><span class="post-copyright-info"><a href="https://ktzxy.github.io">蓝桉</a></span></div><div class="post-copyright__type"><span class="post-copyright-meta"><i class="fas fa-square-arrow-up-right fa-fw"></i>文章链接: </span><span class="post-copyright-info"><a href="https://ktzxy.github.io/posts/8dd416a1.html">https://ktzxy.github.io/posts/8dd416a1.html</a></span></div><div class="post-copyright__notice"><span class="post-copyright-meta"><i class="fas fa-circle-exclamation fa-fw"></i>版权声明: </span><span class="post-copyright-info">本博客所有文章除特别声明外，均采用 <a href="https://creativecommons.org/licenses/by-nc-sa/4.0/" target="_blank">CC BY-NC-SA 4.0</a> 许可协议。转载请注明来源 <a href="https://ktzxy.github.io" target="_blank">蓝桉`Blog</a>！</span></div></div><div class="tag_share"><div class="post-meta__tag-list"><a class="post-meta__tags" href="/tags/%E6%95%B0%E6%8D%AE%E5%BA%93/">数据库</a></div><div class="post-share"><div class="social-share" data-image="/bg/Image00008.webp" data-sites="facebook,twitter,wechat,weibo,qq"></div><link rel="stylesheet" href="https://cdn.jsdelivr.net/npm/butterfly-extsrc/sharejs/dist/css/share.min.css" media="print" onload="this.media='all'"><script src="https://cdn.jsdelivr.net/npm/butterfly-extsrc/sharejs/dist/js/social-share.min.js" defer></script></div></div><link rel="stylesheet" href="/css/coin/coin.css" media="defer" onload="this.media='all'"/><div class="post-reward"><button class="tip-button reward-button"><span class="tip-button__text">不给糖果就捣蛋</span><div class="coin-wrapper"><div class="coin"><div class="coin__middle"></div><div class="coin__back"></div><div class="coin__front"></div></div></div><div class="reward-main"><ul class="reward-all"><li class="reward-item"><a href="/img/wechat.webp" target="_blank"><img class="post-qr-code-img" src="/img/wechat.webp" alt="wechat"/></a><div class="post-qr-code-desc">wechat</div></li><li class="reward-item"><a href="/img/alipay.webp" target="_blank"><img class="post-qr-code-img" src="/img/alipay.webp" alt="alipay"/></a><div class="post-qr-code-desc">alipay</div></li></ul></div></button></div><audio id="coinAudio" src="https://cdn.cbd.int/akilar-candyassets@1.0.36/audio/aowu.m4a"></audio><script defer="defer" src="/js/coin/coin.js"></script><nav class="pagination-post" id="pagination"><a class="pagination-related" href="/posts/774beab2.html" title="MySQL-函数"><img class="cover" src="/bg/Image00016.webp" onerror="onerror=null;src='/img/404.jpg'" alt="cover of previous post"><div class="info"><div class="info-1"><div class="info-item-1">上一篇</div><div class="info-item-2">MySQL-函数</div></div><div class="info-2"><div class="info-item-1">1. 函数概述在 MySQL 中，为了提高代码重用性和隐藏实现细节，MySQL 提供了很多内置函数。函数可以理解为封装好的模板程序或代码，可以直接被另一段程序调用的。函数主要可以分为以下几类：  聚合函数 数学函数 字符串函数 日期函数 控制流函数 窗口函数   TODO: 实际使用时再追加  2. 聚合函数2.1. GROUP_CONCAT() 函数GROUP_CONCAT() 首先根据 group by 指定的列进行分组，并且用分隔符分隔，将同一个分组中的非 NULL 的值连接起来，返回一个字符串结果。语法： 1group_concat([distinct] 字段名 [order by 排序字段 asc/desc] [separator &#x27;分隔符&#x27;]) 参数说明：  使用 distinct 可以排除重复值 如果需要对结果中的值进行排序，可以使用 order by 子句 separator 是一个字符串值，指定返回结果拼接的分隔符，默认为逗号  示例： 12345678SELECT t.spec_id, GROUP_CONCAT(t.option_name)...</div></div></div></a><a class="pagination-related" href="/posts/954a7268.html" title="MySQL-事务"><img class="cover" src="/bg/Image00015.webp" onerror="onerror=null;src='/img/404.jpg'" alt="cover of next post"><div class="info text-right"><div class="info-1"><div class="info-item-1">下一篇</div><div class="info-item-2">MySQL-事务</div></div><div class="info-2"><div class="info-item-1">1. 事务(transaction)的概念在实际的业务开发中，有些业务操作要多次访问数据库。一个业务要发送多条 SQL 语句给数据库执行。需要将多次访问数据库的操作视为一个整体来执行，要么全部执行成功。要么全部执行失败。 事务就是数据库管理系统（DBMS）执行过程中的一个逻辑单位（不可再进行分割），由一个有限的数据库操作序列构成（多个 DML 语句，select 语句不包含事务），要不全部成功，要不全部不成功。如果其中有一条 SQL 语句执行失败，那么之前已经成功的SQL语句都要进行事务的回滚（撤销）。 2. 事务特性事务应该具有4个属性：原子性、一致性、隔离性、持久性。这四个属性通常称为 ACID 特性。  2.1. 原子性（Atomicity）原子性：事务操作中的所有SQL语句不可再分割，要么全部执行成功，要么全部执行失败。对于一个事务来说，不能只执行其中的一部分操作。 1234示例：A卡扣除500元B卡增加500元在整个事务操作中，A卡与B卡要同时成功或者同时失败，不能只出现扣除或者只出现增加的情况 2.2. 一致性（Consistency）一致性：事务将数据库从一种一致性...</div></div></div></a></nav><div class="relatedPosts"><div class="headline"><i class="fas fa-thumbs-up fa-fw"></i><span>相关推荐</span></div><div class="relatedPosts-list"><a class="pagination-related" href="/posts/a318ca1f.html" title="MySQL数据库150道高频面试题"><img class="cover" src="/bg/Image00018.webp" alt="cover"><div class="info text-center"><div class="info-1"><div class="info-item-1"><i class="far fa-calendar-alt fa-fw"></i> 2025-07-09</div><div class="info-item-2">MySQL数据库150道高频面试题</div></div><div class="info-2"><div class="info-item-1">[toc] 1. Mysql 索引1.1. Mysql如何实现的索引机制？MySQL中索引分三类：B+树索引、Hash索引、全文索引 1.1.1. InnoDB索引与MyISAM索引实现的区别是什么？ MyISAM的索引方式都是非聚簇的，与InnoDB包含1个聚簇索引是不同的。 在InnoDB存储引擎中，我们只需要根据主键值对聚簇索引进行一次查找就能找到对应的记录，而在MyISAM中却需要进行一次回表操作，意味着MyISAM中建立的索引相当于全部都是二级索引。 InnoDB的数据文件本身就是索引文件，而MyISAM索引文件和数据文件是分离的 ，索引文件仅保存数据记录的地址。 MyISAM的表在磁盘上存储在以下文件中：  *.sdi（描述表结构）、*.MYD（数据），*.MYI（索引） InnoDB的表在磁盘上存储在以下文件中： .ibd（表结构、索引和数据都存在一起）   InnoDB的非聚簇索引data域存储相应记录主键的值 ，而MyISAM索引记录的是地址 。换句话说，InnoDB的所有非聚簇索引都引用主键作为data域。 MyISAM的回表操作是十分快速的，因为是拿着地址偏...</div></div></div></a><a class="pagination-related" href="/posts/8f9b37aa.html" title="技术同学必会的MySQL设计规约"><img class="cover" src="/bg/Image00014.webp" alt="cover"><div class="info text-center"><div class="info-1"><div class="info-item-1"><i class="far fa-calendar-alt fa-fw"></i> 2025-07-09</div><div class="info-item-2">技术同学必会的MySQL设计规约</div></div><div class="info-2"><div class="info-item-1">在我们对数据库技术方案设计的时候，我们是否有自己的设计理念或者原则，还是更多的依据自己的直觉去设计，是否曾经懊悔线上发生过的一次低级故障，可能稍微注意点就可以避免，是否想过怎么才能很好的避免，下面规范的价值正是我们工作的检查清单，需要我们不断从错误中积累有效经验来指导未来的工作。以下规范在大型互联网公司经过了充分的验证，尤其适用于并发量大、数据量大的业务场景。先介绍的是安全规范，因为安全无小事，很多公司都曾经因为自己的数据泄露导致用户的惨痛损失，所以将安全规范放到了第一位。﻿ 一、安全规范1.【强制】禁止在数据库中存储明文密码，需把密码加密后存储 说明：对于加密操作建议由公司的中间件团队基于如mybatis的扩展，提供统一的加密算法及密钥管理，避免每个业务线单独开发一套，同时也与具体的业务进行了解耦 2.【强制】禁止在数据库中明文存储用户敏感信息，如手机号等 说明：对于手机号建议公司搭建统一的手机号查询服务，避免在每个业务线单独存储 3.【强制】禁止开发直接给业务同学导出或者查询涉及到用户敏感信息的数据，如需要需上级领导审批 4.【强制】涉及到导出数据功能的操作，如包含敏感字段都...</div></div></div></a><a class="pagination-related" href="/posts/dfdfdf4.html" title="数据库概述"><img class="cover" src="/bg/Image00002.webp" alt="cover"><div class="info text-center"><div class="info-1"><div class="info-item-1"><i class="far fa-calendar-alt fa-fw"></i> 2025-07-09</div><div class="info-item-2">数据库概述</div></div><div class="info-2"><div class="info-item-1">1. 数据库技术1.1. 概述数据库（DB）是一个以某种组织方式存储在磁盘上的数据的集合。简单理解就是用来存储数据的仓库。  数据库 DataBase（DB）：存储数据的仓库，数据是有组织的进行存储。 数据库管理系统 DataBase Management System (DBMS)：操纵和管理数据库的大型软件。  1.2. 数据库的分类  1.3. 不同的数据存储方式数据存储在集合（内存）中  优点：读写速度快 缺点：不能永久存储  数据存储在文件中  优点：可以永久存储 缺点：频繁的IO操作效率低，查询数据很不方便。  数据存储在数据库中  优点：可以永久存储。查询速度快，查询数据很方便 缺点：要使用 SQL 语言执行增删改查操作  2. 关系型数据库 关系型数据库 - 百度百科  2.1. 概念关系型数据库，是指采用了关系模型来组织数据的数据库，其以行和列的形式存储数据，以便于用户理解，关系型数据库这一系列的行和列被称为表，一组表组成了数据库。用户通过查询来检索数据库中的数据，而查询是一个用于限定数据库中某些区域的执行代码。关系模型可以简单理解为二维表格模型，而一个关系型数...</div></div></div></a><a class="pagination-related" href="/posts/75522c08.html" title="第4节-布隆过滤器"><img class="cover" src="/bg/Image00003.webp" alt="cover"><div class="info text-center"><div class="info-1"><div class="info-item-1"><i class="far fa-calendar-alt fa-fw"></i> 2025-07-09</div><div class="info-item-2">第4节-布隆过滤器</div></div><div class="info-2"><div class="info-item-1">第4节-布隆过滤器BloomFilter面试题： 现有50亿个电话号码，选定其中10w个电话号码，如何要快速准确的判断这些号码是否已经存在？ 思路：  1、通过数据库查询———-实现快速有点难。  2、数据预放到内存集合中：50亿*8字节大约40G，内存太大了。 1、布隆过滤器是什么？它实际上==是一个很长的二进制数组+一系列随机hash算法映射函数，主要用于判断一个元素是否在集合中==。 通常我们会遇到很多要判断一个元素是否在某个集合中的业务场景，一般想到的是将集合中所有元素保存起来，然后通过比较确定。 链表、树、散列表（又叫哈希表，Hash table）等等数据结构都是这种思路。 但是随着集合中元素的增加，我们需要的存储空间也会呈现线性增长，最终达到瓶颈。 同时检索速度也越来越慢，上述三种结构的检索时间复杂度分别为O(n),O(logn),O(1)。这个时候，布隆过滤器（Bloom Filter）就应运而生  一句话概述：由一个初值为零的bit数组和多个哈希函数构成，用来快速判断某个数据是否存在。 本质就是判断具体元素存不存在一个大的集合中。 布隆过滤器是一种类似set的数据...</div></div></div></a><a class="pagination-related" href="/posts/e4cd3c5b.html" title="第5节-缓存预热+缓存雪崩+缓存击穿+缓存穿透"><img class="cover" src="/bg/Image00008.webp" alt="cover"><div class="info text-center"><div class="info-1"><div class="info-item-1"><i class="far fa-calendar-alt fa-fw"></i> 2025-07-09</div><div class="info-item-2">第5节-缓存预热+缓存雪崩+缓存击穿+缓存穿透</div></div><div class="info-2"><div class="info-item-1">第5节-缓存预热+缓存雪崩+缓存击穿+缓存穿透1、缓存雪崩发生情况： ​    redis主机挂了，redis全盘崩溃，比如缓存中有大量数据同时过期。 解决方案：  redis缓存集群实现高可用，主从+哨兵|| redis cluster ehcache本地缓存 + hystrix 或者 阿里sentinel限流&amp;降级 开启Redis持久化机制/aof+rdb，尽快恢复缓存集群 2、缓存穿透 什么是缓存穿透  请求去查询一条记录，先redis后mysql发现，都查不到该条记录，但是每次请求都会打到数据库上面去，导致后台数据库压力暴增，这种现象我们称为缓存穿透，redis成为了一个摆设。 简单说就是，本来无一物，即不再redis中，也不在mysql中。  危害  数据库可能会被打崩。导致服务不可用。 第一次来查询后，一般我们会有回写redis机制， 第二次来查询的时候redis就有了，偶尔出现穿透现象一般情况无关紧要。  解决方案   1、返回空对象缓存或者缺省值 一般OK  但是存在黑客和恶意攻击情况 黑客会对你的系统进行攻击，拿到一个不存在的id，去查询数据，会产生大量...</div></div></div></a><a class="pagination-related" href="/posts/41ae0132.html" title="MongoDB-基础"><img class="cover" src="/bg/Image00026.webp" alt="cover"><div class="info text-center"><div class="info-1"><div class="info-item-1"><i class="far fa-calendar-alt fa-fw"></i> 2025-07-09</div><div class="info-item-2">MongoDB-基础</div></div><div class="info-2"><div class="info-item-1">1. MongoDb 概述MongoDB 是一个跨平台的，面向文档的数据库，是当前 NoSQL 数据库产品中最热门的一种。它介于关系数据库和非关系数据库之间，是非关系数据库当中功能最丰富，最像关系数据库的产品。它支持的数据结构非常松散，是类似 JSON 的 BSON 格式，因此可以存储比较复杂的数据类型。 1.1. MongoDB 特点MongoDB 最大的特点是他支持的查询语言非常强大，其语法有点类似于面向对象的查询语言，几乎可以实现类似关系数据库单表查询的绝大部分功能，而且还支持对数据建立索引。它是一个面向集合的，模式自由的文档型数据库，具体特点总结如下：  面向集合存储，易于存储对象类型的数据 模式自由 支持动态查询 支持完全索引，包含内部对象 支持复制和故障恢复 使用高效的二进制数据存储，包括大型对象（如视频等） 自动处理碎片，以支持云计算层次的扩展性 支持 Python，PHP，Ruby，Java，C，C#，Javascript，Perl 及 C++语言的驱动程序，社区中也提供了对 Erlang 及.NET 等平台的驱动程序 文件存储格式为 BSON（一种 JSON 的...</div></div></div></a></div></div></div><div class="aside-content" id="aside-content"><div class="card-widget card-info text-center"><div class="avatar-img"><img src="/img/avatar.webp" onerror="this.onerror=null;this.src='/img/friend_404.gif'" alt="avatar"/></div><div class="author-info-name">蓝桉</div><div class="author-info-description"><div style="line-height:1.38;margin:0.6rem 0;text-align:justify;color:rgba(255, 255, 255, 0.8);">这有关于<b style="color:#fff">生活、学习、技术</b>相关的问题和看法，还有<b style="color:#fff">文章教程</b>和<b style="color:#fff">分享</b>。</div><div style="line-height:1.38;margin:0.6rem 0;text-align:justify;color:rgba(255, 255, 255, 0.8);">相信你可以在这里找到对你有用的<b style="color:#fff">知识</b>和<b style="color:#fff">教程</b>。</div></div><div class="site-data"><a href="/archives/"><div class="headline">文章</div><div class="length-num">264</div></a><a href="/tags/"><div class="headline">标签</div><div class="length-num">38</div></a><a href="/categories/"><div class="headline">分类</div><div class="length-num">37</div></a></div><a id="card-info-btn" target="_blank" rel="noopener" href="https://github.com/ktzxy"><i class="fab fa-github"></i><span>Follow Me</span></a><div class="card-info-social-icons"><a class="social-icon faa-parent animated-hover" href="https://github.com/ktzxy" target="_blank" title="Github"><svg class="social_icon faa-tada" aria-hidden="true"><use xlink:href="#icon-github"></use></svg></a><a class="social-icon faa-parent animated-hover" href="https://mail.qq.com/cgi-bin/qm_share?t=qm_mailme&amp;email=2251511764@qq.com" target="_blank" title="Email"><svg class="social_icon faa-tada" aria-hidden="true"><use xlink:href="#icon-youxiang"></use></svg></a><a class="social-icon faa-parent animated-hover" href="/atom.xml" target="_blank" title="RSS"><svg class="social_icon faa-tada" aria-hidden="true"><use xlink:href="#icon-RSS"></use></svg></a><a class="social-icon faa-parent animated-hover" href="https://space.bilibili.com/496148176" target="_blank" title="BiliBili"><svg class="social_icon faa-tada" aria-hidden="true"><use xlink:href="#icon-QX-BILIBILI"></use></svg></a><a class="social-icon faa-parent animated-hover" href="tencent://Message/?Uin=2251511764&amp;amp;websiteName=local.edu.com:8888=&amp;amp;Menu=yes" target="_blank" title="QQ"><svg class="social_icon faa-tada" aria-hidden="true"><use xlink:href="#icon-QQ"></use></svg></a></div></div><div class="card-widget card-announcement"><div class="item-headline"><i class="fas fa-bullhorn fa-shake"></i><span>公告</span></div><div class="announcement_content">This is my Blog</div></div><div class="sticky_layout"><div class="card-widget" id="card-toc"><div class="item-headline"><i class="fas fa-stream"></i><span>目录</span><span class="toc-percentage"></span></div><div class="toc-content"><ol class="toc"><li class="toc-item toc-level-2"><a class="toc-link" href="#1-MySQL-%E6%95%B0%E6%8D%AE%E5%BA%93%E6%A6%82%E8%BF%B0"><span class="toc-number">1.</span> <span class="toc-text">1. MySQL 数据库概述</span></a><ol class="toc-child"><li class="toc-item toc-level-3"><a class="toc-link" href="#1-1-%E7%9B%B8%E5%85%B3%E7%89%88%E6%9C%AC%E8%AF%B4%E6%98%8E"><span class="toc-number">1.1.</span> <span class="toc-text">1.1. 相关版本说明</span></a></li><li class="toc-item toc-level-3"><a class="toc-link" href="#1-2-MySQL-%E5%AE%89%E8%A3%85"><span class="toc-number">1.2.</span> <span class="toc-text">1.2. MySQL 安装</span></a></li><li class="toc-item toc-level-3"><a class="toc-link" href="#1-3-MySQL-%E6%95%B0%E6%8D%AE%E5%BA%93%E7%89%B9%E7%82%B9"><span class="toc-number">1.3.</span> <span class="toc-text">1.3. MySQL 数据库特点</span></a></li></ol></li><li class="toc-item toc-level-2"><a class="toc-link" href="#2-MySQL-%E4%BD%93%E7%B3%BB%E6%9E%B6%E6%9E%84"><span class="toc-number">2.</span> <span class="toc-text">2. MySQL 体系架构</span></a><ol class="toc-child"><li class="toc-item toc-level-3"><a class="toc-link" href="#2-1-%E6%9E%B6%E6%9E%84%E6%A6%82%E8%BF%B0"><span class="toc-number">2.1.</span> <span class="toc-text">2.1. 架构概述</span></a></li><li class="toc-item toc-level-3"><a class="toc-link" href="#2-2-SQL-%E8%AF%AD%E5%8F%A5%E7%9A%84%E6%89%A7%E8%A1%8C%E6%B5%81%E7%A8%8B"><span class="toc-number">2.2.</span> <span class="toc-text">2.2. SQL 语句的执行流程</span></a><ol class="toc-child"><li class="toc-item toc-level-4"><a class="toc-link" href="#2-2-1-%E6%9F%A5%E8%AF%A2%E8%AF%AD%E5%8F%A5%E6%89%A7%E8%A1%8C%E6%B5%81%E7%A8%8B"><span class="toc-number">2.2.1.</span> <span class="toc-text">2.2.1. 查询语句执行流程</span></a></li><li class="toc-item toc-level-4"><a class="toc-link" href="#2-2-2-%E6%9B%B4%E6%96%B0%E8%AF%AD%E5%8F%A5%E6%89%A7%E8%A1%8C%E8%BF%87%E7%A8%8B"><span class="toc-number">2.2.2.</span> <span class="toc-text">2.2.2. 更新语句执行过程</span></a></li><li class="toc-item toc-level-4"><a class="toc-link" href="#2-2-3-SQL-%E6%89%A7%E8%A1%8C%E6%B5%81%E7%A8%8B%E5%9B%BE"><span class="toc-number">2.2.3.</span> <span class="toc-text">2.2.3. SQL 执行流程图</span></a></li></ol></li><li class="toc-item toc-level-3"><a class="toc-link" href="#2-3-%E8%BF%9E%E6%8E%A5%E5%B1%82"><span class="toc-number">2.3.</span> <span class="toc-text">2.3. 连接层</span></a></li><li class="toc-item toc-level-3"><a class="toc-link" href="#2-4-Server-%E5%B1%82-SQL-%E5%A4%84%E7%90%86%E5%B1%82"><span class="toc-number">2.4.</span> <span class="toc-text">2.4. Server 层(SQL 处理层)</span></a><ol class="toc-child"><li class="toc-item toc-level-4"><a class="toc-link" href="#2-4-1-Server-%E5%B1%82%E5%8A%9F%E8%83%BD%E4%BD%9C%E7%94%A8"><span class="toc-number">2.4.1.</span> <span class="toc-text">2.4.1. Server 层功能作用</span></a></li><li class="toc-item toc-level-4"><a class="toc-link" href="#2-4-2-%E6%9F%A5%E8%AF%A2%E7%BC%93%E5%AD%98"><span class="toc-number">2.4.2.</span> <span class="toc-text">2.4.2. 查询缓存</span></a><ol class="toc-child"><li class="toc-item toc-level-5"><a class="toc-link" href="#2-4-2-1-%E6%9F%A5%E8%AF%A2%E7%9B%B8%E5%85%B3%E7%BC%93%E5%AD%98%E7%9A%84%E5%8F%82%E6%95%B0"><span class="toc-number">2.4.2.1.</span> <span class="toc-text">2.4.2.1. 查询相关缓存的参数</span></a></li><li class="toc-item toc-level-5"><a class="toc-link" href="#2-4-2-2-%E6%9F%A5%E8%AF%A2%E7%BC%93%E5%AD%98%E5%8F%82%E6%95%B0%E9%85%8D%E7%BD%AE"><span class="toc-number">2.4.2.2.</span> <span class="toc-text">2.4.2.2. 查询缓存参数配置</span></a></li><li class="toc-item toc-level-5"><a class="toc-link" href="#2-4-2-3-MySQL-8-0-%E7%A7%BB%E9%99%A4%E6%9F%A5%E8%AF%A2%E7%BC%93%E5%AD%98%E5%8A%9F%E8%83%BD"><span class="toc-number">2.4.2.3.</span> <span class="toc-text">2.4.2.3. MySQL 8.0 移除查询缓存功能</span></a></li></ol></li><li class="toc-item toc-level-4"><a class="toc-link" href="#2-4-3-%E5%88%86%E6%9E%90%E5%99%A8"><span class="toc-number">2.4.3.</span> <span class="toc-text">2.4.3. 分析器</span></a></li><li class="toc-item toc-level-4"><a class="toc-link" href="#2-4-4-%E4%BC%98%E5%8C%96%E5%99%A8"><span class="toc-number">2.4.4.</span> <span class="toc-text">2.4.4. 优化器</span></a></li><li class="toc-item toc-level-4"><a class="toc-link" href="#2-4-5-%E6%89%A7%E8%A1%8C%E5%99%A8"><span class="toc-number">2.4.5.</span> <span class="toc-text">2.4.5. 执行器</span></a></li></ol></li><li class="toc-item toc-level-3"><a class="toc-link" href="#2-5-%E5%AD%98%E5%82%A8%E5%BC%95%E6%93%8E%E5%B1%82"><span class="toc-number">2.5.</span> <span class="toc-text">2.5. 存储引擎层</span></a><ol class="toc-child"><li class="toc-item toc-level-4"><a class="toc-link" href="#2-5-1-MySQL-%E5%AE%98%E6%96%B9%E5%BC%95%E6%93%8E%E6%A6%82%E8%A6%81"><span class="toc-number">2.5.1.</span> <span class="toc-text">2.5.1. MySQL 官方引擎概要</span></a><ol class="toc-child"><li class="toc-item toc-level-5"><a class="toc-link" href="#2-5-1-1-InnoDB-%E5%AD%98%E5%82%A8%E5%BC%95%E6%93%8E"><span class="toc-number">2.5.1.1.</span> <span class="toc-text">2.5.1.1. InnoDB 存储引擎</span></a></li><li class="toc-item toc-level-5"><a class="toc-link" href="#2-5-1-2-MyISAM-%E5%AD%98%E5%82%A8%E5%BC%95%E6%93%8E"><span class="toc-number">2.5.1.2.</span> <span class="toc-text">2.5.1.2. MyISAM 存储引擎</span></a></li><li class="toc-item toc-level-5"><a class="toc-link" href="#2-5-1-3-Mrg-MyISAM-%E5%AD%98%E5%82%A8%E5%BC%95%E6%93%8E"><span class="toc-number">2.5.1.3.</span> <span class="toc-text">2.5.1.3. Mrg_MyISAM 存储引擎</span></a></li><li class="toc-item toc-level-5"><a class="toc-link" href="#2-5-1-4-Archive-%E5%AD%98%E5%82%A8%E5%BC%95%E6%93%8E"><span class="toc-number">2.5.1.4.</span> <span class="toc-text">2.5.1.4. Archive 存储引擎</span></a></li><li class="toc-item toc-level-5"><a class="toc-link" href="#2-5-1-5-Blackhole-%E5%AD%98%E5%82%A8%E5%BC%95%E6%93%8E"><span class="toc-number">2.5.1.5.</span> <span class="toc-text">2.5.1.5. Blackhole 存储引擎</span></a></li><li class="toc-item toc-level-5"><a class="toc-link" href="#2-5-1-6-CSV-%E5%BC%95%E5%AD%98%E5%82%A8%E6%93%8E"><span class="toc-number">2.5.1.6.</span> <span class="toc-text">2.5.1.6. CSV 引存储擎</span></a></li><li class="toc-item toc-level-5"><a class="toc-link" href="#2-5-1-7-Federated-%E5%AD%98%E5%82%A8%E5%BC%95%E6%93%8E"><span class="toc-number">2.5.1.7.</span> <span class="toc-text">2.5.1.7. Federated 存储引擎</span></a></li><li class="toc-item toc-level-5"><a class="toc-link" href="#2-5-1-8-Memory-%E5%AD%98%E5%82%A8%E5%BC%95%E6%93%8E"><span class="toc-number">2.5.1.8.</span> <span class="toc-text">2.5.1.8. Memory 存储引擎</span></a></li><li class="toc-item toc-level-5"><a class="toc-link" href="#2-5-1-9-NDB-%E9%9B%86%E7%BE%A4%E5%BC%95%E6%93%8E"><span class="toc-number">2.5.1.9.</span> <span class="toc-text">2.5.1.9. NDB 集群引擎</span></a></li></ol></li><li class="toc-item toc-level-4"><a class="toc-link" href="#2-5-2-%E5%80%BC%E5%BE%97%E4%BA%86%E8%A7%A3%E7%9A%84%E7%AC%AC%E4%B8%89%E6%96%B9%E5%BC%95%E6%93%8E"><span class="toc-number">2.5.2.</span> <span class="toc-text">2.5.2. 值得了解的第三方引擎</span></a><ol class="toc-child"><li class="toc-item toc-level-5"><a class="toc-link" href="#2-5-2-1-Percona-%E7%9A%84-XtraDB-%E5%AD%98%E5%82%A8%E5%BC%95%E6%93%8E"><span class="toc-number">2.5.2.1.</span> <span class="toc-text">2.5.2.1. Percona 的 XtraDB 存储引擎</span></a></li><li class="toc-item toc-level-5"><a class="toc-link" href="#2-5-2-2-TokuDB-%E5%BC%95%E6%93%8E"><span class="toc-number">2.5.2.2.</span> <span class="toc-text">2.5.2.2. TokuDB 引擎</span></a></li><li class="toc-item toc-level-5"><a class="toc-link" href="#2-5-2-3-Infobright"><span class="toc-number">2.5.2.3.</span> <span class="toc-text">2.5.2.3. Infobright</span></a></li></ol></li><li class="toc-item toc-level-4"><a class="toc-link" href="#2-5-3-%E6%8C%87%E5%AE%9A%E8%A1%A8%E7%9A%84%E5%AD%98%E5%82%A8%E5%BC%95%E6%93%8E"><span class="toc-number">2.5.3.</span> <span class="toc-text">2.5.3. 指定表的存储引擎</span></a></li><li class="toc-item toc-level-4"><a class="toc-link" href="#2-5-4-%E8%A1%A8%E7%9A%84%E5%AD%98%E5%82%A8%E5%BC%95%E6%93%8E%E8%BD%AC%E6%8D%A2"><span class="toc-number">2.5.4.</span> <span class="toc-text">2.5.4. 表的存储引擎转换</span></a><ol class="toc-child"><li class="toc-item toc-level-5"><a class="toc-link" href="#2-5-4-1-ALTER-TABLE"><span class="toc-number">2.5.4.1.</span> <span class="toc-text">2.5.4.1. ALTER TABLE</span></a></li><li class="toc-item toc-level-5"><a class="toc-link" href="#2-5-4-2-%E5%AF%BC%E5%87%BA%E4%B8%8E%E5%AF%BC%E5%85%A5"><span class="toc-number">2.5.4.2.</span> <span class="toc-text">2.5.4.2. 导出与导入</span></a></li><li class="toc-item toc-level-5"><a class="toc-link" href="#2-5-4-3-CREATE-%E5%92%8C-SELECT"><span class="toc-number">2.5.4.3.</span> <span class="toc-text">2.5.4.3. CREATE 和 SELECT</span></a></li></ol></li><li class="toc-item toc-level-4"><a class="toc-link" href="#2-5-5-%E6%A3%80%E6%9F%A5-MySQL-%E7%9A%84%E5%BC%95%E6%93%8E"><span class="toc-number">2.5.5.</span> <span class="toc-text">2.5.5. 检查 MySQL 的引擎</span></a></li><li class="toc-item toc-level-4"><a class="toc-link" href="#2-5-6-MyISAM%E3%80%81InnoDB-%E4%B8%8E-Memory-%E6%AF%94%E8%BE%83"><span class="toc-number">2.5.6.</span> <span class="toc-text">2.5.6. MyISAM、InnoDB 与 Memory 比较</span></a></li><li class="toc-item toc-level-4"><a class="toc-link" href="#2-5-7-%E9%80%89%E6%8B%A9%E5%90%88%E9%80%82%E7%9A%84%E5%BC%95%E6%93%8E"><span class="toc-number">2.5.7.</span> <span class="toc-text">2.5.7. 选择合适的引擎</span></a></li></ol></li><li class="toc-item toc-level-3"><a class="toc-link" href="#3-2-%E5%8F%82%E6%95%B0%E7%9A%84%E6%9F%A5%E7%9C%8B%E5%92%8C%E4%BF%AE%E6%94%B9"><span class="toc-number">2.6.</span> <span class="toc-text">3.2. 参数的查看和修改</span></a><ol class="toc-child"><li class="toc-item toc-level-4"><a class="toc-link" href="#3-2-1-MySQL-%E6%95%B0%E6%8D%AE%E5%BA%93%E4%B8%AD%E7%9A%84%E5%8F%82%E6%95%B0%E7%9A%84%E5%88%86%E7%B1%BB"><span class="toc-number">2.6.1.</span> <span class="toc-text">3.2.1. MySQL 数据库中的参数的分类</span></a></li><li class="toc-item toc-level-4"><a class="toc-link" href="#3-2-2-%E5%8A%A8%E6%80%81%E5%8F%82%E6%95%B0%E5%80%BC%E7%9A%84%E4%BF%AE%E6%94%B9"><span class="toc-number">2.6.2.</span> <span class="toc-text">3.2.2. 动态参数值的修改</span></a></li></ol></li><li class="toc-item toc-level-3"><a class="toc-link" href="#3-3-MySQL%E5%AE%98%E6%96%B9%E6%89%8B%E5%86%8C%EF%BC%88%E7%B3%BB%E7%BB%9F%E5%8F%82%E6%95%B0%E9%83%A8%E5%88%86%EF%BC%89"><span class="toc-number">2.7.</span> <span class="toc-text">3.3. MySQL官方手册（系统参数部分）</span></a></li></ol></li><li class="toc-item toc-level-2"><a class="toc-link" href="#4-MySQL-%E6%95%B0%E6%8D%AE%E7%9B%AE%E5%BD%95%E7%BB%93%E6%9E%84%E5%88%86%E6%9E%90"><span class="toc-number">3.</span> <span class="toc-text">4. MySQL 数据目录结构分析</span></a><ol class="toc-child"><li class="toc-item toc-level-3"><a class="toc-link" href="#4-1-%E6%95%B0%E6%8D%AE%E7%9B%AE%E5%BD%95%E7%9A%84%E4%BD%8D%E7%BD%AE"><span class="toc-number">3.1.</span> <span class="toc-text">4.1. 数据目录的位置</span></a></li><li class="toc-item toc-level-3"><a class="toc-link" href="#4-2-%E6%95%B0%E6%8D%AE%E7%9B%AE%E5%BD%95%E7%9A%84%E6%96%87%E4%BB%B6"><span class="toc-number">3.2.</span> <span class="toc-text">4.2. 数据目录的文件</span></a><ol class="toc-child"><li class="toc-item toc-level-4"><a class="toc-link" href="#4-2-1-%E6%95%B0%E6%8D%AE%E5%BA%93%E7%9A%84%E5%AD%98%E5%82%A8"><span class="toc-number">3.2.1.</span> <span class="toc-text">4.2.1. 数据库的存储</span></a></li><li class="toc-item toc-level-4"><a class="toc-link" href="#4-2-2-%E8%A1%A8%E7%9A%84%E5%AD%98%E5%82%A8"><span class="toc-number">3.2.2.</span> <span class="toc-text">4.2.2. 表的存储</span></a></li><li class="toc-item toc-level-4"><a class="toc-link" href="#4-2-3-InnoDB-%E8%A1%A8%E6%95%B0%E6%8D%AE%E7%9A%84%E5%AD%98%E5%82%A8"><span class="toc-number">3.2.3.</span> <span class="toc-text">4.2.3. InnoDB 表数据的存储</span></a></li><li class="toc-item toc-level-4"><a class="toc-link" href="#4-2-4-MyIASM-%E8%A1%A8%E6%95%B0%E6%8D%AE%E7%9A%84%E5%AD%98%E5%82%A8"><span class="toc-number">3.2.4.</span> <span class="toc-text">4.2.4. MyIASM 表数据的存储</span></a></li></ol></li><li class="toc-item toc-level-3"><a class="toc-link" href="#4-3-%E6%97%A5%E5%BF%97%E6%96%87%E4%BB%B6"><span class="toc-number">3.3.</span> <span class="toc-text">4.3. 日志文件</span></a><ol class="toc-child"><li class="toc-item toc-level-4"><a class="toc-link" href="#4-3-1-%E9%94%99%E8%AF%AF%E6%97%A5%E5%BF%97"><span class="toc-number">3.3.1.</span> <span class="toc-text">4.3.1. 错误日志</span></a></li><li class="toc-item toc-level-4"><a class="toc-link" href="#4-3-2-%E6%85%A2%E6%9F%A5%E8%AF%A2%E6%97%A5%E5%BF%97"><span class="toc-number">3.3.2.</span> <span class="toc-text">4.3.2. 慢查询日志</span></a></li><li class="toc-item toc-level-4"><a class="toc-link" href="#4-3-3-%E6%9F%A5%E8%AF%A2%E6%97%A5%E5%BF%97"><span class="toc-number">3.3.3.</span> <span class="toc-text">4.3.3. 查询日志</span></a><ol class="toc-child"><li class="toc-item toc-level-5"><a class="toc-link" href="#4-3-3-1-%E6%9F%A5%E8%AF%A2%E6%97%A5%E5%BF%97%E9%85%8D%E7%BD%AE"><span class="toc-number">3.3.3.1.</span> <span class="toc-text">4.3.3.1. 查询日志配置</span></a></li><li class="toc-item toc-level-5"><a class="toc-link" href="#4-3-3-2-%E6%9F%A5%E8%AF%A2%E6%97%A5%E5%BF%97%E5%8F%82%E6%95%B0%E6%9F%A5%E7%9C%8B"><span class="toc-number">3.3.3.2.</span> <span class="toc-text">4.3.3.2. 查询日志参数查看</span></a></li></ol></li><li class="toc-item toc-level-4"><a class="toc-link" href="#4-3-4-binlog%EF%BC%88%E4%BA%8C%E8%BF%9B%E5%88%B6%E5%BD%92%E6%A1%A3%E6%97%A5%E5%BF%97%EF%BC%89"><span class="toc-number">3.3.4.</span> <span class="toc-text">4.3.4. binlog（二进制归档日志）</span></a></li><li class="toc-item toc-level-4"><a class="toc-link" href="#4-3-5-redo-log%EF%BC%88%E9%87%8D%E5%81%9A%E6%97%A5%E5%BF%97%EF%BC%89%E3%80%81undo-log%EF%BC%88%E6%92%A4%E9%94%80%E6%97%A5%E5%BF%97%EF%BC%89"><span class="toc-number">3.3.5.</span> <span class="toc-text">4.3.5. redo log（重做日志）、undo log（撤销日志）</span></a></li></ol></li><li class="toc-item toc-level-3"><a class="toc-link" href="#4-4-%E5%85%B6%E4%BB%96%E6%95%B0%E6%8D%AE%E6%96%87%E4%BB%B6"><span class="toc-number">3.4.</span> <span class="toc-text">4.4. 其他数据文件</span></a></li></ol></li><li class="toc-item toc-level-2"><a class="toc-link" href="#5-bin-log%EF%BC%88%E4%BA%8C%E8%BF%9B%E5%88%B6%E5%BD%92%E6%A1%A3%E6%97%A5%E5%BF%97%EF%BC%89"><span class="toc-number">4.</span> <span class="toc-text">5. bin log（二进制归档日志）</span></a><ol class="toc-child"><li class="toc-item toc-level-3"><a class="toc-link" href="#5-1-%E4%BA%8C%E8%BF%9B%E5%88%B6%E6%97%A5%E5%BF%97%E7%9A%84%E4%BD%9C%E7%94%A8"><span class="toc-number">4.1.</span> <span class="toc-text">5.1. 二进制日志的作用</span></a></li><li class="toc-item toc-level-3"><a class="toc-link" href="#5-2-binlog-%E7%9B%B8%E5%85%B3%E5%8F%82%E6%95%B0"><span class="toc-number">4.2.</span> <span class="toc-text">5.2. binlog 相关参数</span></a><ol class="toc-child"><li class="toc-item toc-level-4"><a class="toc-link" href="#5-2-1-%E6%9F%A5%E8%AF%A2-binlog-%E5%8F%82%E6%95%B0"><span class="toc-number">4.2.1.</span> <span class="toc-text">5.2.1. 查询 binlog 参数</span></a></li><li class="toc-item toc-level-4"><a class="toc-link" href="#5-2-2-%E9%85%8D%E7%BD%AE-binlog-%E5%8F%82%E6%95%B0"><span class="toc-number">4.2.2.</span> <span class="toc-text">5.2.2. 配置 binlog 参数</span></a></li><li class="toc-item toc-level-4"><a class="toc-link" href="#5-2-3-binlog-format-%E6%97%A5%E5%BF%97%E8%AE%B0%E5%BD%95%E6%A0%BC%E5%BC%8F"><span class="toc-number">4.2.3.</span> <span class="toc-text">5.2.3. binlog_format 日志记录格式</span></a></li><li class="toc-item toc-level-4"><a class="toc-link" href="#5-2-4-sync-binlog-%E5%86%99%E5%85%A5%E7%A3%81%E7%9B%98%E6%9C%BA%E5%88%B6"><span class="toc-number">4.2.4.</span> <span class="toc-text">5.2.4. sync_binlog 写入磁盘机制</span></a></li></ol></li><li class="toc-item toc-level-3"><a class="toc-link" href="#5-3-%E5%88%A0%E9%99%A4-binlog-%E6%97%A5%E5%BF%97%E6%96%87%E4%BB%B6"><span class="toc-number">4.3.</span> <span class="toc-text">5.3. 删除 binlog 日志文件</span></a></li><li class="toc-item toc-level-3"><a class="toc-link" href="#5-4-binlog-%E6%97%A5%E5%BF%97%E6%96%87%E4%BB%B6%E7%9A%84%E9%87%8D%E6%96%B0%E7%94%9F%E6%88%90"><span class="toc-number">4.4.</span> <span class="toc-text">5.4. binlog 日志文件的重新生成</span></a></li><li class="toc-item toc-level-3"><a class="toc-link" href="#5-5-%E6%9F%A5%E7%9C%8B-binlog-%E6%97%A5%E5%BF%97%E6%96%87%E4%BB%B6"><span class="toc-number">4.5.</span> <span class="toc-text">5.5. 查看 binlog 日志文件</span></a><ol class="toc-child"><li class="toc-item toc-level-4"><a class="toc-link" href="#5-5-1-%E6%9F%A5%E8%AF%A2%E6%97%A5%E5%BF%97%E6%96%87%E4%BB%B6%E6%83%85%E5%86%B5"><span class="toc-number">4.5.1.</span> <span class="toc-text">5.5.1. 查询日志文件情况</span></a></li><li class="toc-item toc-level-4"><a class="toc-link" href="#5-5-2-%E6%9F%A5%E7%9C%8B%E6%97%A5%E5%BF%97%E5%86%85%E5%AE%B9"><span class="toc-number">4.5.2.</span> <span class="toc-text">5.5.2. 查看日志内容</span></a></li></ol></li><li class="toc-item toc-level-3"><a class="toc-link" href="#5-6-binlog-%E6%97%A5%E5%BF%97%E6%96%87%E4%BB%B6%E6%81%A2%E5%A4%8D%E6%95%B0%E6%8D%AE"><span class="toc-number">4.6.</span> <span class="toc-text">5.6. binlog 日志文件恢复数据</span></a></li><li class="toc-item toc-level-3"><a class="toc-link" href="#5-7-MySQL-binlog-%E5%85%B8%E5%9E%8B%E7%9A%84%E4%B8%9A%E5%8A%A1%E5%BA%94%E7%94%A8%E5%9C%BA%E6%99%AF"><span class="toc-number">4.7.</span> <span class="toc-text">5.7. MySQL binlog 典型的业务应用场景</span></a><ol class="toc-child"><li class="toc-item toc-level-4"><a class="toc-link" href="#5-7-1-%E6%95%B0%E6%8D%AE%E5%BC%82%E6%9E%84"><span class="toc-number">4.7.1.</span> <span class="toc-text">5.7.1. 数据异构</span></a></li><li class="toc-item toc-level-4"><a class="toc-link" href="#5-7-2-%E7%BC%93%E5%AD%98%E6%95%B0%E6%8D%AE%E7%9A%84%E8%A1%A5%E5%85%85"><span class="toc-number">4.7.2.</span> <span class="toc-text">5.7.2. 缓存数据的补充</span></a></li><li class="toc-item toc-level-4"><a class="toc-link" href="#5-7-3-%E5%9F%BA%E4%BA%8E%E6%95%B0%E6%8D%AE%E7%9A%84%E4%BB%BB%E5%8A%A1%E5%88%86%E5%8F%91"><span class="toc-number">4.7.3.</span> <span class="toc-text">5.7.3. 基于数据的任务分发</span></a></li></ol></li><li class="toc-item toc-level-3"><a class="toc-link" href="#5-8-%E6%89%A9%E5%B1%95%E7%9F%A5%E8%AF%86"><span class="toc-number">4.8.</span> <span class="toc-text">5.8. 扩展知识</span></a><ol class="toc-child"><li class="toc-item toc-level-4"><a class="toc-link" href="#5-8-1-bin-log-%E5%92%8C-redo-log-%E7%9A%84%E5%8C%BA%E5%88%AB"><span class="toc-number">4.8.1.</span> <span class="toc-text">5.8.1. bin log 和 redo log 的区别</span></a></li><li class="toc-item toc-level-4"><a class="toc-link" href="#5-8-2-%E5%85%B3%E4%BA%8E%E6%95%B0%E6%8D%AE%E5%BA%93%E5%A4%87%E4%BB%BD%E4%B8%8E%E6%81%A2%E5%A4%8D%E9%85%8D%E7%BD%AE%E5%BB%BA%E8%AE%AE"><span class="toc-number">4.8.2.</span> <span class="toc-text">5.8.2. 关于数据库备份与恢复配置建议</span></a></li></ol></li></ol></li><li class="toc-item toc-level-2"><a class="toc-link" href="#6-MySQL-%E4%B8%AD%E7%9A%84%E9%BB%98%E8%AE%A4%E7%B3%BB%E7%BB%9F%E5%BA%93%EF%BC%88%E4%BA%86%E8%A7%A3%E6%89%A9%E5%B1%95%EF%BC%89%EF%BC%88TODO-mark-%E8%A1%A5%E5%85%85%E4%B8%AD%E2%80%A6%EF%BC%89"><span class="toc-number">5.</span> <span class="toc-text">6. MySQL 中的默认系统库（了解扩展）（TODO mark: 补充中…）</span></a><ol class="toc-child"><li class="toc-item toc-level-3"><a class="toc-link" href="#6-1-performance-schema-%E7%B3%BB%E7%BB%9F%E5%BA%93"><span class="toc-number">5.1.</span> <span class="toc-text">6.1. performance_schema 系统库</span></a><ol class="toc-child"><li class="toc-item toc-level-4"><a class="toc-link" href="#6-1-1-%E7%AE%80%E4%BB%8B"><span class="toc-number">5.1.1.</span> <span class="toc-text">6.1.1. 简介</span></a></li></ol></li><li class="toc-item toc-level-3"><a class="toc-link" href="#6-2-sys-%E7%B3%BB%E7%BB%9F%E5%BA%93"><span class="toc-number">5.2.</span> <span class="toc-text">6.2. sys 系统库</span></a></li><li class="toc-item toc-level-3"><a class="toc-link" href="#6-3-information-schema-%E7%B3%BB%E7%BB%9F%E5%BA%93"><span class="toc-number">5.3.</span> <span class="toc-text">6.3. information_schema 系统库</span></a></li><li class="toc-item toc-level-3"><a class="toc-link" href="#6-4-mysql-%E7%B3%BB%E7%BB%9F%E5%BA%93%EF%BC%88%E5%90%8D%E7%A7%B0%E4%B8%BAmysql%EF%BC%89"><span class="toc-number">5.4.</span> <span class="toc-text">6.4. mysql 系统库（名称为mysql）</span></a></li></ol></li><li class="toc-item toc-level-2"><a class="toc-link" href="#7-InnoDB-%E5%AD%98%E5%82%A8%E5%BC%95%E6%93%8E%E6%9E%B6%E6%9E%84"><span class="toc-number">6.</span> <span class="toc-text">7. InnoDB 存储引擎架构</span></a><ol class="toc-child"><li class="toc-item toc-level-3"><a class="toc-link" href="#7-1-Innodb-%E5%BA%95%E5%B1%82%E5%8E%9F%E7%90%86%E6%B5%81%E7%A8%8B%E5%9B%BE"><span class="toc-number">6.1.</span> <span class="toc-text">7.1. Innodb 底层原理流程图</span></a></li><li class="toc-item toc-level-3"><a class="toc-link" href="#7-2-InnoDB-%E6%95%B4%E4%BD%93%E6%9E%B6%E6%9E%84%E6%A6%82%E8%BF%B0"><span class="toc-number">6.2.</span> <span class="toc-text">7.2. InnoDB 整体架构概述</span></a><ol class="toc-child"><li class="toc-item toc-level-4"><a class="toc-link" href="#7-2-1-InnoDB-%E9%80%BB%E8%BE%91%E5%AD%98%E5%82%A8%E7%BB%93%E6%9E%84"><span class="toc-number">6.2.1.</span> <span class="toc-text">7.2.1. InnoDB 逻辑存储结构</span></a></li><li class="toc-item toc-level-4"><a class="toc-link" href="#7-2-2-InnoDB-%E7%89%A9%E7%90%86%E6%9E%B6%E6%9E%84"><span class="toc-number">6.2.2.</span> <span class="toc-text">7.2.2. InnoDB 物理架构</span></a></li></ol></li><li class="toc-item toc-level-3"><a class="toc-link" href="#7-3-%E5%86%85%E5%AD%98%E7%BB%93%E6%9E%84"><span class="toc-number">6.3.</span> <span class="toc-text">7.3. 内存结构</span></a><ol class="toc-child"><li class="toc-item toc-level-4"><a class="toc-link" href="#7-3-1-Buffer-Pool"><span class="toc-number">6.3.1.</span> <span class="toc-text">7.3.1. Buffer Pool</span></a><ol class="toc-child"><li class="toc-item toc-level-5"><a class="toc-link" href="#7-3-1-1-Buffer-Pool-%E5%A4%A7%E5%B0%8F"><span class="toc-number">6.3.1.1.</span> <span class="toc-text">7.3.1.1. Buffer Pool 大小</span></a></li></ol></li><li class="toc-item toc-level-4"><a class="toc-link" href="#7-3-2-Change-Buffer"><span class="toc-number">6.3.2.</span> <span class="toc-text">7.3.2. Change Buffer</span></a></li><li class="toc-item toc-level-4"><a class="toc-link" href="#7-3-3-Adaptive-Hash-Index"><span class="toc-number">6.3.3.</span> <span class="toc-text">7.3.3. Adaptive Hash Index</span></a></li><li class="toc-item toc-level-4"><a class="toc-link" href="#7-3-4-Log-Buffer"><span class="toc-number">6.3.4.</span> <span class="toc-text">7.3.4. Log Buffer</span></a></li></ol></li><li class="toc-item toc-level-3"><a class="toc-link" href="#7-4-%E7%A3%81%E7%9B%98%E7%BB%93%E6%9E%84"><span class="toc-number">6.4.</span> <span class="toc-text">7.4. 磁盘结构</span></a></li><li class="toc-item toc-level-3"><a class="toc-link" href="#7-5-%E5%90%8E%E5%8F%B0%E7%BA%BF%E7%A8%8B"><span class="toc-number">6.5.</span> <span class="toc-text">7.5. 后台线程</span></a></li><li class="toc-item toc-level-3"><a class="toc-link" href="#7-6-%E6%95%B0%E6%8D%AE%E9%A1%B5%E7%BB%93%E6%9E%84"><span class="toc-number">6.6.</span> <span class="toc-text">7.6. 数据页结构</span></a></li></ol></li><li class="toc-item toc-level-2"><a class="toc-link" href="#8-%E6%89%A9%E5%B1%95%E5%86%85%E5%AE%B9"><span class="toc-number">7.</span> <span class="toc-text">8. 扩展内容</span></a><ol class="toc-child"><li class="toc-item toc-level-3"><a class="toc-link" href="#8-1-%E4%B8%BA%E4%BB%80%E4%B9%88-Mysql-%E6%9B%B4%E6%96%B0%E6%95%B0%E6%8D%AE%E6%97%B6%E4%B8%8D%E7%9B%B4%E6%8E%A5%E5%88%B7%E6%96%B0%E5%88%B0%E7%A3%81%E7%9B%98"><span class="toc-number">7.1.</span> <span class="toc-text">8.1. 为什么 Mysql 更新数据时不直接刷新到磁盘</span></a></li></ol></li></ol></div></div><div class="card-widget card-recent-post"><div class="item-headline"><i class="fas fa-history"></i><span>最新文章</span></div><div class="aside-list"><div class="aside-list-item"><a class="thumbnail" href="/posts/a318ca1f.html" title="MySQL数据库150道高频面试题"><img src="/bg/Image00018.webp" onerror="this.onerror=null;this.src='/img/404.jpg'" alt="MySQL数据库150道高频面试题"/></a><div class="content"><a class="title" href="/posts/a318ca1f.html" title="MySQL数据库150道高频面试题">MySQL数据库150道高频面试题</a><time datetime="2025-07-09T17:28:46.000Z" title="发表于 2025-07-09 17:28:46">2025-07-09</time></div></div><div class="aside-list-item"><a class="thumbnail" href="/posts/8f9b37aa.html" title="技术同学必会的MySQL设计规约"><img src="/bg/Image00014.webp" onerror="this.onerror=null;this.src='/img/404.jpg'" alt="技术同学必会的MySQL设计规约"/></a><div class="content"><a class="title" href="/posts/8f9b37aa.html" title="技术同学必会的MySQL设计规约">技术同学必会的MySQL设计规约</a><time datetime="2025-07-09T17:28:46.000Z" title="发表于 2025-07-09 17:28:46">2025-07-09</time></div></div><div class="aside-list-item"><a class="thumbnail" href="/posts/dfdfdf4.html" title="数据库概述"><img src="/bg/Image00002.webp" onerror="this.onerror=null;this.src='/img/404.jpg'" alt="数据库概述"/></a><div class="content"><a class="title" href="/posts/dfdfdf4.html" title="数据库概述">数据库概述</a><time datetime="2025-07-09T17:28:46.000Z" title="发表于 2025-07-09 17:28:46">2025-07-09</time></div></div><div class="aside-list-item"><a class="thumbnail" href="/posts/490575ab.html" title="24工厂模式俗话解释"><img src="/bg/Image00024.webp" onerror="this.onerror=null;this.src='/img/404.jpg'" alt="24工厂模式俗话解释"/></a><div class="content"><a class="title" href="/posts/490575ab.html" title="24工厂模式俗话解释">24工厂模式俗话解释</a><time datetime="2025-07-09T17:28:46.000Z" title="发表于 2025-07-09 17:28:46">2025-07-09</time></div></div><div class="aside-list-item"><a class="thumbnail" href="/posts/364ea8cc.html" title="设计模式"><img src="/bg/Image00014.webp" onerror="this.onerror=null;this.src='/img/404.jpg'" alt="设计模式"/></a><div class="content"><a class="title" href="/posts/364ea8cc.html" title="设计模式">设计模式</a><time datetime="2025-07-09T17:28:46.000Z" title="发表于 2025-07-09 17:28:46">2025-07-09</time></div></div></div></div></div></div></main><footer id="footer"><div class="footer-other"><div class="footer-copyright"><span class="copyright">&copy;2020 - 2025 By 蓝桉</span><span class="framework-info"><span>框架 </span><a target="_blank" rel="noopener" href="https://hexo.io">Hexo 7.3.0</a><span class="footer-separator">|</span><span>主题 </span><a target="_blank" rel="noopener" href="https://github.com/jerryc127/hexo-theme-butterfly">Butterfly 5.4.2</a></span></div></div></footer></div><div id="rightside"><div id="rightside-config-hide"><button id="readmode" type="button" title="阅读模式"><i class="fas fa-book-open"></i></button><button id="darkmode" type="button" title="日间和夜间模式切换"><i class="fas fa-adjust"></i></button><button id="hide-aside-btn" type="button" title="单栏和双栏切换"><i class="fas fa-arrows-alt-h"></i></button></div><div id="rightside-config-show"><button id="rightside-config" type="button" title="设置"><i class="fas fa-cog fa-spin"></i></button><button class="close" id="mobile-toc-button" type="button" title="目录"><i class="fas fa-list-ul"></i></button><button id="go-up" type="button" title="回到顶部"><span class="scroll-percent"></span><i class="fas fa-arrow-up"></i></button></div></div><div><script src="/js/utils.js"></script><script src="/js/main.js"></script><div class="js-pjax"></div><div class="aplayer no-destroy" data-id="8152976493" data-server="netease" data-type="playlist"   data-order="list" data-fixed="true" data-preload="auto" data-autoplay="false" data-mutex="true" ></div><script async src="//at.alicdn.com/t/c/font_4379924_273fk05h86zi.js"></script><link rel="stylesheet" href="https://cdn.jsdelivr.net/gh/l-lin/font-awesome-animation/dist/font-awesome-animation.min.css"  media="defer" onload="this.media='all'"><script async src="//npm.elemecdn.com/pace-js@1.2.4/pace.min.js"></script><script defer src="https://npm.elemecdn.com/jquery@latest/dist/jquery.min.js"></script><script defer data-pjax src="/js/cat/cat.js"></script><script async data-pjax src="/js/meting/music_lanan.min.js"></script><script defer type="text/javascript" src="https://cdn1.tianli0.top/npm/sweetalert2@8.19.0/dist/sweetalert2.all.js"></script><script defer src="/js/day/lunar.js"></script><script defer src="/js/day/day.js"></script><script async data-pjax src="//busuanzi.ibruce.info/busuanzi/2.3/busuanzi.pure.mini.js"></script></div><!-- hexo injector body_end start --><script data-pjax>
+  function butterfly_clock_anzhiyu_injector_config(){
+    var parent_div_git = document.getElementsByClassName('sticky_layout')[0];
+    var item_html = '<div class="card-widget card-clock"><div class="card-glass"><div class="card-background"><div class="card-content"><div id="hexo_electric_clock"><img class="entered loading" id="card-clock-loading" src="https://cdn.cbd.int/hexo-butterfly-clock-anzhiyu/lib/loading.gif" style="height: 120px; width: 100%;" data-ll-status="loading"/></div></div></div></div></div>';
+    console.log('已挂载butterfly_clock_anzhiyu')
+    if(parent_div_git) {
+      parent_div_git.insertAdjacentHTML("afterbegin",item_html)
+    }
+  }
+  var elist = 'null'.split(',');
+  var cpage = location.pathname;
+  var epage = '/';
+  var qweather_key = '10a7db1c41b6489db9c830c668a18304';
+  var gaud_map_key = '82a64bc994fb6494830f157f319f9f69';
+  var baidu_ak_key = 'undefined';
+  var flag = 0;
+  var clock_rectangle = '113.34532,23.15624';
+  var clock_default_rectangle_enable = 'false';
+
+  for (var i=0;i<elist.length;i++){
+    if (cpage.includes(elist[i])){
+      flag++;
+    }
+  }
+
+  if ((epage ==='all')&&(flag == 0)){
+    butterfly_clock_anzhiyu_injector_config();
+  }
+  else if (epage === cpage){
+    butterfly_clock_anzhiyu_injector_config();
+  }
+  </script><script src="https://widget.qweather.net/simple/static/js/he-simple-common.js?v=2.0"></script><script data-pjax src="https://cdn.cbd.int/hexo-butterfly-clock-anzhiyu/lib/clock.min.js"></script><script data-pjax>
+  function butterfly_footer_beautify_injector_config(){
+    var parent_div_git = document.getElementById('footer-wrap');
+    var item_html = '<div id="workboard"></div><p id="ghbdages"><a class="github-badge" target="_blank" href="https://hexo.io/" style="margin-inline:5px" data-title="博客框架为Hexo_v5.4.0" title=""><img src="https://img.shields.io/badge/Frame-Hexo-blue?style=flat&amp;logo=hexo" alt=""/></a><a class="github-badge" target="_blank" href="https://butterfly.js.org/" style="margin-inline:5px" data-title="主题版本Butterfly_v4.2.2" title=""><img src="https://img.shields.io/badge/Theme-Butterfly-6513df?style=flat&amp;logo=bitdefender" alt=""/></a><a class="github-badge" target="_blank" href="https://www.jsdelivr.com/" style="margin-inline:5px" data-title="本站使用JsDelivr为静态资源提供CDN加速" title=""><img src="https://img.shields.io/badge/CDN-jsDelivr-orange?style=flat&amp;logo=jsDelivr" alt=""/></a><a class="github-badge" target="_blank" href="https://github.com/" style="margin-inline:5px" data-title="本站项目由Github托管" title=""><img src="https://img.shields.io/badge/Source-Github-d021d6?style=flat&amp;logo=GitHub" alt=""/></a><a class="github-badge" target="_blank" href="http://creativecommons.org/licenses/by-nc-sa/4.0/" style="margin-inline:5px" data-title="本站采用知识共享署名-非商业性使用-相同方式共享4.0国际许可协议进行许可" title=""><img src="https://img.shields.io/badge/Copyright-BY--NC--SA%204.0-d42328?style=flat&amp;logo=Claris" alt=""/></a></p>';
+    console.log('已挂载butterfly_footer_beautify')
+    parent_div_git.insertAdjacentHTML("beforeend",item_html)
+    }
+  var elist = 'null'.split(',');
+  var cpage = location.pathname;
+  var epage = 'all';
+  var flag = 0;
+
+  for (var i=0;i<elist.length;i++){
+    if (cpage.includes(elist[i])){
+      flag++;
+    }
+  }
+
+  if ((epage ==='all')&&(flag == 0)){
+    butterfly_footer_beautify_injector_config();
+  }
+  else if (epage === cpage){
+    butterfly_footer_beautify_injector_config();
+  }
+  </script><script async src="/js/runtime/runtime.min.js"></script><script async src="/js/font/ali_font_all.js"></script><div class="js-pjax"><script async="async">var arr = document.getElementsByClassName('recent-post-item');
+for(var i = 0;i<arr.length;i++){
+    arr[i].classList.add('wow');
+    arr[i].classList.add('animate__zoomIn');
+    arr[i].setAttribute('data-wow-duration', '1.5s');
+    arr[i].setAttribute('data-wow-delay', '200ms');
+    arr[i].setAttribute('data-wow-offset', '30');
+    arr[i].setAttribute('data-wow-iteration', '1');
+  }</script><script async="async">var arr = document.getElementsByClassName('card-widget');
+for(var i = 0;i<arr.length;i++){
+    arr[i].classList.add('wow');
+    arr[i].classList.add('animate__zoomIn');
+    arr[i].setAttribute('data-wow-duration', '');
+    arr[i].setAttribute('data-wow-delay', '200ms');
+    arr[i].setAttribute('data-wow-offset', '');
+    arr[i].setAttribute('data-wow-iteration', '');
+  }</script><script async="async">var arr = document.getElementsByClassName('flink-list-card');
+for(var i = 0;i<arr.length;i++){
+    arr[i].classList.add('wow');
+    arr[i].classList.add('animate__flipInY');
+    arr[i].setAttribute('data-wow-duration', '3s');
+    arr[i].setAttribute('data-wow-delay', '');
+    arr[i].setAttribute('data-wow-offset', '');
+    arr[i].setAttribute('data-wow-iteration', '');
+  }</script><script async="async">var arr = document.getElementsByClassName('flink-list-card');
+for(var i = 0;i<arr.length;i++){
+    arr[i].classList.add('wow');
+    arr[i].classList.add('animate__animated');
+    arr[i].setAttribute('data-wow-duration', '3s');
+    arr[i].setAttribute('data-wow-delay', '');
+    arr[i].setAttribute('data-wow-offset', '');
+    arr[i].setAttribute('data-wow-iteration', '');
+  }</script><script async="async">var arr = document.getElementsByClassName('article-sort-item');
+for(var i = 0;i<arr.length;i++){
+    arr[i].classList.add('wow');
+    arr[i].classList.add('animate__slideInRight');
+    arr[i].setAttribute('data-wow-duration', '1.5s');
+    arr[i].setAttribute('data-wow-delay', '');
+    arr[i].setAttribute('data-wow-offset', '');
+    arr[i].setAttribute('data-wow-iteration', '');
+  }</script><script async="async">var arr = document.getElementsByClassName('site-card');
+for(var i = 0;i<arr.length;i++){
+    arr[i].classList.add('wow');
+    arr[i].classList.add('animate__flipInY');
+    arr[i].setAttribute('data-wow-duration', '3s');
+    arr[i].setAttribute('data-wow-delay', '');
+    arr[i].setAttribute('data-wow-offset', '');
+    arr[i].setAttribute('data-wow-iteration', '');
+  }</script><script async="async">var arr = document.getElementsByClassName('site-card');
+for(var i = 0;i<arr.length;i++){
+    arr[i].classList.add('wow');
+    arr[i].classList.add('animate__animated');
+    arr[i].setAttribute('data-wow-duration', '3s');
+    arr[i].setAttribute('data-wow-delay', '');
+    arr[i].setAttribute('data-wow-offset', '');
+    arr[i].setAttribute('data-wow-iteration', '');
+  }</script></div><script defer src="https://cdn.cbd.int/hexo-butterfly-wowjs/lib/wow.min.js"></script><script defer src="https://cdn.cbd.int/hexo-butterfly-wowjs/lib/wow_init.js"></script><!-- hexo injector body_end end --><script src="/live2dw/lib/L2Dwidget.min.js?094cbace49a39548bed64abff5988b05"></script><script>L2Dwidget.init({"pluginRootPath":"live2dw/","pluginJsPath":"lib/","pluginModelPath":"assets/","tagMode":false,"debug":false,"model":{"jsonPath":"/live2dw/assets/shizuku.model.json"},"display":{"position":"right","width":150,"height":300},"mobile":{"show":false},"log":false});</script></body></html>
